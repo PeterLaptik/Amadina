@@ -75,6 +75,7 @@ class ViewPanel: public wxPanel
 
 
     private:
+        void AddTestShapes(void);
         void TransformCoordinatesToGlobal(double &x, double &y);
         void CalculateBestSnapRadius(void);
 //        void TransformCoordinatesFromGlobal(double &x, double &y);

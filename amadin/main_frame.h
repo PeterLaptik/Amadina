@@ -23,6 +23,7 @@ class MainFrame : public wxFrame
 
 	protected:
 	    void OnToolButtonClicked(wxCommandEvent &event);
+	    void OnStickyButtonClicked(wxCommandEvent &event);
 	    void OnKeyPressed(wxKeyEvent &event);
 
 	    CommandInterpreter m_interpreter;
@@ -31,19 +32,25 @@ class MainFrame : public wxFrame
 
 	private:
 	    wxAuiToolBar* CreateToolbarDraft(void);
+	    wxAuiToolBar* CreateToolbarSnap(void);
 	    wxAuiNotebook* CreateNotebookDrawing(void);
 
 	    // Controls ids
 	    static const int ID_NOTEBOOK;
 	    static const int ID_TOOL_DRAFT;
+	    static const int ID_TOOL_SNAP;
 	    static const int ID_BTN_DRAW_POINT;
 	    static const int ID_BTN_DRAW_LINE;
+	    static const int ID_BTN_DRAW_LINE_ORTHO;
 	    static const int ID_BTN_DRAW_CIRCLE;
-	    static const int ID_BTN_DRAW_SQUARE;
-
+	    static const int ID_BTN_DRAW_SQUARE_CENTER;
+	    static const int ID_BTN_DRAW_SQUARE_POINTS;
+        static const int ID_BTN_SNAP_GRID_SHOW;
+        static const int ID_BTN_SNAP_GRID_SNAP;
 
         wxAuiManager m_mgr;
         wxAuiToolBar *tool_draft;
+        wxAuiToolBar *tool_snap;
         wxAuiNotebook *drawing_container;
 
 

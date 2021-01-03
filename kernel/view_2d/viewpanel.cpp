@@ -5,6 +5,7 @@
 #include "../entities/square.h"
 #include <wx/dcclient.h>
 
+#define TEST_MODE
 
 // Default borders positions
 static const double DEFAULT_LEFT_BORDER = 0;
@@ -18,6 +19,7 @@ static const double ZOOM_COEFF = 1.1;
 // Minimum and maximum screen sizes
 static const double MIN_MARGIN = 0.1;
 
+static const int DEFAULT_COLOUR_VALUE = 0;
 
 
 wxBEGIN_EVENT_TABLE(ViewPanel, wxPanel)
@@ -43,21 +45,16 @@ ViewPanel::ViewPanel(wxWindow *parent,
     wheel_pressed = false;
     canvas_state = STATE_NOTHING;
     shape_builder = nullptr;
-//    draw_manager.AddEntity(new Point(35,35));
-//    draw_manager.AddEntity(new Point(37,37));
-//    draw_manager.AddEntity(new Line(0, 0, 0, 100));
-//    draw_manager.AddEntity(new Line(0,100,100, 100));
-//    draw_manager.AddEntity(new Line(100,100,100, 0));
-//    draw_manager.AddEntity(new Line(100,0,0, 0));
-    //draw_manager.AddEntity(new Circle(0, 0, 10));
-    draw_manager.AddEntity(new Square(Point(0,0),20,10));
     borders.left = DEFAULT_LEFT_BORDER;
     borders.right = DEFAULT_RIGHT_BORDER;
     borders.top = DEFAULT_TOP_BORDER;
     borders.bottom = DEFAULT_BOTTOM_BORDER;
     this->GetSize(&width_px, &height_px);
     this->SetBackgroundStyle(wxBG_STYLE_PAINT);
-    this->SetBackgroundColour(wxColour(70, 70, 70));
+    this->SetBackgroundColour(wxColour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
+    #ifdef TEST_MODE
+        AddTestShapes();
+    #endif // TEST_MODE
 }
 
 ViewPanel::~ViewPanel()
@@ -317,4 +314,18 @@ void ViewPanel::CancelCommand()
         shape_builder = nullptr;
     }
     this->Refresh();
+}
+
+void ViewPanel::AddTestShapes()
+{
+    //    draw_manager.AddEntity(new Point(35,35));
+//    draw_manager.AddEntity(new Point(37,37));
+//    draw_manager.AddEntity(new Line(0, 0, 0, 100));
+//    draw_manager.AddEntity(new Line(0,100,100, 100));
+//    draw_manager.AddEntity(new Line(100,100,100, 0));
+//    draw_manager.AddEntity(new Line(100,0,0, 0));
+    //draw_manager.AddEntity(new Circle(0, 0, 10));
+    draw_manager.AddEntity(new Square(Point(0,0),20,10));
+    draw_manager.AddEntity(new Point(30,30));
+    draw_manager.AddEntity(new Point(40,40));
 }

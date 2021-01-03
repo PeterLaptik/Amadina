@@ -24,6 +24,8 @@ class Point: public Entity
 
         static double GetDistanceBetween(const Point &pt1, const Point &pt2);
 
+        void GetSnapPoints(std::vector<std::pair<Entity*,Point>> &vec);
+
         void SetX(double x_coord) {x = x_coord;}
         void SetY(double y_coord) {y = y_coord;}
         void SetZ(double z_coord) {z = z_coord;}

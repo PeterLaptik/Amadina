@@ -3,11 +3,25 @@
 
 #include "abstractbuilder.h"
 
-class SquareBuilder: public AbstractBuilder
+class SquareBuilderByCenter: public AbstractBuilder
 {
     public:
-        SquareBuilder();
-        virtual ~SquareBuilder();
+        SquareBuilderByCenter();
+        virtual ~SquareBuilderByCenter();
+
+        virtual bool AppendPoint(const Point &pt);
+
+        virtual void Redraw(IAdapterDC &dc, double x, double y);
+
+        virtual Entity* Create(void);
+};
+
+
+class SquareBuilderByPoints: public AbstractBuilder
+{
+    public:
+        SquareBuilderByPoints();
+        virtual ~SquareBuilderByPoints();
 
         virtual bool AppendPoint(const Point &pt);
 

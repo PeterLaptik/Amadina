@@ -21,6 +21,11 @@ class IAdapterDC
 
         virtual void CadSetColour(const Colour &colour) = 0;
 
+        virtual void CadDrawConstraintLine(double x1, double y1, double x2, double y2)
+        {
+            CadDrawLine(x1, y1, x2, y2);
+        }
+
     protected:
         // The fields have to be initialized in derived classes
         struct Border
@@ -30,6 +35,9 @@ class IAdapterDC
             double top;
             double bottom;
         } m_borders;
+
+        double x_scale;
+        double y_scale;
 
     private:
 

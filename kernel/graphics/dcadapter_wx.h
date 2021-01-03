@@ -19,10 +19,13 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual void CadDrawCircle(const Point &pt, const double &radius);
 
+        virtual void CadDrawConstraintLine(double x1, double y1, double x2, double y2);
+
         virtual void CadSetColour(const Colour &colour);
 
         void SetBorders(double left, double right, double top, double bottom);
         void GetBorders(double *left, double *right, double *top, double *bottom) const;
+        void GetScale(double *x, double *y) const;
 
     protected:
 

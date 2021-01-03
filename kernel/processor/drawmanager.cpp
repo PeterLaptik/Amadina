@@ -1,4 +1,5 @@
 #include "drawmanager.h"
+#include "default_commands.h"
 
 DrawManager::DrawManager()
         : snap_point(nullptr)
@@ -8,6 +9,7 @@ DrawManager::DrawManager()
     Layer layer(DEFAULT_LAYER_NAME);
     m_layers.insert(std::pair<std::string,Layer>(DEFAULT_LAYER_NAME, layer));
     current_layer = &(m_layers.find(DEFAULT_LAYER_NAME)->second);
+    AssignDefaultPreferences();
 }
 
 DrawManager::~DrawManager()
@@ -82,4 +84,22 @@ void DrawManager::AppendSnapPointsFor(Entity *entity)
 Point* DrawManager::GetSnapPoint(void) const
 {
     return snap_point;
+}
+
+void DrawManager::AssignDefaultPreferences()
+{
+    m_preferences = {
+        {cad::preferences::PREF_GRID_SHOW, 1},
+        {cad::preferences::PREF_SNAP_GRID, 0}
+    };
+}
+
+bool DrawManager::HasPreference(const std::string &pref) const
+{
+    return m_preferences.find(pref)!=m_preferences.end();
+}
+
+void DrawManager::SetPreference(const std::string &pref, float val)
+{
+    m_preferences.insert(std::pair<std::string,float>(pref, val));
 }

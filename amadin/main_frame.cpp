@@ -1,16 +1,23 @@
 #include "main_frame.h"
 #include "../kernel/processor/default_commands.h"
-#include <wx/artprov.h>
+//#include <wx/artprov.h>
+#include <wx/display.h>
+#include <wx/msgdlg.h>
 
+static const wxRect DEFAULT_SIZE_RECT = wxRect(0, 0, 800, 600);
 static const wxSize DEFAULT_BUTTON_SIZE = wxSize(32, 32);
 
 const int MainFrame::ID_TOOL_DRAFT = wxNewId();
+const int MainFrame::ID_TOOL_SNAP = wxNewId();
 const int MainFrame::ID_BTN_DRAW_POINT = wxNewId();
 const int MainFrame::ID_BTN_DRAW_LINE = wxNewId();
+const int MainFrame::ID_BTN_DRAW_LINE_ORTHO = wxNewId();
 const int MainFrame::ID_BTN_DRAW_CIRCLE = wxNewId();
-const int MainFrame::ID_BTN_DRAW_SQUARE = wxNewId();
+const int MainFrame::ID_BTN_DRAW_SQUARE_CENTER = wxNewId();
+const int MainFrame::ID_BTN_DRAW_SQUARE_POINTS = wxNewId();
+const int MainFrame::ID_BTN_SNAP_GRID_SHOW = wxNewId();
+const int MainFrame::ID_BTN_SNAP_GRID_SNAP = wxNewId();
 const int MainFrame::ID_NOTEBOOK = wxNewId();
-
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
@@ -25,12 +32,15 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
                      long style)
             : wxFrame(parent, id, title, pos, size, style)
 {
+	wxDisplay display(wxDisplay::GetFromWindow(this));
+	this->SetSize(display.GetClientArea());
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 	m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
 
 	m_mgr.AddPane(CreateNotebookDrawing(), wxAuiPaneInfo().Center().CaptionVisible(false).Dock().Resizable().FloatingSize(wxDefaultSize));
-    m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("aui_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("toolbar_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
 
     ViewPanel *m_panel2 = new ViewPanel(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
@@ -50,19 +60,36 @@ MainFrame::~MainFrame()
 }
 
 
-wxAuiToolBar* MainFrame::CreateToolbarDraft(void)
+wxAuiToolBar* MainFrame::CreateToolbarDraft()
 {
     tool_draft = new wxAuiToolBar(this, ID_TOOL_DRAFT, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
-    tool_draft->AddTool(ID_BTN_DRAW_POINT, _("point"), wxBitmap(wxImage(_T("res\\icons\\icon_point.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL);
-    tool_draft->AddTool(ID_BTN_DRAW_LINE, _("line"), wxBitmap(wxImage(_T("res\\icons\\icon_line.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL);
-    tool_draft->AddTool(ID_BTN_DRAW_CIRCLE, _("circle"), wxBitmap(wxImage(_T("res\\icons\\icon_circle.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL);
-    tool_draft->AddTool(ID_BTN_DRAW_SQUARE, _("square"), wxBitmap(wxImage(_T("res\\icons\\icon_square.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL);
+    tool_draft->AddTool(ID_BTN_DRAW_POINT, cad::command::CMD_POINT, wxBitmap(wxImage(_T("res\\icons\\icon_point.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Plot point"), wxEmptyString, NULL);
+    tool_draft->AddTool(ID_BTN_DRAW_LINE, cad::command::CMD_LINE, wxBitmap(wxImage(_T("res\\icons\\icon_line.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Draw line"), wxEmptyString, NULL);
+    tool_draft->AddTool(ID_BTN_DRAW_LINE_ORTHO, cad::command::CMD_LINE_ORTHOGONAL, wxBitmap(wxImage(_T("res\\icons\\icon_line_ortho.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Draw line orthogonal"), wxEmptyString, NULL);
+    tool_draft->AddTool(ID_BTN_DRAW_CIRCLE, cad::command::CMD_CIRCLE, wxBitmap(wxImage(_T("res\\icons\\icon_circle.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Draw circle"), wxEmptyString, NULL);
+    tool_draft->AddTool(ID_BTN_DRAW_SQUARE_CENTER, cad::command::CMD_SQUARE_CENTER, wxBitmap(wxImage(_T("res\\icons\\icon_square.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Draw square from center"), wxEmptyString, NULL);
+    tool_draft->AddTool(ID_BTN_DRAW_SQUARE_POINTS, cad::command::CMD_SQUARE, wxBitmap(wxImage(_T("res\\icons\\icon_square_pt.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Draw square"), wxEmptyString, NULL);
     tool_draft->Realize();
     return tool_draft;
+}
+
+wxAuiToolBar* MainFrame::CreateToolbarSnap()
+{
+    tool_snap = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
+    tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, cad::preferences::PREF_GRID_SHOW, wxBitmap(wxImage(_T("res\\icons\\icon_grid.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
+    tool_snap->AddTool(ID_BTN_SNAP_GRID_SNAP, cad::preferences::PREF_SNAP_GRID, wxBitmap(wxImage(_T("res\\icons\\icon_snap.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Grid snap"), wxEmptyString, NULL);
+//    (tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, "snap_grid", wxBitmap(wxImage(_T("res\\icons\\icon_snap.ico"))),
+//                        wxEmptyString, wxITEM_CHECK))->SetSticky(true);
+
+    return tool_snap;
 }
 
 wxAuiNotebook* MainFrame::CreateNotebookDrawing()
@@ -85,15 +112,30 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
 {
     wxString cmd;
     int button_id = event.GetId();
+    wxObject *obj = event.GetEventObject();
+    // Process sticky buttons (preferences, variables etc.)
+    if(obj==tool_snap)
+    {
+        OnStickyButtonClicked(event);
+        return;
+    }
+    // Process command buttons
+    // Each command is being kept in tool-item label
+    wxAuiToolBar *toolbar = dynamic_cast<wxAuiToolBar*>(obj);
+    if(obj)
+        cmd = toolbar->FindTool(event.GetId())->GetLabel();
 
-    if(button_id==ID_BTN_DRAW_POINT)
-        cmd = "point";
-    if(button_id==ID_BTN_DRAW_LINE)
-        cmd = "line";
-    if(button_id==ID_BTN_DRAW_CIRCLE)
-        cmd = "circle";
-    if(button_id==ID_BTN_DRAW_SQUARE)
-        cmd = "square";
+    m_interpreter.ExecuteCommand(cmd.ToStdString());
+}
 
+void MainFrame::OnStickyButtonClicked(wxCommandEvent &event)
+{
+    wxString cmd;
+    wxAuiToolBarItem *item = tool_snap->FindTool(event.GetId());
+    if(!item)
+        return;
+
+    item->SetSticky(!item->IsSticky());
+    cmd<<item->GetLabel()<<" "<<item->IsSticky();
     m_interpreter.ExecuteCommand(cmd.ToStdString());
 }

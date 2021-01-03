@@ -21,6 +21,8 @@ wxAdapterDC::wxAdapterDC(wxWindow *win, wxSize size)
     m_borders.bottom = DEFAULT_BOTTOM_BORDER;
     this->SetBrush(wxBrush(*wxTRANSPARENT_BRUSH));
     this->SetPen(wxPen(wxColour(m_colour.R, m_colour.G, m_colour.B)));
+    x_scale = (m_borders.right -  m_borders.left)/m_width;
+    y_scale = (m_borders.top -  m_borders.bottom)/m_height;
 }
 
 
@@ -67,6 +69,28 @@ void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
     this->DrawCircle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(rad - x));
 }
 
+// Shows dot-line as a constraint line
+void wxAdapterDC::CadDrawConstraintLine(double x1, double y1, double x2, double y2)
+{
+    double x_val, y_val;
+    double distance = pow(pow(x1 - x2, 2) + pow(y1 - y2, 2), 0.5);
+    int pixel_num = static_cast<int>(distance/x_scale/10);
+    if(pixel_num<2)
+        return;
+
+    double start_x = x2;
+    double start_y = y2;
+    double delta_x = (x1 - x2)/pixel_num;
+    double delta_y = (y1 - y2)/pixel_num;
+    for(int step=0; step<pixel_num; step++)
+    {
+        x_val = start_x + delta_x*step;
+        y_val = start_y + delta_y*step;
+        TransformCoordinatesToView(x_val, y_val);
+        this->DrawPoint(static_cast<int>(x_val), static_cast<int>(y_val));
+    }
+}
+
 // Transforms coordinates from real values to device coordinates
 void wxAdapterDC::TransformCoordinatesToView(double &x, double &y)
 {
@@ -88,6 +112,8 @@ void wxAdapterDC::SetBorders(double left, double right, double top, double botto
     m_borders.right = right;
     m_borders.top = top;
     m_borders.bottom = bottom;
+    x_scale = (m_borders.right -  m_borders.left)/m_width;
+    y_scale = (m_borders.top -  m_borders.bottom)/m_height;
 }
 
 void wxAdapterDC::GetBorders(double *left, double *right, double *top, double *bottom) const

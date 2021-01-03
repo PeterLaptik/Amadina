@@ -18,4 +18,20 @@ class LineBuilder: public AbstractBuilder
         virtual bool IsMultiBuild(void) const;
 };
 
+
+class LineBuilderOrtho: public AbstractBuilder
+{
+    public:
+        LineBuilderOrtho();
+        virtual ~LineBuilderOrtho();
+
+        virtual bool AppendPoint(const Point &pt);
+
+        virtual void Redraw(IAdapterDC &dc,  double x, double y);
+
+        virtual Entity* Create(void);
+
+        virtual bool IsMultiBuild(void) const;
+};
+
 #endif // LINEBUILDER_H_INCLUDED

@@ -17,6 +17,8 @@ class CommandInterpreter
 
         void ExecuteCommand(const std::string &name);
 
+        void ParseCommand(const std::string &line);
+
         void SetActivePanel(ViewPanel *panel);
 
         void ResetActivePanel(void);
@@ -24,6 +26,7 @@ class CommandInterpreter
     protected:
 
     private:
+
         std::unordered_map<std::string,command_function> m_commands;
 
         ViewPanel *m_active_panel;

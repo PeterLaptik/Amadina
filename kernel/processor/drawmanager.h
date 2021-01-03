@@ -5,6 +5,7 @@
 #include "../entities/entity.h"
 #include "../graphics/dc.h"
 #include <vector>
+#include <map>
 #include <unordered_map>
 
 class DrawManager
@@ -21,10 +22,22 @@ class DrawManager
 
         Point* GetSnapPoint(void) const;
 
+        bool HasPreference(const std::string &pref) const;
+
+        void SetPreference(const std::string &pref, float val);
+
     protected:
 
     private:
         void AppendSnapPointsFor(Entity *entity);
+        void AssignDefaultPreferences(void);
+
+        // Preferences
+//        bool m_show_grid;
+//        bool m_snap_points;
+//        bool m_snap_center;
+//        bool m_snap_ortho;
+//        bool m_snap_intersection;
 
         std::unordered_map<std::string,Layer> m_layers;
         Layer *current_layer;
@@ -36,6 +49,9 @@ class DrawManager
         std::vector<std::pair<Entity*,Point>> m_snap_points;
         std::vector<std::pair<Entity*,Point>> m_snap_center;
         std::vector<Point> m_snap_intersections;
+
+        // Preferences
+        std::map<std::string, float> m_preferences;
 };
 
 #endif // DRAWMANAGER_H_INCLUDED

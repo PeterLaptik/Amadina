@@ -20,10 +20,13 @@ void CircleBuilder::Redraw(IAdapterDC &dc, double x, double y)
     if(points.size()<1)
         return;
 
+    double center_x = points.at(0).GetX();
+    double center_y = points.at(0).GetY();
     double distance = pow((pow(points.at(0).GetX() - x,2)
                            + pow(points.at(0).GetY() - y,2)),
                           0.5);
     dc.CadDrawCircle(points.at(0), distance);
+    dc.CadDrawConstraintLine(center_x, center_y, x, y);
 }
 
 Entity* CircleBuilder::Create()
