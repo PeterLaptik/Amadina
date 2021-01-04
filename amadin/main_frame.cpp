@@ -16,7 +16,13 @@ const int MainFrame::ID_BTN_DRAW_CIRCLE = wxNewId();
 const int MainFrame::ID_BTN_DRAW_SQUARE_CENTER = wxNewId();
 const int MainFrame::ID_BTN_DRAW_SQUARE_POINTS = wxNewId();
 const int MainFrame::ID_BTN_SNAP_GRID_SHOW = wxNewId();
-const int MainFrame::ID_BTN_SNAP_GRID_SNAP = wxNewId();
+const int MainFrame::ID_BTN_SNAP_GRID = wxNewId();
+const int MainFrame::ID_BTN_SNAP_POINT = wxNewId();
+const int MainFrame::ID_BTN_SNAP_CENTER = wxNewId();
+const int MainFrame::ID_BTN_SNAP_ORTHO = wxNewId();
+const int MainFrame::ID_BTN_SNAP_INTERSECTION = wxNewId();
+const int MainFrame::ID_BTN_SNAP_TANGENT = wxNewId();
+const int MainFrame::ID_BTN_SNAP_ANGLE = wxNewId();
 const int MainFrame::ID_NOTEBOOK = wxNewId();
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -83,14 +89,22 @@ wxAuiToolBar* MainFrame::CreateToolbarDraft()
 wxAuiToolBar* MainFrame::CreateToolbarSnap()
 {
     tool_snap = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
-    tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, cad::preferences::PREF_GRID_SHOW, wxBitmap(wxImage(_T("res\\icons\\icon_grid.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
-    tool_snap->FindTool(ID_BTN_SNAP_GRID_SHOW)->SetSticky(true);
-    tool_snap->AddTool(ID_BTN_SNAP_GRID_SNAP, cad::preferences::PREF_SNAP_GRID, wxBitmap(wxImage(_T("res\\icons\\icon_snap.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Grid snap"), wxEmptyString, NULL);
-//    (tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, "snap_grid", wxBitmap(wxImage(_T("res\\icons\\icon_snap.ico"))),
-//                        wxEmptyString, wxITEM_CHECK))->SetSticky(true);
-
+    (tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, cad::preferences::PREF_GRID_SHOW, wxBitmap(wxImage(_T("res\\icons\\icon_grid.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL))->SetSticky(true);
+    (tool_snap->AddTool(ID_BTN_SNAP_GRID, cad::preferences::PREF_SNAP_GRID, wxBitmap(wxImage(_T("res\\icons\\icon_snap_grid.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Snap grid"), wxEmptyString, NULL))->SetSticky(false);
+    (tool_snap->AddTool(ID_BTN_SNAP_POINT, cad::preferences::PREF_SNAP_POINT, wxBitmap(wxImage(_T("res\\icons\\icon_snap_point.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Snap point"), wxEmptyString, NULL))->SetSticky(true);
+    (tool_snap->AddTool(ID_BTN_SNAP_CENTER, cad::preferences::PREF_SNAP_CENTER, wxBitmap(wxImage(_T("res\\icons\\icon_snap_center.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Snap center"), wxEmptyString, NULL))->SetSticky(true);
+    (tool_snap->AddTool(ID_BTN_SNAP_INTERSECTION, cad::preferences::PREF_SNAP_INTERSECTION, wxBitmap(wxImage(_T("res\\icons\\icon_snap_intersection.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Snap intersection"), wxEmptyString, NULL))->SetSticky(true);
+    (tool_snap->AddTool(ID_BTN_SNAP_ORTHO, cad::preferences::PREF_SNAP_ORTHO, wxBitmap(wxImage(_T("res\\icons\\icon_snap_ortho.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Snap orthogonal"), wxEmptyString, NULL))->SetSticky(true);
+    (tool_snap->AddTool(ID_BTN_SNAP_TANGENT, cad::preferences::PREF_SNAP_TANGENT, wxBitmap(wxImage(_T("res\\icons\\icon_snap_tangent.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Snap tangent"), wxEmptyString, NULL))->SetSticky(true);
+    (tool_snap->AddTool(ID_BTN_SNAP_ANGLE, cad::preferences::PREF_SNAP_ANGLE, wxBitmap(wxImage(_T("res\\icons\\icon_snap_angle.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Snap angle"), wxEmptyString, NULL))->SetSticky(true);
     return tool_snap;
 }
 

@@ -46,7 +46,13 @@ class MainFrame : public wxFrame
 	    static const int ID_BTN_DRAW_SQUARE_CENTER;
 	    static const int ID_BTN_DRAW_SQUARE_POINTS;
         static const int ID_BTN_SNAP_GRID_SHOW;
-        static const int ID_BTN_SNAP_GRID_SNAP;
+        static const int ID_BTN_SNAP_GRID;
+        static const int ID_BTN_SNAP_POINT;
+        static const int ID_BTN_SNAP_CENTER;
+        static const int ID_BTN_SNAP_INTERSECTION;
+        static const int ID_BTN_SNAP_ORTHO;
+        static const int ID_BTN_SNAP_TANGENT;
+        static const int ID_BTN_SNAP_ANGLE;
 
         wxAuiManager m_mgr;
         wxAuiToolBar *tool_draft;

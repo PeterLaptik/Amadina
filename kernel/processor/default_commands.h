@@ -30,6 +30,12 @@ namespace cad
     {
         const std::string PREF_GRID_SHOW = "grid_show";
         const std::string PREF_SNAP_GRID = "snap_grid";
+        const std::string PREF_SNAP_POINT = "snap_point";
+        const std::string PREF_SNAP_CENTER = "snap_center";
+        const std::string PREF_SNAP_INTERSECTION = "snap_intersection";
+        const std::string PREF_SNAP_ORTHO = "snap_ortho";
+        const std::string PREF_SNAP_TANGENT = "snap_tangent";
+        const std::string PREF_SNAP_ANGLE = "snap_angle";
     }
 }
 

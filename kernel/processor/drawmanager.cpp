@@ -67,25 +67,31 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     double min_distance = snap_radius + 1;
     snap_point = nullptr;
     // Snap points
-    for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_points.begin(); it!=m_snap_points.end(); ++it)
+    if(m_preferences.find(cad::preferences::PREF_SNAP_POINT)->second)
     {
-        double distance = Point::GetDistanceBetween(mouse_point, it->second);
-        if(min_distance>distance)
+        for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_points.begin(); it!=m_snap_points.end(); ++it)
         {
-            min_distance = distance;
-            snap_point = &it->second;
-            snap_type = POINT;
+            double distance = Point::GetDistanceBetween(mouse_point, it->second);
+            if(min_distance>distance)
+            {
+                min_distance = distance;
+                snap_point = &it->second;
+                snap_type = POINT;
+            }
         }
     }
-    // Center points
-    for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_center.begin(); it!=m_snap_center.end(); ++it)
+    // Snap center points
+    if(m_preferences.find(cad::preferences::PREF_SNAP_CENTER)->second)
     {
-        double distance = Point::GetDistanceBetween(mouse_point, it->second);
-        if(min_distance>distance)
+        for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_center.begin(); it!=m_snap_center.end(); ++it)
         {
-            min_distance = distance;
-            snap_point = &it->second;
-            snap_type = CENTER;
+            double distance = Point::GetDistanceBetween(mouse_point, it->second);
+            if(min_distance>distance)
+            {
+                min_distance = distance;
+                snap_point = &it->second;
+                snap_type = CENTER;
+            }
         }
     }
 
@@ -188,7 +194,13 @@ void DrawManager::AssignDefaultPreferences()
 {
     m_preferences = {
         {cad::preferences::PREF_GRID_SHOW, 1},
-        {cad::preferences::PREF_SNAP_GRID, 0}
+        {cad::preferences::PREF_SNAP_GRID, 0},
+        {cad::preferences::PREF_SNAP_POINT, 1},
+        {cad::preferences::PREF_SNAP_CENTER, 1},
+        {cad::preferences::PREF_SNAP_INTERSECTION, 1},
+        {cad::preferences::PREF_SNAP_ORTHO, 1},
+        {cad::preferences::PREF_SNAP_TANGENT, 1},
+        {cad::preferences::PREF_SNAP_ANGLE, 1}
     };
 }
 
