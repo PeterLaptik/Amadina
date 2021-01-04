@@ -12,9 +12,9 @@ class Square: public Entity
 
         virtual void Draw(IAdapterDC &dc);
 
-        virtual void GetSnapPoints(std::vector<std::pair<Entity*,Point>> &vec);
+        virtual void GetSnapPoints(std::vector<Point> &vec) const;
 
-        virtual void GetCenterPoints(std::vector<std::pair<Entity*, Point>> &vec);
+        virtual void GetCenterPoints(std::vector<Point> &vec) const;
 
     protected:
 

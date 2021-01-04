@@ -30,13 +30,13 @@ void Line::Draw(IAdapterDC &dc)
     dc.CadDrawLine(m_pt1, m_pt2);
 }
 
-void Line::GetSnapPoints(std::vector<std::pair<Entity*,Point>> &vec)
+void Line::GetSnapPoints(std::vector<Point> &vec) const
 {
-    vec.push_back(std::pair<Entity*,Point>(this, m_pt1));
-    vec.push_back(std::pair<Entity*,Point>(this, m_pt2));
+    vec.push_back(m_pt1);
+    vec.push_back(m_pt2);
 }
 
-void Line::GetCenterPoints(std::vector<std::pair<Entity*, Point>> &vec)
+void Line::GetCenterPoints(std::vector<Point> &vec) const
 {
     double x1 = m_pt1.GetX();
     double y1 = m_pt1.GetY();
@@ -49,5 +49,7 @@ void Line::GetCenterPoints(std::vector<std::pair<Entity*, Point>> &vec)
     if(y1>y2)
         std::swap(y1, y2);
 
-    vec.push_back(std::pair<Entity*,Point>(this, Point(x1+(x2-x1)/2, y1+(y2-y1)/2)));
+    vec.push_back(Point(x1+(x2-x1)/2, y1+(y2-y1)/2));
 }
+
+

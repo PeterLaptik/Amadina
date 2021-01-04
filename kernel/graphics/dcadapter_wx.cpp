@@ -116,14 +116,6 @@ void wxAdapterDC::SetBorders(double left, double right, double top, double botto
     y_scale = (m_borders.top -  m_borders.bottom)/m_height;
 }
 
-void wxAdapterDC::GetBorders(double *left, double *right, double *top, double *bottom) const
-{
-    *left = m_borders.left;
-    *right = m_borders.right;
-    *top = m_borders.top;
-    *bottom = m_borders.bottom;
-}
-
 void wxAdapterDC::CadSetColour(const Colour &colour)
 {
     m_colour = colour;

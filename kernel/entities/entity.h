@@ -20,11 +20,16 @@ class Entity
 
         // Getting points for snap and edit
         // Each entity is able to push its own points for snapping
-        virtual void GetSnapPoints(std::vector<std::pair<Entity*, Point>> &vec)
+        virtual void GetSnapPoints(std::vector<Point> &vec) const
         { }
 
         // Points for snap to center
-        virtual void GetCenterPoints(std::vector<std::pair<Entity*, Point>> &vec)
+        virtual void GetCenterPoints(std::vector<Point> &vec) const
+        { }
+
+        // Getting object's primitive entities for calculating intersections
+        // Primitives can be only: Line, Circle.
+        virtual void GetPrimitives(std::vector<Entity> &vec) const
         { }
 
         void SetLayer(Layer *layer);

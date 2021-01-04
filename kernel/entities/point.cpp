@@ -27,7 +27,7 @@ double Point::GetDistanceBetween(const Point &pt1, const Point &pt2)
                0.5);
 }
 
-void Point::GetSnapPoints(std::vector<std::pair<Entity*,Point>> &vec)
+void Point::GetSnapPoints(std::vector<Point> &vec) const
 {
-    vec.push_back(std::pair<Entity*,Point>(this, *this));
+    vec.push_back(*this);
 }

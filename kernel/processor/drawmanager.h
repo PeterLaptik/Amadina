@@ -26,18 +26,14 @@ class DrawManager
 
         void SetPreference(const std::string &pref, float val);
 
+        float GetPreference(const std::string &pref) const;
+
     protected:
 
     private:
+        void ShowGrid(IAdapterDC &dc);
         void AppendSnapPointsFor(Entity *entity);
         void AssignDefaultPreferences(void);
-
-        // Preferences
-//        bool m_show_grid;
-//        bool m_snap_points;
-//        bool m_snap_center;
-//        bool m_snap_ortho;
-//        bool m_snap_intersection;
 
         std::unordered_map<std::string,Layer> m_layers;
         Layer *current_layer;
@@ -46,6 +42,7 @@ class DrawManager
         std::vector<Entity*> m_elements;
         // Snap points
         Point *snap_point;
+        std::vector<Point> m_snap_grid;
         std::vector<std::pair<Entity*,Point>> m_snap_points;
         std::vector<std::pair<Entity*,Point>> m_snap_center;
         std::vector<Point> m_snap_intersections;

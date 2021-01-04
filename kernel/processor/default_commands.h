@@ -16,6 +16,8 @@ namespace cad
         const std::string CMD_CIRCLE = "circle";
 
         void RegisterDefaultCommands(CommandInterpreter &interpreter);
+
+        // Command callbacks
         void DrawPoint(ViewPanel *panel);
         void DrawLine(ViewPanel *panel);
         void DrawLineOrtho(ViewPanel *panel);

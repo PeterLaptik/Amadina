@@ -26,6 +26,22 @@ class IAdapterDC
             CadDrawLine(x1, y1, x2, y2);
         }
 
+        virtual void SetBorders(double left, double right, double top, double bottom)
+        {
+            m_borders.left = left;
+            m_borders.right = right;
+            m_borders.top = top;
+            m_borders.bottom = bottom;
+        }
+
+        virtual void GetBorders(double *left, double *right, double *top, double *bottom) const
+        {
+            *left = m_borders.left;
+            *right = m_borders.right;
+            *top = m_borders.top;
+            *bottom = m_borders.bottom;
+        }
+
     protected:
         // The fields have to be initialized in derived classes
         struct Border

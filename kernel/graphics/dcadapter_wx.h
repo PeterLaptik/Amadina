@@ -23,8 +23,10 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual void CadSetColour(const Colour &colour);
 
-        void SetBorders(double left, double right, double top, double bottom);
-        void GetBorders(double *left, double *right, double *top, double *bottom) const;
+        // Overridden method of a base class
+        // Includes additional scale calculation (length per pixel)
+        virtual void SetBorders(double left, double right, double top, double bottom);
+
         void GetScale(double *x, double *y) const;
 
     protected:

@@ -20,17 +20,17 @@ void Circle::Draw(IAdapterDC &dc)
     dc.CadDrawCircle(m_center, m_radius);
 }
 
-void Circle::GetSnapPoints(std::vector<std::pair<Entity*,Point>> &vec)
+void Circle::GetSnapPoints(std::vector<Point> &vec) const
 {
     double x = m_center.GetX();
     double y = m_center.GetY();
-    vec.push_back(std::pair<Entity*,Point>(this, Point(x, y + m_radius)));
-    vec.push_back(std::pair<Entity*,Point>(this, Point(x, y - m_radius)));
-    vec.push_back(std::pair<Entity*,Point>(this, Point(x + m_radius, y)));
-    vec.push_back(std::pair<Entity*,Point>(this, Point(x - m_radius, y)));
+    vec.push_back(Point(x, y + m_radius));
+    vec.push_back(Point(x, y - m_radius));
+    vec.push_back(Point(x + m_radius, y));
+    vec.push_back(Point(x - m_radius, y));
 }
 
-void Circle::GetCenterPoints(std::vector<std::pair<Entity*, Point>> &vec)
+void Circle::GetCenterPoints(std::vector<Point> &vec) const
 {
-    vec.push_back(std::pair<Entity*,Point>(this, m_center));
+    vec.push_back(m_center);
 }

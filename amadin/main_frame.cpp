@@ -34,6 +34,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 {
 	wxDisplay display(wxDisplay::GetFromWindow(this));
 	this->SetSize(display.GetClientArea());
+	this->SetSize(DEFAULT_SIZE_RECT);
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 	m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
@@ -84,6 +85,7 @@ wxAuiToolBar* MainFrame::CreateToolbarSnap()
     tool_snap = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
     tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, cad::preferences::PREF_GRID_SHOW, wxBitmap(wxImage(_T("res\\icons\\icon_grid.ico"))),
                         wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
+    tool_snap->FindTool(ID_BTN_SNAP_GRID_SHOW)->SetSticky(true);
     tool_snap->AddTool(ID_BTN_SNAP_GRID_SNAP, cad::preferences::PREF_SNAP_GRID, wxBitmap(wxImage(_T("res\\icons\\icon_snap.ico"))),
                         wxNullBitmap, wxITEM_NORMAL, _("Grid snap"), wxEmptyString, NULL);
 //    (tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, "snap_grid", wxBitmap(wxImage(_T("res\\icons\\icon_snap.ico"))),
@@ -138,4 +140,5 @@ void MainFrame::OnStickyButtonClicked(wxCommandEvent &event)
     item->SetSticky(!item->IsSticky());
     cmd<<item->GetLabel()<<" "<<item->IsSticky();
     m_interpreter.ExecuteCommand(cmd.ToStdString());
+    this->Refresh();
 }
