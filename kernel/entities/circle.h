@@ -16,6 +16,8 @@ class Circle: public Entity
 
         virtual void GetCenterPoints(std::vector<Point> &vec) const;
 
+        //virtual void GetPrimitives(std::vector<Entity> &vec) const;
+
     protected:
 
     private:

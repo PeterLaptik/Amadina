@@ -41,7 +41,7 @@ class DrawManager
         // Shapes
         std::vector<Entity*> m_elements;
         // Snap points
-        Point *snap_point;
+        Point *m_snap_point;
         std::vector<Point> m_snap_grid;
         std::vector<std::pair<Entity*,Point>> m_snap_points;
         std::vector<std::pair<Entity*,Point>> m_snap_center;

@@ -34,3 +34,8 @@ void Circle::GetCenterPoints(std::vector<Point> &vec) const
 {
     vec.push_back(m_center);
 }
+
+//void Circle::GetPrimitives(std::vector<Entity> &vec) const
+//{
+//    vec.push_back(Circle(m_center,m_radius));
+//}

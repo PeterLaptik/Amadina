@@ -1,4 +1,5 @@
 #include "line.h"
+#include "circle.h"
 #include <math.h>
 
 Line::Line()
@@ -52,4 +53,58 @@ void Line::GetCenterPoints(std::vector<Point> &vec) const
     vec.push_back(Point(x1+(x2-x1)/2, y1+(y2-y1)/2));
 }
 
+void Line::IntersectsWith(Entity* entity, std::vector<Point> &points) const
+{
+    Line *line = dynamic_cast<Line*>(entity);
+    Circle *circle = dynamic_cast<Circle*>(entity);
 
+    if(line)
+        LineIntersection(line, points);
+
+    if(circle)
+        CircleIntersection(points);
+}
+
+void Line::LineIntersection(Line *line, std::vector<Point> &points) const
+{
+    double x1, x2, y1, y2;
+    // First line
+    x1 = m_pt1.GetX();
+    y1 = m_pt1.GetY();
+    x2 = m_pt2.GetX();
+    y2 = m_pt2.GetY();
+
+//    if(x1>x2)
+//        std::swap(x1,x2);
+//
+//    if(y1>y2)
+//        std::swap(x1,x2);
+
+    // y1 = ax + c
+    // y2 = bx + d
+    double a = (y2 - y1)/(x2 - x1);
+    double c = y1 + a*x1;
+
+    // (x-x1)/(x2-x1)=(y-y1)/(y2-y1)
+    // (x-x1)*((y2-y1)/(x2-x1))=(y-y1)
+    // (x-x1)*a=(y-y1)
+    //  a*x1 = y - y1
+    //  y1 + a*x1 = y
+
+    // Second line
+    x1 = line->m_pt1.GetX();
+    y1 = line->m_pt1.GetY();
+    x2 = line->m_pt2.GetX();
+    y2 = line->m_pt2.GetY();
+    double b = (y2 - y1)/(x2 - x1);
+    double d = y1 + a*x1;
+
+    double x = (d - c)/(a - b);
+    double y = a*(d - c)/(a - b) + c;
+    points.push_back(Point(x,y));
+}
+
+void Line::CircleIntersection(std::vector<Point> &points) const
+{
+
+}

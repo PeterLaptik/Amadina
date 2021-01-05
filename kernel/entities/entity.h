@@ -27,9 +27,9 @@ class Entity
         virtual void GetCenterPoints(std::vector<Point> &vec) const
         { }
 
-        // Getting object's primitive entities for calculating intersections
-        // Primitives can be only: Line, Circle.
-        virtual void GetPrimitives(std::vector<Entity> &vec) const
+        //
+        //
+        virtual void IntersectsWith(Entity* entity, std::vector<Point> &points) const
         { }
 
         void SetLayer(Layer *layer);
