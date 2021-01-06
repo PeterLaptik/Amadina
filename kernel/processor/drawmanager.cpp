@@ -155,7 +155,10 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
             }
         case INTERSECTION:
             {
-                dc.CadDrawCircle(*m_snap_point, snap_radius);
+                dc.CadDrawLine(Point(m_snap_point->GetX()-snap_radius, m_snap_point->GetY()-snap_radius),
+                               Point(m_snap_point->GetX()+snap_radius, m_snap_point->GetY()+snap_radius));
+                dc.CadDrawLine(Point(m_snap_point->GetX()-snap_radius, m_snap_point->GetY()+snap_radius),
+                               Point(m_snap_point->GetX()+snap_radius, m_snap_point->GetY()-snap_radius));
                 break;
             }
         }
@@ -182,6 +185,9 @@ void DrawManager::AppendSnapPointsFor(Entity *entity)
     points.clear();
     for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
     {
+        if(*it==entity)
+            continue;
+
         (*it)->IntersectsWith(entity, points);
     }
     for(std::vector<Point>::iterator it=points.begin(); it!=points.end(); ++it)

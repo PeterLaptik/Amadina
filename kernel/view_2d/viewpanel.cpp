@@ -241,6 +241,7 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
 
     wxString debug_coord;
     debug_coord<<coordinates.x<<" - "<<coordinates.y<<" - "<<canvas_state;
+    dc.SetTextForeground(wxColour(255,255,0));
     dc.DrawText(debug_coord, 100, 100);
 }
 

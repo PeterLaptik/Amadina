@@ -4,6 +4,10 @@
 #include "entity.h"
 #include "point.h"
 
+// Forward declaration for intersections calculations
+class Circle;
+
+
 class Line: public Entity
 {
     public:
@@ -25,7 +29,7 @@ class Line: public Entity
         Line();
         void CalculateLength(void);
         void LineIntersection(Line *line, std::vector<Point> &points) const;
-        void CircleIntersection(std::vector<Point> &points) const;
+        void CircleIntersection(Circle *circle, std::vector<Point> &points) const;
 
         Point m_pt1;
         Point m_pt2;

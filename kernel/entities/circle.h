@@ -12,11 +12,15 @@ class Circle: public Entity
 
         virtual void Draw(IAdapterDC &dc);
 
+        Point GetCenterPoint(void) const;
+
+        double GetRadius(void) const;
+
         virtual void GetSnapPoints(std::vector<Point> &vec) const;
 
         virtual void GetCenterPoints(std::vector<Point> &vec) const;
 
-        //virtual void GetPrimitives(std::vector<Entity> &vec) const;
+        virtual void IntersectsWith(Entity* entity, std::vector<Point> &points) const;
 
     protected:
 
