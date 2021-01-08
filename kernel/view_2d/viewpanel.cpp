@@ -53,7 +53,7 @@ ViewPanel::ViewPanel(wxWindow *parent,
     this->SetBackgroundStyle(wxBG_STYLE_PAINT);
     this->SetBackgroundColour(wxColour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
     #ifdef TEST_MODE
-        AddTestShapes();
+        //AddTestShapes();
     #endif // TEST_MODE
 }
 
@@ -65,10 +65,12 @@ ViewPanel::~ViewPanel()
 
 void ViewPanel::OnMouseMove(wxMouseEvent &event)
 {
+    bool is_ctrl_pressed = wxGetKeyState(WXK_RAW_CONTROL);
+    bool is_lb_pressed = wxGetMouseState().LeftIsDown();
     double x = static_cast<double>(event.GetX());
     double y = static_cast<double>(event.GetY());
     TransformCoordinatesToGlobal(x, y);
-    if(!wheel_pressed) // move by wheel pressed
+    if((!wheel_pressed)&&(!((is_ctrl_pressed)&&(is_lb_pressed)))) // move by wheel pressed or mouse left button + ctrl
     {
         coordinates.x = x;
         coordinates.y = y;
@@ -138,6 +140,9 @@ void ViewPanel::OnMouseWheelUp(wxMouseEvent &event)
 
 void ViewPanel::OnMouseLeftButtonDown(wxMouseEvent &event)
 {
+    if(wxGetKeyState(WXK_RAW_CONTROL))
+        return; // Do not pick points on screen dragging
+
     double x = static_cast<double>(event.GetX());
     double y = static_cast<double>(event.GetY());
     TransformCoordinatesToGlobal(x, y);

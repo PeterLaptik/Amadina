@@ -42,7 +42,6 @@ class ViewPanel: public wxPanel
             return &draw_manager;
         }
 
-
     protected:
         void OnPaint(wxPaintEvent &event);
         void OnResize(wxSizeEvent &event);

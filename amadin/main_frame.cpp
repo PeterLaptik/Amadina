@@ -39,7 +39,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
             : wxFrame(parent, id, title, pos, size, style)
 {
 	wxDisplay display(wxDisplay::GetFromWindow(this));
-	this->SetSize(display.GetClientArea());
+	//this->SetSize(display.GetClientArea());
 	this->SetSize(DEFAULT_SIZE_RECT);
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 	m_mgr.SetManagedWindow(this);
