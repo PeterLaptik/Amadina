@@ -3,7 +3,7 @@
 
 bool Point::operator==(const Point &pt)
 {
-    return (pt.GetX()==x)&&(pt.GetY()==y)&&(pt.GetZ()==z);
+    return (pt.x==x)&&(pt.x==y)&&(pt.x==z);
 }
 
 void Point::Draw(IAdapterDC &dc)

@@ -1,5 +1,6 @@
 #include "drawmanager.h"
 #include "default_commands.h"
+#include "../geometry/intersections.h"
 
 static const int DEFAULT_GRID_STEP_BASE_NUMBER = 5;
 static const float DEFAULT_PREFERENCE_EMPTY_VALUE = -1;
@@ -105,20 +106,22 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
             }
         }
     }
-
-        for(std::vector<Point>::iterator it=m_snap_intersections.begin(); it!=m_snap_intersections.end(); ++it)
+    // Intersection points
+    if(m_preferences.find(cad::preferences::PREF_SNAP_INTERSECTION)->second)
+    {
+        for(std::vector<std::pair<std::pair<Entity*,Entity*>,Point>>::iterator it=m_snap_intersections.begin(); it!=m_snap_intersections.end(); ++it)
         {
-            double distance = Point::GetDistanceBetween(mouse_point, *it);
+            double distance = Point::GetDistanceBetween(mouse_point, it->second);
             if(min_distance>distance)
             {
                 min_distance = distance;
-                m_snap_point = &(*it);
+                m_snap_point = &(it->second);
                 snap_type = INTERSECTION;
             }
         }
-
+    }
     // Find snap points among grid points
-    // Apply snap only if grid is shown
+    // Apply snap if grid is shown
     if((m_preferences.find(cad::preferences::PREF_SNAP_GRID)->second)&&(m_preferences.find(cad::preferences::PREF_GRID_SHOW)->second))
     {
         for(std::vector<Point>::iterator it=m_snap_grid.begin(); it!=m_snap_grid.end(); ++it)
@@ -159,12 +162,15 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
                                Point(m_snap_point->GetX()+snap_radius, m_snap_point->GetY()+snap_radius));
                 dc.CadDrawLine(Point(m_snap_point->GetX()-snap_radius, m_snap_point->GetY()+snap_radius),
                                Point(m_snap_point->GetX()+snap_radius, m_snap_point->GetY()-snap_radius));
+                dc.CadDrawLine(Point(m_snap_point->GetX()-snap_radius*2, m_snap_point->GetY()),
+                               Point(m_snap_point->GetX()+snap_radius*2, m_snap_point->GetY()));
+                dc.CadDrawLine(Point(m_snap_point->GetX(), m_snap_point->GetY()+snap_radius*2),
+                               Point(m_snap_point->GetX(), m_snap_point->GetY()-snap_radius*2));
                 break;
             }
         }
     }
     dc.CadSetColour(Colour(255, 255, 255));
-
 }
 
 // Finds snap points and appends them into a lists.
@@ -172,26 +178,43 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
 void DrawManager::AppendSnapPointsFor(Entity *entity)
 {
     std::vector<Point> points;  // found points
+    std::vector<Entity*> primitives;            // primitives of the entity
+    std::vector<Entity*> primitives_ext;  // primitives of existing entity
+
     // Get constraint points
     entity->GetSnapPoints(points);
     for(std::vector<Point>::iterator it=points.begin(); it!=points.end(); ++it)
         m_snap_points.push_back(std::pair<Entity*,Point>(entity, *it));
+
     // Get center points
     points.clear();
     entity->GetCenterPoints(points);
     for(std::vector<Point>::iterator it=points.begin(); it!=points.end(); ++it)
         m_snap_center.push_back(std::pair<Entity*,Point>(entity, *it));
+
     // Get entities intersections
-    points.clear();
     for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
     {
         if(*it==entity)
             continue;
 
-        (*it)->IntersectsWith(entity, points);
+        primitives.clear();
+        primitives_ext.clear();
+        entity->GetPrimitives(primitives);
+        (*it)->GetPrimitives(primitives_ext);
+        // Iterate over all sub-entities of appending item and sub-entities of overall existing items
+        for(std::vector<Entity*>::iterator it=primitives.begin(); it!=primitives.end(); ++it)
+        {
+            for(std::vector<Entity*>::iterator it_ext=primitives_ext.begin(); it_ext!=primitives_ext.end(); ++it_ext)
+            {
+                points.clear();
+                cad::geometry::calculate_intersections((*it_ext), (*it), points);
+                // Write intersections points
+                for(std::vector<Point>::iterator it_point=points.begin(); it_point!=points.end(); ++it_point)
+                    m_snap_intersections.push_back(std::pair<std::pair<Entity*,Entity*>,Point>(std::pair<Entity*,Entity*>(*it, *it_ext), *it_point));
+            }
+        }
     }
-    for(std::vector<Point>::iterator it=points.begin(); it!=points.end(); ++it)
-        m_snap_intersections.push_back(*it);
 }
 
 Point* DrawManager::GetSnapPoint(void) const
@@ -212,17 +235,17 @@ void DrawManager::ShowGrid(IAdapterDC &dc)
     int y_log = static_cast<int>(log10(top - bottom)) - 1;
     int num_log = x_log < y_log ? x_log : y_log;
     // Step values
-    double x_num = DEFAULT_GRID_STEP_BASE_NUMBER*pow(10,num_log);
-    double y_num = DEFAULT_GRID_STEP_BASE_NUMBER*pow(10,num_log);
+    double x_step = DEFAULT_GRID_STEP_BASE_NUMBER*pow(10,num_log);
+    double y_step = DEFAULT_GRID_STEP_BASE_NUMBER*pow(10,num_log);
     // Start values for dots
-    int x_multiplier = left/x_num;
-    int y_multiplier = bottom/y_num;
+    int x_multiplier = left/x_step;
+    int y_multiplier = bottom/y_step;
     // Draw grid
     dc.CadSetColour(Colour(255, 255, 255));
     m_snap_grid.clear();
     bool snap_to_grid = m_preferences.find(cad::preferences::PREF_SNAP_GRID)->second;
-    for(double i=x_num*x_multiplier; i<right; i+=x_num)
-        for(double j=y_num*y_multiplier; j<top; j+=y_num)
+    for(double i=x_step*x_multiplier; i<right; i+=x_step)
+        for(double j=y_step*y_multiplier; j<top; j+=y_step)
         {
             Point pt(i,j);
             dc.CadDrawPoint(pt);
@@ -232,7 +255,7 @@ void DrawManager::ShowGrid(IAdapterDC &dc)
 }
 
 // Default preferences for a drawing
-// Initial GUI controls states are to be synchronized width the default values
+// Initial GUI controls states are to be synchronized with the default values
 void DrawManager::AssignDefaultPreferences()
 {
     m_preferences = {
@@ -252,6 +275,9 @@ bool DrawManager::HasPreference(const std::string &pref) const
     return m_preferences.find(pref)!=m_preferences.end();
 }
 
+//Sets preference value
+//pref -- preference name
+//val - value to set
 void DrawManager::SetPreference(const std::string &pref, float val)
 {
     std::map<std::string,float>::iterator it = m_preferences.find(pref);
@@ -261,6 +287,7 @@ void DrawManager::SetPreference(const std::string &pref, float val)
     it->second = val;
 }
 
+// Returns preference value if has been found
 float DrawManager::GetPreference(const std::string &pref) const
 {
     float result = DEFAULT_PREFERENCE_EMPTY_VALUE;

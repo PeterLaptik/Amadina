@@ -18,18 +18,23 @@ class Entity
         // Main drawing routine
         virtual void Draw(IAdapterDC &dc) = 0;
 
-        // Getting points for snap and edit
-        // Each entity is able to push its own points for snapping
+        // Highlight the entity
+        // May be used to show picked entities
+        virtual void DrawHighlighted(IAdapterDC &dc)
+        { }
+
+        // Returns points for snap to constraints, edge points etc.
         virtual void GetSnapPoints(std::vector<Point> &vec) const
         { }
 
-        // Points for snap to center
+        // Returns points for snap to center
         virtual void GetCenterPoints(std::vector<Point> &vec) const
         { }
 
-        //
-        //
-        virtual void IntersectsWith(Entity* entity, std::vector<Point> &points) const
+        // Returns pointers to sub-shapes (primitives).
+        // Primitive sub-shapes are: line, circle, point.
+        // The result can be used for intersections computing, geometric transformations etc.
+        virtual void GetPrimitives(std::vector<Entity*> &vec)
         { }
 
         void SetLayer(Layer *layer);

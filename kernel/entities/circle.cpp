@@ -2,6 +2,7 @@
 #include "line.h"
 
 Circle::Circle()
+        : m_center(Point(0,0)), m_radius(1.0)
 { }
 
 Circle::Circle(const Point &pt1, const double &radius)
@@ -36,7 +37,12 @@ void Circle::GetCenterPoints(std::vector<Point> &vec) const
     vec.push_back(m_center);
 }
 
-Point Circle::GetCenterPoint(void) const
+void Circle::GetPrimitives(std::vector<Entity*> &vec)
+{
+    vec.push_back(this);
+}
+
+const Point& Circle::GetCenterPoint(void) const
 {
     return m_center;
 }
@@ -44,14 +50,4 @@ Point Circle::GetCenterPoint(void) const
 double Circle::GetRadius(void) const
 {
     return m_radius;
-}
-
-void Circle::IntersectsWith(Entity* entity, std::vector<Point> &points) const
-{
-    Line *line = dynamic_cast<Line*>(entity);
-    if(line)
-    {
-        line->IntersectsWith(const_cast<Circle*>(this), points);
-        return;
-    }
 }

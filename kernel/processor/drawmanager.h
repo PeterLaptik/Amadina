@@ -40,12 +40,16 @@ class DrawManager
 
         // Shapes
         std::vector<Entity*> m_elements;
+
+        // Data cache for quick access:
+        // snap points, entities etc.
+
         // Snap points
-        Point *m_snap_point;
+        Point *m_snap_point;    // last found snap point. The value is reset to null-pointer on each screen refresh
         std::vector<Point> m_snap_grid;
         std::vector<std::pair<Entity*,Point>> m_snap_points;
         std::vector<std::pair<Entity*,Point>> m_snap_center;
-        std::vector<Point> m_snap_intersections;
+        std::vector<std::pair<std::pair<Entity*,Entity*>,Point>> m_snap_intersections;
 
         // Preferences
         std::map<std::string, float> m_preferences;

@@ -13,6 +13,8 @@ bool CircleBuilder::AppendPoint(const Point &pt)
     points.push_back(pt);
     if(points.size()>1)
         return true;
+
+    return false;
 }
 
 void CircleBuilder::Redraw(IAdapterDC &dc, double x, double y)

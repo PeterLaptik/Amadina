@@ -16,6 +16,8 @@ bool SquareBuilderByCenter::AppendPoint(const Point &pt)
     points.push_back(pt);
     if(points.size()>1)
         return true;
+
+    return false;
 }
 
 void SquareBuilderByCenter::Redraw(IAdapterDC &dc, double x, double y)
@@ -64,6 +66,8 @@ bool SquareBuilderByPoints::AppendPoint(const Point &pt)
     points.push_back(pt);
     if(points.size()>1)
         return true;
+
+    return false;
 }
 
 void SquareBuilderByPoints::Redraw(IAdapterDC &dc, double x, double y)
