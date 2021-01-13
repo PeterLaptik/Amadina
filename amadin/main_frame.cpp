@@ -119,7 +119,10 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
     switch(code)
     {
     case WXK_ESCAPE:
-        m_active_panel->CancelCommand();
+        m_interpreter.ExecuteCommand(cad::command::CMD_CANCEL);
+        break;
+    case WXK_DELETE:
+        m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
         break;
     }
 }

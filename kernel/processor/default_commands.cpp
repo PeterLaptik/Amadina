@@ -12,6 +12,8 @@ void cad::command::RegisterDefaultCommands(CommandInterpreter &interpreter)
     interpreter.RegisterCommand(CMD_CIRCLE, &DrawCircle);
     interpreter.RegisterCommand(CMD_SQUARE_CENTER, &DrawSquareCenter);
     interpreter.RegisterCommand(CMD_SQUARE, &DrawSquareFrame);
+    interpreter.RegisterCommand(CMD_CANCEL, &Cancel);
+    interpreter.RegisterCommand(CMD_DELETE, &Delete);
 }
 
 void cad::command::DrawPoint(ViewPanel *panel)
@@ -42,4 +44,14 @@ void cad::command::DrawSquareCenter(ViewPanel *panel)
 void cad::command::DrawSquareFrame(ViewPanel *panel)
 {
     panel->CreateEntityByPoints(new SquareBuilderByPoints());
+}
+
+void cad::command::Cancel(ViewPanel *panel)
+{
+    panel->CancelCommand();
+}
+
+void cad::command::Delete(ViewPanel *panel)
+{
+    panel->DeleteSelection();
 }

@@ -29,6 +29,7 @@ void CommandInterpreter::ExecuteCommand(const std::string &name)
         ParseCommand(name);
         return;
     }
+    // Execute command
     command_function cmd = it->second;
     cmd(m_active_panel);
 }

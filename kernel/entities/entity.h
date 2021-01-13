@@ -3,6 +3,7 @@
 
 #include "../graphics/dc.h"
 #include "layer.h"
+#include <limits>
 #include <vector>
 #include <set>
 
@@ -22,6 +23,12 @@ class Entity
         // May be used to show picked entities
         virtual void DrawHighlighted(IAdapterDC &dc)
         { }
+
+        // Returns minimum distance between the entity and point
+        virtual double DistanceFrom(const Point &pt) const
+        {
+            return std::numeric_limits<double>::max();
+        }
 
         // Returns points for snap to constraints, edge points etc.
         virtual void GetSnapPoints(std::vector<Point> &vec) const

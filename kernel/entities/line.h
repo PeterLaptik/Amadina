@@ -19,6 +19,10 @@ class Line: public Entity
 
         virtual void Draw(IAdapterDC &dc);
 
+        virtual void DrawHighlighted(IAdapterDC &dc);
+
+        virtual double DistanceFrom(const Point &pt) const;
+
         virtual void GetSnapPoints(std::vector<Point> &vec) const;
 
         virtual void GetCenterPoints(std::vector<Point> &vec) const;

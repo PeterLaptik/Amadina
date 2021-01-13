@@ -18,7 +18,15 @@ class DrawManager
 
         void DrawAll(IAdapterDC &dc);
 
+        void SelectInPoint(double x, double y, double snap_radius);
+
+        void DeleteSelection(void);
+
+        void ClearSelection(void);
+
         void ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap_radius);
+
+        void ShowSnapEntities(IAdapterDC &dc, double x, double y, double snap_radius);
 
         Point* GetSnapPoint(void) const;
 
@@ -33,6 +41,7 @@ class DrawManager
     private:
         void ShowGrid(IAdapterDC &dc);
         void AppendSnapPointsFor(Entity *entity);
+        void RemoveSnapPointsFor(Entity *entity);
         void AssignDefaultPreferences(void);
 
         std::unordered_map<std::string,Layer> m_layers;
@@ -43,9 +52,12 @@ class DrawManager
 
         // Data cache for quick access:
         // snap points, entities etc.
+        Entity *m_selecting_entity;
+        std::vector<Entity*> m_selected_entities;
 
         // Snap points
         Point *m_snap_point;    // last found snap point. The value is reset to null-pointer on each screen refresh
+
         std::vector<Point> m_snap_grid;
         std::vector<std::pair<Entity*,Point>> m_snap_points;
         std::vector<std::pair<Entity*,Point>> m_snap_center;

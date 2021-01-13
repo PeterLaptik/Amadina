@@ -32,6 +32,44 @@ void Line::Draw(IAdapterDC &dc)
     dc.CadDrawLine(m_pt1, m_pt2);
 }
 
+void Line::DrawHighlighted(IAdapterDC &dc)
+{
+    Point pt1 = m_pt1;
+    Point pt2 = m_pt2;
+    //pt2.SetX(pt2.GetX()-1);
+    //pt2.SetY(pt2.GetY()-1);
+    dc.CadSetColour(Colour(255,0,0));
+    dc.CadDrawLine(pt1, pt2);
+}
+
+double Line::DistanceFrom(const Point &pt) const
+{
+    double px = pt.GetX();
+    double py = pt.GetY();
+    double x0 = m_pt1.GetX();
+    double x1 = m_pt2.GetX();
+    double y0 = m_pt1.GetY();
+    double y1 = m_pt2.GetY();
+
+    double dx = x1 - x0;
+    double dy = y1 - y0;
+
+    double t = -((x0 - px)*(x1 - x0) + (y0 - py)*(y1 - y0))/(dx*dx + dy*dy);
+
+    double distance = std::numeric_limits<double>::max();
+    if((t>=0)&&(t<=1))
+    {
+        distance = fabs((dx*(y0 - py) - dy*(x0 - px)))/sqrt(dx*dx + dy*dy);
+    }
+    else
+    {
+        double d1 = sqrt(pow(x1-px,2) + pow(y1-py,2));
+        double d2 = sqrt(pow(x0-px,2) + pow(y0-py,2));
+        distance = std::min(d1,d2);
+    }
+    return distance;
+}
+
 void Line::SetStartPoint(const Point &pt)
 {
     m_pt1 = pt;

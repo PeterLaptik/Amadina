@@ -35,6 +35,9 @@ class ViewPanel: public wxPanel
         void SetScreenSize(double width, double height);
 
         void CancelCommand(void);
+
+        void DeleteSelection(void);
+
         void CreateEntityByPoints(AbstractBuilder *builder);
 
         DrawManager* GetDrawManager(void)

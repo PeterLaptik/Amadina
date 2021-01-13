@@ -155,6 +155,9 @@ void ViewPanel::OnMouseLeftButtonDown(wxMouseEvent &event)
         PointPicked(x, y);
         this->Refresh();
         break;
+    case STATE_NOTHING:
+        draw_manager.SelectInPoint(x, y, snap_radius/2);
+        break;
     }
 }
 
@@ -239,8 +242,14 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
     dc.Clear();
     dc.SetBorders(borders.left, borders.right, borders.top, borders.bottom);
     draw_manager.DrawAll(dc);
+    if(canvas_state==STATE_NOTHING)
+    {
+        draw_manager.ShowSnapEntities(dc, coordinates.x, coordinates.y, snap_radius/2);
+    }
     if(canvas_state!=STATE_NOTHING)
+    {
         draw_manager.ShowSnapPoints(dc, coordinates.x, coordinates.y, snap_radius);
+    }
     if(shape_builder)
         shape_builder->Redraw(dc, coordinates.x, coordinates.y);
 
@@ -258,11 +267,18 @@ void ViewPanel::SetCenterPosition(Point point)
 
 void ViewPanel::CreateEntityByPoints(AbstractBuilder *builder)
 {
+    if(!builder)
+        return;
+
+    // Reset selection if exists
+    draw_manager.ClearSelection();
+
     canvas_state = STATE_PICKING_POINTS;
     // Reassign builder
     if(shape_builder!=nullptr)
         delete shape_builder;
     shape_builder = builder;
+    this->Refresh();
 }
 
 void ViewPanel::SetCenterPosition(double x, double y)
@@ -319,6 +335,13 @@ void ViewPanel::CancelCommand()
         delete shape_builder;
         shape_builder = nullptr;
     }
+    draw_manager.ClearSelection();
+    this->Refresh();
+}
+
+void ViewPanel::DeleteSelection()
+{
+    draw_manager.DeleteSelection();
     this->Refresh();
 }
 

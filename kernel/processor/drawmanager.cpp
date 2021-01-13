@@ -1,9 +1,17 @@
 #include "drawmanager.h"
 #include "default_commands.h"
 #include "../geometry/intersections.h"
+#include <algorithm>
 
+// Each grid step value will be equal to base_number*10^x, where x = ... -2, -1, 0, 1, 2, ...
 static const int DEFAULT_GRID_STEP_BASE_NUMBER = 5;
+
+// Return value for preference if the one is not defined
 static const float DEFAULT_PREFERENCE_EMPTY_VALUE = -1;
+
+// Size multiplier value for snap symbols
+static const float SNAP_SYMBOL_MULTIPLIER = 1.5;
+
 
 enum SnapType
 {
@@ -59,6 +67,9 @@ void DrawManager::DrawAll(IAdapterDC &dc)
         dc.CadSetColour(default_black);
         (*it)->Draw(dc);
     }
+
+    for(std::vector<Entity*>::iterator it=m_selected_entities.begin(); it!=m_selected_entities.end(); ++it)
+        (*it)->DrawHighlighted(dc);
 }
 
 // Finds the best fit snap point.
@@ -162,15 +173,89 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
                                Point(m_snap_point->GetX()+snap_radius, m_snap_point->GetY()+snap_radius));
                 dc.CadDrawLine(Point(m_snap_point->GetX()-snap_radius, m_snap_point->GetY()+snap_radius),
                                Point(m_snap_point->GetX()+snap_radius, m_snap_point->GetY()-snap_radius));
-                dc.CadDrawLine(Point(m_snap_point->GetX()-snap_radius*2, m_snap_point->GetY()),
-                               Point(m_snap_point->GetX()+snap_radius*2, m_snap_point->GetY()));
-                dc.CadDrawLine(Point(m_snap_point->GetX(), m_snap_point->GetY()+snap_radius*2),
-                               Point(m_snap_point->GetX(), m_snap_point->GetY()-snap_radius*2));
+                dc.CadDrawLine(Point(m_snap_point->GetX()-snap_radius*SNAP_SYMBOL_MULTIPLIER, m_snap_point->GetY()),
+                               Point(m_snap_point->GetX()+snap_radius*SNAP_SYMBOL_MULTIPLIER, m_snap_point->GetY()));
+                dc.CadDrawLine(Point(m_snap_point->GetX(), m_snap_point->GetY()+snap_radius*SNAP_SYMBOL_MULTIPLIER),
+                               Point(m_snap_point->GetX(), m_snap_point->GetY()-snap_radius*SNAP_SYMBOL_MULTIPLIER));
                 break;
             }
         }
     }
     dc.CadSetColour(Colour(255, 255, 255));
+}
+
+// Highlight the nearest entity to the mouse pointer
+void DrawManager::ShowSnapEntities(IAdapterDC &dc, double x, double y, double snap_radius)
+{
+    Point pt(x,y);
+    m_selecting_entity = nullptr;
+    double min_distance = std::numeric_limits<double>::max();
+    double distance = std::numeric_limits<double>::max();
+    for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
+    {
+        distance = (*it)->DistanceFrom(pt);
+        if(distance<min_distance)
+        {
+            min_distance = distance;
+            m_selecting_entity = *it;
+        }
+    }
+    if(min_distance<snap_radius)
+    {
+        m_selecting_entity->DrawHighlighted(dc);
+    }
+}
+
+void DrawManager::SelectInPoint(double x, double y, double snap_radius)
+{
+    Point pt(x,y);
+    m_selecting_entity = nullptr;
+    double min_distance = std::numeric_limits<double>::max();
+    double distance = std::numeric_limits<double>::max();
+    for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
+    {
+        distance = (*it)->DistanceFrom(pt);
+        if(distance<min_distance)
+        {
+            min_distance = distance;
+            m_selecting_entity = *it;
+        }
+    }
+    if(min_distance<snap_radius)
+        m_selected_entities.push_back(m_selecting_entity);
+}
+
+void DrawManager::ClearSelection()
+{
+    m_selected_entities.clear();
+}
+
+void DrawManager::DeleteSelection()
+{
+    Entity *item_ptr = nullptr;
+    if(m_selected_entities.empty())
+        return;
+    // Delete selected items
+    for(std::vector<Entity*>::iterator it=m_selected_entities.begin(); it!=m_selected_entities.end(); ++it)
+    {
+        // Delete entity itself
+        item_ptr = *it;
+        m_elements.erase(std::remove_if(m_elements.begin(), m_elements.end(),
+                        [item_ptr](Entity *x)
+                        {
+                            if(x==item_ptr)
+                                return true;
+                            else
+                                return false;
+                        }),
+                        m_elements.end());
+
+        delete item_ptr;
+        // Remove cache data
+        RemoveSnapPointsFor(item_ptr);
+    }
+    // Clear selection
+    m_selected_entities.clear();
 }
 
 // Finds snap points and appends them into a lists.
@@ -217,6 +302,41 @@ void DrawManager::AppendSnapPointsFor(Entity *entity)
     }
 }
 
+// Deletes snap points related to the entity
+void DrawManager::RemoveSnapPointsFor(Entity *entity)
+{
+    // Intersections points
+    m_snap_intersections.erase(std::remove_if(m_snap_intersections.begin(), m_snap_intersections.end(),
+                                [entity](std::pair<std::pair<Entity*,Entity*>,Point> x)
+                                {
+                                    if((x.first.first==entity)||(x.first.second==entity))
+                                        return true;
+                                    else
+                                        return false;
+                                }),
+                                m_snap_intersections.end());
+    // Center points
+    m_snap_center.erase(std::remove_if(m_snap_center.begin(), m_snap_center.end(),
+                                [entity](std::pair<Entity*,Point> x)
+                                {
+                                    if(x.first==entity)
+                                        return true;
+                                    else
+                                        return false;
+                                }),
+                                m_snap_center.end());
+    // Snap points
+    m_snap_points.erase(std::remove_if(m_snap_points.begin(), m_snap_points.end(),
+                                [entity](std::pair<Entity*,Point> x)
+                                {
+                                    if(x.first==entity)
+                                        return true;
+                                    else
+                                        return false;
+                                }),
+                                m_snap_points.end());
+}
+
 Point* DrawManager::GetSnapPoint(void) const
 {
     return m_snap_point;
@@ -227,9 +347,6 @@ void DrawManager::ShowGrid(IAdapterDC &dc)
     double left, right, top, bottom;
     dc.GetBorders(&left, &right, &top, &bottom);
     // Smart scale and positioning
-    double delta_x = (right - left);
-    double delta_y = (top - bottom);
-    double delta = delta_x < delta_y ? delta_x : delta_y;
     // Exponent for step base number
     int x_log = static_cast<int>(log10(right - left)) - 1;
     int y_log = static_cast<int>(log10(top - bottom)) - 1;

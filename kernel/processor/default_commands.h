@@ -14,6 +14,8 @@ namespace cad
         const std::string CMD_SQUARE = "square";
         const std::string CMD_SQUARE_CENTER = "square_center";
         const std::string CMD_CIRCLE = "circle";
+        const std::string CMD_CANCEL = "cancel";
+        const std::string CMD_DELETE = "delete";
 
         void RegisterDefaultCommands(CommandInterpreter &interpreter);
 
@@ -24,6 +26,8 @@ namespace cad
         void DrawCircle(ViewPanel *panel);
         void DrawSquareCenter(ViewPanel *panel);
         void DrawSquareFrame(ViewPanel *panel);
+        void Cancel(ViewPanel *panel);
+        void Delete(ViewPanel *panel);
     }
 
     namespace preferences

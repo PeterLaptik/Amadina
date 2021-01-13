@@ -13,7 +13,7 @@ namespace cad
     namespace geometry
     {
         // Functions for intersections calculations.
-        // Each function receive two entities to compute intersections and vector of points to write intersection points.
+        // Each function receive two entities to compute intersections and vector of points to write intersections points.
 
         // General case: two abstract entities
         void calculate_intersections(Entity *entity_1, Entity *entity_2, std::vector<Point> &points);
