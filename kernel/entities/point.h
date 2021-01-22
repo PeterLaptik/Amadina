@@ -22,6 +22,10 @@ class Point: public Entity
 
         virtual void Draw(IAdapterDC &dc);
 
+        virtual void DrawHighlighted(IAdapterDC &dc);
+
+        virtual double DistanceFrom(const Point &pt) const;
+
         static double GetDistanceBetween(const Point &pt1, const Point &pt2);
 
         void GetSnapPoints(std::vector<Point> &vec) const;

@@ -54,7 +54,7 @@ void DrawManager::DrawAll(IAdapterDC &dc)
 {
     std::map<std::string,float>::iterator pref_iterator;
 
-    Colour default_black(255,255,255);
+    //Colour default_black(255,255,255);
     m_snap_point = nullptr;
     // Show grid if necessary
     pref_iterator = m_preferences.find(cad::preferences::PREF_GRID_SHOW);
@@ -64,7 +64,7 @@ void DrawManager::DrawAll(IAdapterDC &dc)
     // Draw all entities
     for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
     {
-        dc.CadSetColour(default_black);
+        //dc.CadSetColour(default_black);
         (*it)->Draw(dc);
     }
 
@@ -262,9 +262,9 @@ void DrawManager::DeleteSelection()
 // Snap points are found once when an entity is being appended.
 void DrawManager::AppendSnapPointsFor(Entity *entity)
 {
-    std::vector<Point> points;  // found points
-    std::vector<Entity*> primitives;            // primitives of the entity
-    std::vector<Entity*> primitives_ext;  // primitives of existing entity
+    std::vector<Point> points;              // found points
+    std::vector<Entity*> primitives;        // primitives of the entity
+    std::vector<Entity*> primitives_ext;    // primitives of existing entity
 
     // Get constraint points
     entity->GetSnapPoints(points);
@@ -288,15 +288,15 @@ void DrawManager::AppendSnapPointsFor(Entity *entity)
         entity->GetPrimitives(primitives);
         (*it)->GetPrimitives(primitives_ext);
         // Iterate over all sub-entities of appending item and sub-entities of overall existing items
-        for(std::vector<Entity*>::iterator it=primitives.begin(); it!=primitives.end(); ++it)
+        for(std::vector<Entity*>::iterator it_prim=primitives.begin(); it_prim!=primitives.end(); ++it_prim)
         {
             for(std::vector<Entity*>::iterator it_ext=primitives_ext.begin(); it_ext!=primitives_ext.end(); ++it_ext)
             {
                 points.clear();
-                cad::geometry::calculate_intersections((*it_ext), (*it), points);
+                cad::geometry::calculate_intersections((*it_ext), (*it_prim), points);
                 // Write intersections points
                 for(std::vector<Point>::iterator it_point=points.begin(); it_point!=points.end(); ++it_point)
-                    m_snap_intersections.push_back(std::pair<std::pair<Entity*,Entity*>,Point>(std::pair<Entity*,Entity*>(*it, *it_ext), *it_point));
+                    m_snap_intersections.push_back(std::pair<std::pair<Entity*,Entity*>,Point>(std::pair<Entity*,Entity*>(*it, entity), *it_point));
             }
         }
     }

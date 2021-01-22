@@ -1,4 +1,5 @@
 #include "layer.h"
+#include "../graphics/dc.h"
 
 Layer::Layer(const std::string &name)
     : m_name(name),
@@ -9,6 +10,17 @@ Layer::Layer(const std::string &name)
 
 Layer::~Layer()
 { }
+
+
+void Layer::Apply(IAdapterDC &dc) const
+{
+
+}
+
+void Layer::SetColour(const Colour &colour)
+{
+    m_colour = colour;
+}
 
 const Colour& Layer::GetColour() const
 {

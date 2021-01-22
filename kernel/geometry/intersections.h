@@ -26,6 +26,10 @@ namespace cad
 
         // Circle-circle intersection
         void intersections(Circle *circle_1, Circle *circle_2, std::vector<Point> &points);
+
+        // Screen borders intersections calculations
+        //void border_intersection(Line *line, Point top_left, Point top_right);
+
     }
 }
 

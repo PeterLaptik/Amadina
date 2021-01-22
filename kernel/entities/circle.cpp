@@ -1,5 +1,6 @@
 #include "circle.h"
 #include "line.h"
+#include <math.h>
 
 Circle::Circle()
         : m_center(Point(0,0)), m_radius(1.0)
@@ -22,6 +23,22 @@ void Circle::Draw(IAdapterDC &dc)
     dc.CadDrawCircle(m_center, m_radius);
 }
 
+void Circle::DrawHighlighted(IAdapterDC &dc)
+{
+    dc.CadSetColour(Colour(255,0,0));
+    dc.CadDrawCircle(m_center, m_radius);
+}
+
+const Point& Circle::GetCenterPoint(void) const
+{
+    return m_center;
+}
+
+double Circle::GetRadius(void) const
+{
+    return m_radius;
+}
+
 void Circle::GetSnapPoints(std::vector<Point> &vec) const
 {
     double x = m_center.GetX();
@@ -42,12 +59,12 @@ void Circle::GetPrimitives(std::vector<Entity*> &vec)
     vec.push_back(this);
 }
 
-const Point& Circle::GetCenterPoint(void) const
+double Circle::DistanceFrom(const Point &pt) const
 {
-    return m_center;
-}
-
-double Circle::GetRadius(void) const
-{
-    return m_radius;
+    double x0 = m_center.GetX();
+    double y0 = m_center.GetY();
+    double x = pt.GetX();
+    double y = pt.GetY();
+    double distance_from_center = sqrt(pow(x-x0,2) + pow(y-y0,2));
+    return fabs(distance_from_center - m_radius);
 }

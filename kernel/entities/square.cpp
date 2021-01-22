@@ -1,5 +1,6 @@
 #include "square.h"
 #include "line.h"
+#include <algorithm>
 
 Square::Square()
 { }
@@ -24,16 +25,26 @@ Square::~Square()
 
 void Square::Draw(IAdapterDC &dc)
 {
-//    double center_x = m_center.GetX();
-//    double center_y = m_center.GetY();
-//    dc.CadDrawLine(center_x - m_width/2, center_y + m_height/2, center_x + m_width/2 ,center_y + m_height/2);
-//    dc.CadDrawLine(center_x - m_width/2, center_y - m_height/2, center_x - m_width/2 ,center_y + m_height/2);
-//    dc.CadDrawLine(center_x - m_width/2, center_y - m_height/2, center_x + m_width/2 ,center_y - m_height/2);
-//    dc.CadDrawLine(center_x + m_width/2, center_y - m_height/2, center_x + m_width/2 ,center_y + m_height/2);
     line_top.Draw(dc);
     line_bottom.Draw(dc);
     line_left.Draw(dc);
     line_right.Draw(dc);
+}
+
+void Square::DrawHighlighted(IAdapterDC &dc)
+{
+    dc.CadSetColour(Colour(255,0,0));
+    line_top.DrawHighlighted(dc);
+    line_bottom.DrawHighlighted(dc);
+    line_left.DrawHighlighted(dc);
+    line_right.DrawHighlighted(dc);
+}
+
+double Square::DistanceFrom(const Point &pt) const
+{
+    double vertical = std::min(line_left.DistanceFrom(pt), line_right.DistanceFrom(pt));
+    double horizontal = std::min(line_top.DistanceFrom(pt), line_bottom.DistanceFrom(pt));
+    return std::min(vertical, horizontal);
 }
 
 void Square::GetSnapPoints(std::vector<Point> &vec) const

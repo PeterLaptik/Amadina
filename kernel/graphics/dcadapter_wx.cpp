@@ -121,3 +121,13 @@ void wxAdapterDC::CadSetColour(const Colour &colour)
     m_colour = colour;
     this->SetPen(wxPen(wxColour(m_colour.R, m_colour.G, m_colour.B)));
 }
+
+const Colour& wxAdapterDC::GetBackgroundColour(void) const
+{
+    return m_background_colour;
+}
+
+void wxAdapterDC::SetBackgroundColour(Colour colour)
+{
+    m_background_colour = colour;
+}

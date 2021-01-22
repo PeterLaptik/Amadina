@@ -4,11 +4,17 @@
 #include "../graphics/colour.h"
 #include <string>
 
+class IAdapterDC;
+
 class Layer
 {
     public:
         Layer(const std::string &name);
         virtual ~Layer();
+
+        void Apply(IAdapterDC &dc) const;
+
+        void SetColour(const Colour &colour);
 
         const Colour& GetColour() const;
 

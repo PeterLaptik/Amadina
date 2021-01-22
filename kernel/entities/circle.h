@@ -13,9 +13,13 @@ class Circle: public Entity
 
         virtual void Draw(IAdapterDC &dc);
 
+        virtual void DrawHighlighted(IAdapterDC &dc);
+
         const Point& GetCenterPoint(void) const;
 
         double GetRadius(void) const;
+
+        virtual double DistanceFrom(const Point &pt) const;
 
         virtual void GetSnapPoints(std::vector<Point> &vec) const;
 

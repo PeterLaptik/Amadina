@@ -44,6 +44,7 @@ class DrawManager
         void RemoveSnapPointsFor(Entity *entity);
         void AssignDefaultPreferences(void);
 
+//        std::vector layer_list;
         std::unordered_map<std::string,Layer> m_layers;
         Layer *current_layer;
 

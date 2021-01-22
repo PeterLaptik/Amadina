@@ -27,7 +27,18 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
         // Includes additional scale calculation (length per pixel)
         virtual void SetBorders(double left, double right, double top, double bottom);
 
+        virtual void GetBorders(double *left, double *right, double *top, double *bottom) const
+        {
+            *left = m_borders.left;
+            *right = m_borders.right;
+            *top = m_borders.top;
+            *bottom = m_borders.bottom;
+        }
+
         void GetScale(double *x, double *y) const;
+
+        virtual const Colour& GetBackgroundColour(void) const;
+        virtual void SetBackgroundColour(Colour colour);
 
     protected:
 
@@ -35,10 +46,27 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
         inline void TransformCoordinatesToView(double &x1, double &y1);
         inline void TransformCoordinatesToView(double &x1, double &y1, double &x2, double &y2);
 
+        struct Border
+        {
+            double left;
+            double right;
+            double top;
+            double bottom;
+        } m_borders;
+
+        double x_scale;
+        double y_scale;
+
         int m_width;
         int m_height;
         Colour m_colour;
+        Colour m_background_colour;
 
+        struct DeviceColours
+        {
+            Colour background;
+            Colour pen;
+        } m_colours;
 };
 
 #endif // DCADAPTER_WX_H_INCLUDED
