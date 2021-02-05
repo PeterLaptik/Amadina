@@ -9,6 +9,10 @@ static const double DEFAULT_BOTTOM_BORDER = 0;
 // Out of screen coordinate value
 static const int COORD_OUT_OF_SCREEN = 1;
 
+// Default colours
+Colour DEFAULT_COLOUR_BLACK(0,0,0);
+Colour DEFAULT_COLOUR_WHITE(255,255,255);
+
 
 wxAdapterDC::wxAdapterDC(wxWindow *win, wxSize size)
                 :wxBufferedPaintDC(win)
@@ -116,18 +120,25 @@ void wxAdapterDC::SetBorders(double left, double right, double top, double botto
     y_scale = (m_borders.top -  m_borders.bottom)/m_height;
 }
 
+void wxAdapterDC::CadSetLayer(Layer *layer)
+{
+    m_layer = layer;
+}
+
 void wxAdapterDC::CadSetColour(const Colour &colour)
 {
     m_colour = colour;
+    m_colour.CheckAndInverse(m_colours.background);
     this->SetPen(wxPen(wxColour(m_colour.R, m_colour.G, m_colour.B)));
 }
 
 const Colour& wxAdapterDC::GetBackgroundColour(void) const
 {
-    return m_background_colour;
+    return m_colours.background;
 }
 
-void wxAdapterDC::SetBackgroundColour(Colour colour)
+void wxAdapterDC::SetBackgroundColour(const Colour &colour)
 {
-    m_background_colour = colour;
+    m_colours.background = colour;
 }
+

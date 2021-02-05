@@ -9,7 +9,7 @@ class IAdapterDC;
 class Layer
 {
     public:
-        Layer(const std::string &name);
+        Layer(const std::string &name, const Colour &colour = Colour::BLACK);
         virtual ~Layer();
 
         void Apply(IAdapterDC &dc) const;
@@ -17,6 +17,8 @@ class Layer
         void SetColour(const Colour &colour);
 
         const Colour& GetColour() const;
+
+        const std::string& GetName(void) const;
 
     protected:
 

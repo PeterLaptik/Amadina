@@ -58,13 +58,14 @@ void DrawManager::DrawAll(IAdapterDC &dc)
     m_snap_point = nullptr;
     // Show grid if necessary
     pref_iterator = m_preferences.find(cad::preferences::PREF_GRID_SHOW);
-    if((pref_iterator!=m_preferences.end())&&(static_cast<bool>(pref_iterator->second)==1))
+    if((pref_iterator!=m_preferences.end())&&(static_cast<bool>(pref_iterator->second)==true))
         ShowGrid(dc);
 
     // Draw all entities
     for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
     {
-        //dc.CadSetColour(default_black);
+        Layer *layer = (*it)->GetLayer();
+        dc.CadSetColour(layer->GetColour());
         (*it)->Draw(dc);
     }
 
@@ -78,7 +79,7 @@ void DrawManager::DrawAll(IAdapterDC &dc)
 // - constraint points
 // - center points
 // - grid points
-// Found point pointer is being kept in m_snap_point variable.
+// Found point (pointer) is being kept in m_snap_point variable.
 // The m_snap_point is equals to null-pointer if a snap is not found.
 // dc - device context
 // x, y - current mouse coordinates

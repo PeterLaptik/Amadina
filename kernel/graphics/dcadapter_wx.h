@@ -23,6 +23,8 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual void CadSetColour(const Colour &colour);
 
+        virtual void CadSetLayer(Layer *layer);
+
         // Overridden method of a base class
         // Includes additional scale calculation (length per pixel)
         virtual void SetBorders(double left, double right, double top, double bottom);
@@ -38,7 +40,7 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
         void GetScale(double *x, double *y) const;
 
         virtual const Colour& GetBackgroundColour(void) const;
-        virtual void SetBackgroundColour(Colour colour);
+        virtual void SetBackgroundColour(const Colour &colour);
 
     protected:
 
@@ -61,6 +63,8 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
         int m_height;
         Colour m_colour;
         Colour m_background_colour;
+
+        Layer *m_layer;
 
         struct DeviceColours
         {

@@ -33,6 +33,7 @@ class MainFrame : public wxFrame
 	private:
 	    wxAuiToolBar* CreateToolbarDraft(void);
 	    wxAuiToolBar* CreateToolbarSnap(void);
+	    wxAuiToolBar* CreateToolbarLayer(void);
 	    wxAuiNotebook* CreateNotebookDrawing(void);
 
 	    // Controls ids
@@ -57,6 +58,7 @@ class MainFrame : public wxFrame
         wxAuiManager m_mgr;
         wxAuiToolBar *tool_draft;
         wxAuiToolBar *tool_snap;
+        wxAuiToolBar *tool_layer;
         wxAuiNotebook *drawing_container;
 
 

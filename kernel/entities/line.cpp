@@ -29,6 +29,7 @@ void Line::CalculateLength()
 
 void Line::Draw(IAdapterDC &dc)
 {
+    dc.CadSetLayer(m_layer);
     dc.CadDrawLine(m_pt1, m_pt2);
 }
 

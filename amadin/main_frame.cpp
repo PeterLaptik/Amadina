@@ -1,4 +1,5 @@
 #include "main_frame.h"
+#include "wxchoicelayer.h"
 #include "../kernel/processor/default_commands.h"
 //#include <wx/artprov.h>
 #include <wx/display.h>
@@ -48,6 +49,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 	m_mgr.AddPane(CreateNotebookDrawing(), wxAuiPaneInfo().Center().CaptionVisible(false).Dock().Resizable().FloatingSize(wxDefaultSize));
     m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("toolbar_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
     m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
 
     ViewPanel *m_panel2 = new ViewPanel(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
@@ -107,6 +109,29 @@ wxAuiToolBar* MainFrame::CreateToolbarSnap()
                         wxNullBitmap, wxITEM_NORMAL, _("Snap angle"), wxEmptyString, NULL))->SetSticky(true);
     return tool_snap;
 }
+
+wxAuiToolBar* MainFrame::CreateToolbarLayer()
+{
+    tool_layer = new wxAuiToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE | wxAUI_TB_HORIZONTAL);
+    tool_layer->AddTool(wxID_ANY, "aaa", wxBitmap(wxImage(_T("res\\icons\\icon_layers.ico"))),
+                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
+
+    tool_layer->AddSeparator();
+    wxChoiceLayer *choice = new wxChoiceLayer(tool_layer, wxNewId());
+    choice->SetReadOnly();
+    std::vector<Layer> layers;
+    Layer l1("name1");
+    Layer l2("name2", Colour::BLUE);
+    Layer l3("name3", Colour::GREEN);
+    layers.push_back(l1);
+    layers.push_back(l2);
+    layers.push_back(l3);
+    choice->AddLayers(layers);
+
+    tool_layer->AddControl(choice);
+    tool_layer->AddSeparator();
+}
+
 
 wxAuiNotebook* MainFrame::CreateNotebookDrawing()
 {

@@ -19,7 +19,7 @@ static const double ZOOM_COEFF = 1.1;
 // Minimum and maximum screen sizes
 static const double MIN_MARGIN = 0.1;
 
-static const int DEFAULT_COLOUR_VALUE = 0;
+static const int DEFAULT_COLOUR_VALUE = 50;
 
 
 wxBEGIN_EVENT_TABLE(ViewPanel, wxPanel)
@@ -238,9 +238,11 @@ void ViewPanel::CalculateBestSnapRadius()
 
 void ViewPanel::OnPaint(wxPaintEvent &event)
 {
+    wxColour background = this->GetBackgroundColour();
     wxAdapterDC dc(this, this->GetSize());
     dc.Clear();
     dc.SetBorders(borders.left, borders.right, borders.top, borders.bottom);
+    dc.SetBackgroundColour(Colour(background.Red(), background.Green(), background.Blue()));
     draw_manager.DrawAll(dc);
     if(canvas_state==STATE_NOTHING)
     {
