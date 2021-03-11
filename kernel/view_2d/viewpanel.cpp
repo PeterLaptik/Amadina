@@ -40,7 +40,8 @@ ViewPanel::ViewPanel(wxWindow *parent,
                     const wxSize &size,
                     long style,
                     const wxString &name):
-    wxPanel(parent, winid, pos, size, style, name)
+    wxPanel(parent, winid, pos, size, style, name),
+    Adapter(this->GetSize().GetWidth(), this->GetSize().GetHeight())
 {
     wheel_pressed = false;
     canvas_state = STATE_NOTHING;
@@ -65,6 +66,7 @@ ViewPanel::~ViewPanel()
 
 void ViewPanel::OnMouseMove(wxMouseEvent &event)
 {
+    /** TODO delete **
     bool is_ctrl_pressed = wxGetKeyState(WXK_RAW_CONTROL);
     bool is_lb_pressed = wxGetMouseState().LeftIsDown();
     double x = static_cast<double>(event.GetX());
@@ -86,17 +88,24 @@ void ViewPanel::OnMouseMove(wxMouseEvent &event)
     borders.right += delta_x;
     borders.top += delta_y;
     borders.bottom += delta_y;
+     **/
+    Adapter::ScreenMouseMove(event.GetX(), event.GetY(),
+                             wxGetKeyState(WXK_RAW_CONTROL),
+                             wxGetMouseState().LeftIsDown());
     this->Refresh();
 }
 
 void ViewPanel::OnMouseWheelDown(wxMouseEvent &event)
 {
+    /** TODO delete **
     double x = static_cast<double>(event.GetX());
     double y = static_cast<double>(event.GetY());
     TransformCoordinatesToGlobal(x, y);
     coordinates.x = x;
     coordinates.y = y;
     wheel_pressed = true;
+    **/
+    Adapter::ScreenMouseWheelDown(event.GetX(), event.GetY());
 }
 
 void ViewPanel::PointPicked(double x, double y)
@@ -135,11 +144,15 @@ void ViewPanel::PointPicked(double x, double y)
 
 void ViewPanel::OnMouseWheelUp(wxMouseEvent &event)
 {
+    /** TODO delete **
     wheel_pressed = false;
+     **/
+    Adapter::ScreenMouseWheelUp(event.GetX(), event.GetY());
 }
 
 void ViewPanel::OnMouseLeftButtonDown(wxMouseEvent &event)
 {
+    /** Remove **
     if(wxGetKeyState(WXK_RAW_CONTROL))
         return; // Do not pick points on screen dragging
 
@@ -159,17 +172,24 @@ void ViewPanel::OnMouseLeftButtonDown(wxMouseEvent &event)
         draw_manager.SelectInPoint(x, y, snap_radius/2);
         break;
     }
+    **/
+    if(ScreenMouseLBClicked(event.GetX(), event.GetY(), wxGetKeyState(WXK_RAW_CONTROL)))
+        this->Refresh();
 }
 
 void ViewPanel::OnMouseLeftButtonUp(wxMouseEvent &event)
 {
+    /** TODO delete **
     coordinates.x = static_cast<double>(event.GetX());
     coordinates.y = static_cast<double>(event.GetY());
     TransformCoordinatesToGlobal(coordinates.x, coordinates.y);
+     **/
+    ScreenMouseLeftButtonUp(event.GetX(), event.GetY());
 }
 
 void ViewPanel::OnMouseWheel(wxMouseEvent &event)
 {
+    /** TODO delete **
     int delta = event.GetWheelRotation();
     double zoom_x = ((borders.right - borders.left)*ZOOM_COEFF - (borders.right - borders.left))/2;
     double zoom_y = ((borders.top - borders.bottom)*ZOOM_COEFF - (borders.top - borders.bottom))/2;
@@ -207,6 +227,8 @@ void ViewPanel::OnMouseWheel(wxMouseEvent &event)
     borders.top -= delta_y;
     borders.bottom -= delta_y;
     CalculateBestSnapRadius();
+     **/
+    ScreenMouseWheel(event.GetWheelRotation(), event.GetX(), event.GetY());
     this->Refresh();
 }
 
@@ -214,6 +236,8 @@ void ViewPanel::OnResize(wxSizeEvent &event)
 {
     int width, height;
     this->GetSize(&width, &height);
+    Adapter::ScreenResize(width, height);
+    /*** TODO remove **
     // Keep right proportions for a drafting
     double scr_ratio = static_cast<double>(height)/ static_cast<double>(width);
     if(scr_ratio<=1)
@@ -222,6 +246,7 @@ void ViewPanel::OnResize(wxSizeEvent &event)
         borders.bottom = borders.top - scr_ratio*(borders.right - borders.left);
 
     CalculateBestSnapRadius();
+     ***/
     this->Refresh();
 }
 
@@ -240,10 +265,15 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
 {
     wxColour background = this->GetBackgroundColour();
     wxAdapterDC dc(this, this->GetSize());
-    dc.Clear();
-    dc.SetBorders(borders.left, borders.right, borders.top, borders.bottom);
-    dc.SetBackgroundColour(Colour(background.Red(), background.Green(), background.Blue()));
-    draw_manager.DrawAll(dc);
+//    dc.Clear();
+//    dc.SetBorders(borders.left, borders.right, borders.top, borders.bottom);
+//    dc.SetBackgroundColour(Colour(background.Red(), background.Green(), background.Blue()));
+
+    //Adapter::GetDrawManager().DrawAll(dc);
+    Adapter::RedrawAll(dc);
+//    draw_manager.DrawAll(dc);
+
+    /**
     if(canvas_state==STATE_NOTHING)
     {
         draw_manager.ShowSnapEntities(dc, coordinates.x, coordinates.y, snap_radius/2);
@@ -252,8 +282,12 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
     {
         draw_manager.ShowSnapPoints(dc, coordinates.x, coordinates.y, snap_radius);
     }
+    **/
+    /**
     if(shape_builder)
         shape_builder->Redraw(dc, coordinates.x, coordinates.y);
+    **/
+
 
     wxString debug_coord;
     debug_coord<<coordinates.x<<" - "<<coordinates.y<<" - "<<canvas_state;
@@ -269,6 +303,7 @@ void ViewPanel::SetCenterPosition(Point point)
 
 void ViewPanel::CreateEntityByPoints(AbstractBuilder *builder)
 {
+    /** TODO delete
     if(!builder)
         return;
 
@@ -280,6 +315,8 @@ void ViewPanel::CreateEntityByPoints(AbstractBuilder *builder)
     if(shape_builder!=nullptr)
         delete shape_builder;
     shape_builder = builder;
+     **/
+    Adapter::CreateEntity(builder);
     this->Refresh();
 }
 
@@ -331,6 +368,7 @@ void ViewPanel::SetBorders(double left, double right, double top, double bottom)
 
 void ViewPanel::CancelCommand()
 {
+    /** TODO delete ***
     canvas_state = STATE_NOTHING;
     if(shape_builder)
     {
@@ -338,6 +376,9 @@ void ViewPanel::CancelCommand()
         shape_builder = nullptr;
     }
     draw_manager.ClearSelection();
+     **/
+
+    Adapter::CancelCommand();
     this->Refresh();
 }
 

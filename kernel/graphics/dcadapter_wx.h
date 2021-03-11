@@ -11,6 +11,8 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual ~wxAdapterDC();
 
+        virtual void CadClear(void);
+
         virtual void CadDrawPoint(const Point &pt);
 
         virtual void CadDrawLine(const Point &pt1, const Point &pt2);

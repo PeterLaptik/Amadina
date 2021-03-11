@@ -12,6 +12,7 @@ class Layer;
 class IAdapterDC
 {
     public:
+        virtual void CadClear(void) = 0;
 
         virtual void CadDrawPoint(const Point &pt) = 0;
 

@@ -2,11 +2,12 @@
 #define VIEWPANEL_H_INCLUDED
 
 #include "wx/panel.h"
+#include "adapter.h"
 #include "../entities/point.h"
 #include "../processor/drawmanager.h"
 #include "../builders/abstractbuilder.h"
 
-class ViewPanel: public wxPanel
+class ViewPanel: public wxPanel, private Adapter
 {
     public:
         ViewPanel(wxWindow *parent,

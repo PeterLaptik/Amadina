@@ -34,6 +34,11 @@ wxAdapterDC::~wxAdapterDC()
  { }
 
 
+void wxAdapterDC::CadClear()
+{
+   this->Clear();
+}
+
 void wxAdapterDC::CadDrawPoint(const Point &pt)
 {
     double x = pt.GetX();
