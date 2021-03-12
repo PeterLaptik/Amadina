@@ -13,14 +13,6 @@ class ScreenInterface
         virtual void ScreenResize(const int &width, const int &height) = 0;
 
 
-//        ///\brief Sets screen size in pixels.
-//        /// Sets screen width and height in pixels
-//        /// (unlike SetBorders which sets border in real scale units).
-//        ///\param width - screen width in pixels
-//        ///\param height - screen height in pixels
-//        void ScreenSetSizeInPixels(const int &width, const int &height) = 0;
-
-
         ///\brief The method should be called on a mouse move over a screen
         ///\param coord_x - x-coordinate of a mouse position
         ///\param coord_y - y-coordinate of a mouse position
@@ -37,16 +29,16 @@ class ScreenInterface
         ///\param coord_y - y-coordinate of a mouse position
         ///\param is_ctrl_pressed - is control-button is pressed on a keyboard
         ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseLBClicked(const int &coord_x,
-                                          const int &coord_y,
-                                          const bool &is_ctrl_pressed);
+        virtual bool ScreenMouseLeftButtonClicked(const int &coord_x,
+                                                const int &coord_y,
+                                                const bool &is_ctrl_pressed) = 0;
 
 
         ///\brief The method should be called on mouse left button released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
         ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y);
+        virtual bool ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y) = 0;
 
 
         ///\brief The method should be called on mouse wheel event over a screen
@@ -76,7 +68,7 @@ class ScreenInterface
 
         ///\brief Resets screen interactive state (executing commend etc.)
         ///\return true is the screen has to be refreshed / repainted
-        bool CancelCommand(void) = 0;
+        virtual bool CancelCommand(void) = 0;
 };
 
 #endif // SCREEN_INTERFACE_H_INCLUDED

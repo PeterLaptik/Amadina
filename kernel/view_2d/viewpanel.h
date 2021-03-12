@@ -2,13 +2,10 @@
 #define VIEWPANEL_H_INCLUDED
 
 #include "wx/panel.h"
-//#include "adapter.h"
 #include "screen.h"
-#include "../entities/point.h"
-#include "../processor/drawmanager.h"
 #include "../builders/abstractbuilder.h"
 
-class ViewPanel: public wxPanel//, private Adapter
+class ViewPanel: public wxPanel
 {
     public:
         ViewPanel(wxWindow *parent,
@@ -20,17 +17,6 @@ class ViewPanel: public wxPanel//, private Adapter
 
         virtual ~ViewPanel();
 
-
-        void SetBorders(double left, double right, double top, double bottom);
-        //
-        // Positioning and scaling
-        //
-        // Sets real coordinates for the center of a panel
-        // The panel is positioned using center point and width/height values
-        void SetCenterPosition(Point point);
-        void SetCenterPosition(double x, double y);
-        // Returns center point (coordinates) of the panel
-        Point GetCenterPosition(void) const;
 
         // Sets screen size for drafting
         // After screen size changed the screen panel is to be refreshed to redraw all entities
@@ -51,6 +37,7 @@ class ViewPanel: public wxPanel//, private Adapter
         }
 
     protected:
+        // Event handlers
         void OnPaint(wxPaintEvent &event);
         void OnResize(wxSizeEvent &event);
         void OnMouseMove(wxMouseEvent &event);
@@ -60,13 +47,6 @@ class ViewPanel: public wxPanel//, private Adapter
         void OnMouseWheelDown(wxMouseEvent &event);
         void OnMouseWheelUp(wxMouseEvent &event);
 
-        void PointPicked(double x, double y);
-
-        enum State
-        {
-            STATE_NOTHING,
-            STATE_PICKING_POINTS
-        } canvas_state;
         AbstractBuilder *shape_builder;
 
         int width_px;
@@ -103,9 +83,6 @@ class ViewPanel: public wxPanel//, private Adapter
             double x;
             double y;
         } coordinates;
-
-        //DrawManager &draw_manager = Adapter::GetDrawManager();
-
 
     wxDECLARE_EVENT_TABLE();
 };

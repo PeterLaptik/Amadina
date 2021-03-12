@@ -54,7 +54,7 @@ void Screen::ScreenResize(const int &width, const int &height)
 
 // The method should be called each time on mouse wheel event over a derived panel.
 // Recalculates screen scale
-void Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y)
+bool Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y)
 {
     double zoom_x = ((m_borders.right - m_borders.left)*ZOOM_COEFF - (m_borders.right - m_borders.left))/2;
     double zoom_y = ((m_borders.top - m_borders.bottom)*ZOOM_COEFF - (m_borders.top - m_borders.bottom))/2;
@@ -72,7 +72,7 @@ void Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const in
         // Ignore scaling if the margin is too small
         if((m_borders.right - m_borders.left<MIN_MARGIN)
            ||(m_borders.top - m_borders.bottom<MIN_MARGIN))
-            return;
+            return false;
 
         m_borders.right -= zoom_x;
         m_borders.left += zoom_x;
@@ -81,7 +81,6 @@ void Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const in
     }
     // Calibrate screen position to mouse pointer
     // I.e. scaling has to be performed closer to the current mouse pointer position
-
     double current_x = static_cast<double>(coord_x);
     double current_y = static_cast<double>(coord_y);
     TransformCoordinatesToGlobal(current_x, current_y);
@@ -92,11 +91,11 @@ void Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const in
     m_borders.top -= delta_y;
     m_borders.bottom -= delta_y;
     CalculateBestSnapRadius();
-
+    return true;
 }
 
 // TODO
-bool Screen::ScreenMouseLBClicked(const int &coord_x,
+bool Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
                                   const int &coord_y,
                                   const bool &is_ctrl_pressed)
 {
@@ -121,19 +120,21 @@ bool Screen::ScreenMouseLBClicked(const int &coord_x,
     return false;
 }
 
-void Screen::ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y)
+bool Screen::ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y)
 {
     m_mouse_coord.x = static_cast<double>(coord_x);
     m_mouse_coord.y = static_cast<double>(coord_y);
     TransformCoordinatesToGlobal(m_mouse_coord.x, m_mouse_coord.y);
+    return false;
 }
 
-void Screen::ScreenMouseWheelUp(const int &coord_x, const int &coord_y)
+bool Screen::ScreenMouseWheelUp(const int &coord_x, const int &coord_y)
 {
     m_is_wheel_pressed = false;
+    return false;
 }
 
-void Screen::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
+bool Screen::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
 {
     double x = static_cast<double>(coord_x);
     double y = static_cast<double>(coord_y);
@@ -141,6 +142,7 @@ void Screen::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
     m_mouse_coord.x = x;
     m_mouse_coord.y = y;
     m_is_wheel_pressed = true;
+    return false;
 }
 
 bool Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,

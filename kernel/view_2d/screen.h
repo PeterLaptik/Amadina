@@ -1,6 +1,7 @@
 #ifndef SCREEN_H_INCLUDED
 #define SCREEN_H_INCLUDED
 
+#include "screen_interface.h"
 #include "../processor/drawmanager.h"
 
 
@@ -13,7 +14,7 @@ enum InteractiveState
 
 class AbstractBuilder;
 
-class Screen
+class Screen: public ScreenInterface
 {
     public:
         /// Default constructor
@@ -43,44 +44,33 @@ class Screen
         ///\param direction - negative integer value on zoom in / positive integer value on zoom out
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual void ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y);
+        virtual bool ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y);
 
         ///\brief The method should be called each time on mouse left button is clicked on a derived panel.
         ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseLBClicked(const int &coord_x,
-                                          const int &coord_y,
-                                          const bool &is_ctrl_pressed);
+        virtual bool ScreenMouseLeftButtonClicked(const int &coord_x,
+                                                const int &coord_y,
+                                                const bool &is_ctrl_pressed);
 
         ///\brief The method has been called on mouse left button released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual void ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y);
+        virtual bool ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y);
 
         ///\brief The method should be called on mouse wheel click released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual void ScreenMouseWheelUp(const int &coord_x, const int &coord_y);
+        virtual bool ScreenMouseWheelUp(const int &coord_x, const int &coord_y);
 
         ///\brief The method should be called on mouse wheel click down
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual void ScreenMouseWheelDown(const int &coord_x, const int &coord_y);
+        virtual bool ScreenMouseWheelDown(const int &coord_x, const int &coord_y);
 
         ///\brief Refresh the screen: draw all entities and signs
         ///\param dc - device context (implementation of IAdapterDC)
         ///\see IAdapterDC
         virtual void RedrawAll(IAdapterDC &dc);
-
-//        ///\brief Sets screen size in pixels.
-//        /// Sets screen width and height in pixels
-//        /// (unlike SetBorders which sets border in real scale units).
-//        ///\param width - screen width in pixels
-//        ///\param height - screen height in pixels
-//        void ScreenSetSizeInPixels(const int &width, const int &height)
-//        {
-//            m_width = width;
-//            m_height = height;
-//        }
 
         ///\brief Sets current screen borders (in a real scale coordinates)
         ///\param left - left border value
@@ -105,11 +95,6 @@ class Screen
         ///\brief Resets screen interactive state (executing commend etc.)
         bool CancelCommand(void);
 
-//        void ScreenSetSizeInPixels(const int &width, const int &height)
-//        {
-//            m_width = width;
-//            m_height = height;
-//        }
 
     protected:
 
