@@ -1,4 +1,4 @@
-#include "adapter.h"
+#include "Screen.h"
 #include "../builders/abstractbuilder.h"
 
 // Default borders positions
@@ -18,7 +18,7 @@ static const double MIN_MARGIN = 0.1;
 static const int SCREEN_DEFAULT_WIDTH = 100;
 static const int SCREEN_DEFAULT_HEIGHT = 100;
 
-Adapter::Adapter():
+Screen::Screen():
         m_screen_width(SCREEN_DEFAULT_WIDTH),
         m_screen_height(SCREEN_DEFAULT_HEIGHT),
         m_screen_state(SCR_NOTHING),
@@ -32,13 +32,13 @@ Adapter::Adapter():
 }
 
 
-Adapter::~Adapter()
+Screen::~Screen()
 { }
 
 
 // The method should be called each time on derived panel resizing.
 // Recalculates screen ratios
-void Adapter::ScreenResize(const int &width, const int &height)
+void Screen::ScreenResize(const int &width, const int &height)
 {
     m_width = width;
     m_height = height;
@@ -54,7 +54,7 @@ void Adapter::ScreenResize(const int &width, const int &height)
 
 // The method should be called each time on mouse wheel event over a derived panel.
 // Recalculates screen scale
-void Adapter::ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y)
 {
     double zoom_x = ((m_borders.right - m_borders.left)*ZOOM_COEFF - (m_borders.right - m_borders.left))/2;
     double zoom_y = ((m_borders.top - m_borders.bottom)*ZOOM_COEFF - (m_borders.top - m_borders.bottom))/2;
@@ -96,7 +96,7 @@ void Adapter::ScreenMouseWheel(const int &direction, const int &coord_x, const i
 }
 
 // TODO
-bool Adapter::ScreenMouseLBClicked(const int &coord_x,
+bool Screen::ScreenMouseLBClicked(const int &coord_x,
                                   const int &coord_y,
                                   const bool &is_ctrl_pressed)
 {
@@ -121,19 +121,19 @@ bool Adapter::ScreenMouseLBClicked(const int &coord_x,
     return false;
 }
 
-void Adapter::ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y)
 {
     m_mouse_coord.x = static_cast<double>(coord_x);
     m_mouse_coord.y = static_cast<double>(coord_y);
     TransformCoordinatesToGlobal(m_mouse_coord.x, m_mouse_coord.y);
 }
 
-void Adapter::ScreenMouseWheelUp(const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseWheelUp(const int &coord_x, const int &coord_y)
 {
     m_is_wheel_pressed = false;
 }
 
-void Adapter::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
 {
     double x = static_cast<double>(coord_x);
     double y = static_cast<double>(coord_y);
@@ -143,7 +143,7 @@ void Adapter::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
     m_is_wheel_pressed = true;
 }
 
-void Adapter::ScreenMouseMove(const int &coord_x, const int &coord_y,
+bool Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,
                               const bool &is_ctrl_pressed,
                               const bool &is_lb_pressed)
 {
@@ -154,7 +154,7 @@ void Adapter::ScreenMouseMove(const int &coord_x, const int &coord_y,
     {
         m_mouse_coord.x = x;
         m_mouse_coord.y = y;
-        return;
+        return true;
     }
 
     // TODO
@@ -165,10 +165,11 @@ void Adapter::ScreenMouseMove(const int &coord_x, const int &coord_y,
     m_borders.right += delta_x;
     m_borders.top += delta_y;
     m_borders.bottom += delta_y;
+    return true;
 }
 
 // Calculates snap radius value in a real coordinates
-void Adapter::CalculateBestSnapRadius()
+void Screen::CalculateBestSnapRadius()
 {
     double dummy_y1 = 0;
     double dummy_y2 = 0;
@@ -180,7 +181,7 @@ void Adapter::CalculateBestSnapRadius()
 }
 
 // Recalculates coordinates values from a local values on a panel into a global values
-void Adapter::TransformCoordinatesToGlobal(double &x, double &y)
+void Screen::TransformCoordinatesToGlobal(double &x, double &y)
 {
     int a = m_width;
     int b = m_height;
@@ -188,7 +189,7 @@ void Adapter::TransformCoordinatesToGlobal(double &x, double &y)
     y = m_borders.bottom + (static_cast<double>(m_height) - y)/static_cast<double>(m_height)*(m_borders.top - m_borders.bottom);
 }
 
-void Adapter::PointPicked(double x, double y)
+void Screen::PointPicked(double x, double y)
 {
     if(!m_shape_builder)
         return;
@@ -221,7 +222,7 @@ void Adapter::PointPicked(double x, double y)
     }
 }
 
-void Adapter::CreateEntity(AbstractBuilder *builder)
+void Screen::CreateEntity(AbstractBuilder *builder)
 {
     if(!builder)
         return;
@@ -238,7 +239,7 @@ void Adapter::CreateEntity(AbstractBuilder *builder)
     m_shape_builder = builder;
 }
 
-void Adapter::CancelCommand()
+bool Screen::CancelCommand()
 {
     m_screen_state = SCR_NOTHING;
     if(m_shape_builder)
@@ -249,7 +250,7 @@ void Adapter::CancelCommand()
     m_draw_manager.ClearSelection();
 }
 
-void Adapter::RedrawAll(IAdapterDC &dc)
+void Screen::RedrawAll(IAdapterDC &dc)
 {
 //    dc.CadClear();
     dc.SetBorders(m_borders.left, m_borders.right, m_borders.top, m_borders.bottom);
@@ -271,12 +272,18 @@ void Adapter::RedrawAll(IAdapterDC &dc)
         m_shape_builder->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
 }
 
-DrawManager& Adapter::GetDrawManager()
+DrawManager* Screen::GetDrawManager()
 {
-    return m_draw_manager;
+    return &m_draw_manager;
 }
 
-void Adapter::SetBorders(const double &left,
+//void Screen::ScreenSetSizeInPixels(const int &width, const int &height)
+//{
+//    m_width = width;
+//    m_height = height;
+//}
+
+void Screen::SetBorders(const double &left,
                         const double &right,
                         const double &top,
                         const double &bottom)
@@ -287,7 +294,7 @@ void Adapter::SetBorders(const double &left,
     m_borders.bottom = bottom;
 }
 
-void Adapter::GetBorders(double *left,
+void Screen::GetBorders(double *left,
                         double *right,
                         double *top,
                         double *bottom) const

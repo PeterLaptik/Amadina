@@ -2,12 +2,13 @@
 #define VIEWPANEL_H_INCLUDED
 
 #include "wx/panel.h"
-#include "adapter.h"
+//#include "adapter.h"
+#include "screen.h"
 #include "../entities/point.h"
 #include "../processor/drawmanager.h"
 #include "../builders/abstractbuilder.h"
 
-class ViewPanel: public wxPanel, private Adapter
+class ViewPanel: public wxPanel//, private Adapter
 {
     public:
         ViewPanel(wxWindow *parent,
@@ -41,9 +42,12 @@ class ViewPanel: public wxPanel, private Adapter
 
         void CreateEntityByPoints(AbstractBuilder *builder);
 
+        //
+        //TODO
+        //
         DrawManager* GetDrawManager(void)
         {
-            return &draw_manager;
+            return m_screen.GetDrawManager();
         }
 
     protected:
@@ -83,6 +87,8 @@ class ViewPanel: public wxPanel, private Adapter
         void CalculateBestSnapRadius(void);
 //        void TransformCoordinatesFromGlobal(double &x, double &y);
 
+        Screen m_screen;
+
         // Screen position
         struct Borders
         {
@@ -98,7 +104,7 @@ class ViewPanel: public wxPanel, private Adapter
             double y;
         } coordinates;
 
-        DrawManager &draw_manager = Adapter::GetDrawManager();
+        //DrawManager &draw_manager = Adapter::GetDrawManager();
 
 
     wxDECLARE_EVENT_TABLE();

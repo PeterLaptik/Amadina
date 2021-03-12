@@ -3,7 +3,7 @@
 
 #include <wx/bmpcbox.h>
 #include <vector>
-#include "../../amadin/kernel/entities/layer.h"
+#include "../kernel/entities/layer.h"
 
 // Combo box for selecting layers
 class wxChoiceLayer : public wxBitmapComboBox
