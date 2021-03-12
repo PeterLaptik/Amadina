@@ -130,6 +130,7 @@ wxAuiToolBar* MainFrame::CreateToolbarLayer()
 
     tool_layer->AddControl(choice);
     tool_layer->AddSeparator();
+    return tool_layer;
 }
 
 

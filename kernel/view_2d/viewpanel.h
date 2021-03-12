@@ -98,8 +98,7 @@ class ViewPanel: public wxPanel, private Adapter
             double y;
         } coordinates;
 
-        int last_mouse_pos;
-        DrawManager draw_manager;
+        DrawManager &draw_manager = Adapter::GetDrawManager();
 
 
     wxDECLARE_EVENT_TABLE();

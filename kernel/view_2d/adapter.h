@@ -19,7 +19,7 @@ class Adapter
         /// Default constructor
         ///\param width - width  of a derived panel in pixels
         ///\param height - height of a derived panel in pixels
-        Adapter(int width, int height);
+        Adapter();
 
         virtual ~Adapter();
 
@@ -78,6 +78,16 @@ class Adapter
 
         virtual void RedrawAll(IAdapterDC &dc);
 
+        void ScreenSetSizeInPixels(const int &width, const int &height)
+        {
+            m_width = width;
+            m_height = height;
+        }
+
+        void GetAdSize(double *w, double *h){
+            *w = m_width;
+            *h = m_height;
+        }
 
     protected:
 

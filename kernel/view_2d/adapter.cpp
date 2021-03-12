@@ -13,10 +13,14 @@ static const double ZOOM_COEFF = 1.1;
 // Minimum and maximum screen sizes
 static const double MIN_MARGIN = 0.1;
 
+// Default size
+// Has to be reassigned on creating
+static const int SCREEN_DEFAULT_WIDTH = 100;
+static const int SCREEN_DEFAULT_HEIGHT = 100;
 
-Adapter::Adapter(int width, int height):
-        m_screen_width(width),
-        m_screen_height(height),
+Adapter::Adapter():
+        m_screen_width(SCREEN_DEFAULT_WIDTH),
+        m_screen_height(SCREEN_DEFAULT_HEIGHT),
         m_screen_state(SCR_NOTHING),
         m_is_wheel_pressed(false),
         m_shape_builder(nullptr)
@@ -36,6 +40,8 @@ Adapter::~Adapter()
 // Recalculates screen ratios
 void Adapter::ScreenResize(const int &width, const int &height)
 {
+    m_width = width;
+    m_height = height;
     // Keep right proportions for a drafting
     double scr_ratio = static_cast<double>(height)/ static_cast<double>(width);
     if(scr_ratio<=1)
@@ -75,8 +81,9 @@ void Adapter::ScreenMouseWheel(const int &direction, const int &coord_x, const i
     }
     // Calibrate screen position to mouse pointer
     // I.e. scaling has to be performed closer to the current mouse pointer position
+
     double current_x = static_cast<double>(coord_x);
-    double current_y = static_cast<double>(coord_x);
+    double current_y = static_cast<double>(coord_y);
     TransformCoordinatesToGlobal(current_x, current_y);
     double delta_x = current_x - m_mouse_coord.x;
     double delta_y = current_y - m_mouse_coord.y;
@@ -85,6 +92,7 @@ void Adapter::ScreenMouseWheel(const int &direction, const int &coord_x, const i
     m_borders.top -= delta_y;
     m_borders.bottom -= delta_y;
     CalculateBestSnapRadius();
+
 }
 
 // TODO
@@ -106,9 +114,8 @@ bool Adapter::ScreenMouseLBClicked(const int &coord_x,
     case SCR_PICKING:
         PointPicked(x, y);
         return true;
-        break;
     case SCR_NOTHING:
-        //draw_manager.SelectInPoint(x, y, m_snap_radius/2);
+        m_draw_manager.SelectInPoint(x, y, m_snap_radius/2);
         break;
     }
     return false;
@@ -117,7 +124,7 @@ bool Adapter::ScreenMouseLBClicked(const int &coord_x,
 void Adapter::ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y)
 {
     m_mouse_coord.x = static_cast<double>(coord_x);
-    m_mouse_coord.y = static_cast<double>(coord_x);
+    m_mouse_coord.y = static_cast<double>(coord_y);
     TransformCoordinatesToGlobal(m_mouse_coord.x, m_mouse_coord.y);
 }
 
@@ -140,8 +147,8 @@ void Adapter::ScreenMouseMove(const int &coord_x, const int &coord_y,
                               const bool &is_ctrl_pressed,
                               const bool &is_lb_pressed)
 {
-    double x = static_cast<double>(x);
-    double y = static_cast<double>(y);
+    double x = static_cast<double>(coord_x);
+    double y = static_cast<double>(coord_y);
     TransformCoordinatesToGlobal(x, y);
     if((!m_is_wheel_pressed)&&(!((is_ctrl_pressed)&&(is_lb_pressed)))) // move by wheel pressed or mouse left button + ctrl
     {
@@ -175,6 +182,8 @@ void Adapter::CalculateBestSnapRadius()
 // Recalculates coordinates values from a local values on a panel into a global values
 void Adapter::TransformCoordinatesToGlobal(double &x, double &y)
 {
+    int a = m_width;
+    int b = m_height;
     x = m_borders.left + x/static_cast<double>(m_width)*(m_borders.right - m_borders.left);
     y = m_borders.bottom + (static_cast<double>(m_height) - y)/static_cast<double>(m_height)*(m_borders.top - m_borders.bottom);
 }
@@ -242,9 +251,11 @@ void Adapter::CancelCommand()
 
 void Adapter::RedrawAll(IAdapterDC &dc)
 {
-    dc.CadClear();
+//    dc.CadClear();
     dc.SetBorders(m_borders.left, m_borders.right, m_borders.top, m_borders.bottom);
-    dc.SetBackgroundColour(Colour(70, 70, 70));
+//    dc.SetBackgroundColour(Colour(70, 70, 70));
+
+    m_draw_manager.DrawAll(dc);
 
     if(m_screen_state==SCR_NOTHING)
     {
@@ -256,10 +267,8 @@ void Adapter::RedrawAll(IAdapterDC &dc)
         m_draw_manager.ShowSnapPoints(dc, m_mouse_coord.x, m_mouse_coord.y, m_snap_radius);
     }
 
-    m_draw_manager.DrawAll(dc);
-
-    //if(m_shape_builder)
-        //m_shape_builder->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
+    if(m_shape_builder)
+        m_shape_builder->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
 }
 
 DrawManager& Adapter::GetDrawManager()
