@@ -2,25 +2,25 @@
 #include "../builders/abstractbuilder.h"
 
 // Default borders positions
+// I.e. default screen is [0, 0, 200, 200]
 static const double DEFAULT_LEFT_BORDER = 0;
 static const double DEFAULT_RIGHT_BORDER = 200;
 static const double DEFAULT_TOP_BORDER = 200;
 static const double DEFAULT_BOTTOM_BORDER = 0;
 
 // Zoom multiplier
+// Each step of mouse wheel rotation will change
+// screen scale by ZOOM_COEFF times
 static const double ZOOM_COEFF = 1.1;
 
-// Minimum and maximum screen sizes
+// Minimum screen size
+// Screen cannot be zoomed in for width / height less than MIN_MARGIN
 static const double MIN_MARGIN = 0.1;
 
-// Default size
-// Has to be reassigned on creating
-static const int SCREEN_DEFAULT_WIDTH = 100;
-static const int SCREEN_DEFAULT_HEIGHT = 100;
+// Default value of snap radius in pixels
+static const int SCREEN_SNAP_RADIUS = 5;
 
 Screen::Screen():
-        m_screen_width(SCREEN_DEFAULT_WIDTH),
-        m_screen_height(SCREEN_DEFAULT_HEIGHT),
         m_screen_state(SCR_NOTHING),
         m_is_wheel_pressed(false),
         m_shape_builder(nullptr)
@@ -176,7 +176,7 @@ void Screen::CalculateBestSnapRadius()
     double dummy_y1 = 0;
     double dummy_y2 = 0;
     double dummy_x1 = 0;
-    double dummy_x2 = 5;
+    double dummy_x2 = SCREEN_SNAP_RADIUS;
     TransformCoordinatesToGlobal(dummy_x1, dummy_y1);
     TransformCoordinatesToGlobal(dummy_x2, dummy_y2);
     m_snap_radius = dummy_x2 - dummy_x1;
@@ -185,8 +185,6 @@ void Screen::CalculateBestSnapRadius()
 // Recalculates coordinates values from a local values on a panel into a global values
 void Screen::TransformCoordinatesToGlobal(double &x, double &y)
 {
-    int a = m_width;
-    int b = m_height;
     x = m_borders.left + x/static_cast<double>(m_width)*(m_borders.right - m_borders.left);
     y = m_borders.bottom + (static_cast<double>(m_height) - y)/static_cast<double>(m_height)*(m_borders.top - m_borders.bottom);
 }
@@ -241,6 +239,8 @@ void Screen::CreateEntity(AbstractBuilder *builder)
     m_shape_builder = builder;
 }
 
+// TODO
+// Screen refresh checks
 bool Screen::CancelCommand()
 {
     m_screen_state = SCR_NOTHING;
@@ -250,6 +250,7 @@ bool Screen::CancelCommand()
         m_shape_builder = nullptr;
     }
     m_draw_manager.ClearSelection();
+    return true;
 }
 
 void Screen::RedrawAll(IAdapterDC &dc)

@@ -2,12 +2,21 @@
 #define VIEWPANEL_H_INCLUDED
 
 #include "wx/panel.h"
-#include "screen.h"
 #include "../builders/abstractbuilder.h"
 
+class ScreenInterface;
+class DrawManager;
+
+///\brief Drawing panel class implementation for wxWidgets GUI-library.
 class ViewPanel: public wxPanel
 {
     public:
+        ///\brief Constructor
+        ///\param parent - parent window
+        ///\param pos - default panel position
+        ///\param size - panel size
+        ///\param style - panel style (see wxWidgets documentation)
+        ///\param name - panel name
         ViewPanel(wxWindow *parent,
                     wxWindowID winid = wxID_ANY,
                     const wxPoint &pos = wxDefaultPosition,
@@ -15,26 +24,31 @@ class ViewPanel: public wxPanel
                     long style = wxTAB_TRAVERSAL | wxNO_BORDER,
                     const wxString &name = wxPanelNameStr);
 
+        ///\brief Destructor
         virtual ~ViewPanel();
 
-
-        // Sets screen size for drafting
-        // After screen size changed the screen panel is to be refreshed to redraw all entities
-        void SetScreenSize(double width, double height);
-
+        ///\brief Cancels current command execution.
+        /// The method has to be called on escape-button clicked
+        /// (or other specific events)
         void CancelCommand(void);
 
+        ///\brief Deletes current entities selection.
+        /// The method has to be called on delete-button clicked
+        /// (or other specific events)
         void DeleteSelection(void);
 
+        ///\brief Creates new entity on drawing
+        /// using appropriate builder instance
+        ///\param builder - builder instance
+        ///\see AbstractBuilder
         void CreateEntityByPoints(AbstractBuilder *builder);
 
         //
-        //TODO
+        // TODO
+        // Remove draw manager getter:
+        // Command executions have to work through Screen implementation
         //
-        DrawManager* GetDrawManager(void)
-        {
-            return m_screen.GetDrawManager();
-        }
+        DrawManager* GetDrawManager(void);
 
     protected:
         // Event handlers
@@ -47,42 +61,12 @@ class ViewPanel: public wxPanel
         void OnMouseWheelDown(wxMouseEvent &event);
         void OnMouseWheelUp(wxMouseEvent &event);
 
-        AbstractBuilder *shape_builder;
-
-        int width_px;
-        int height_px;
-
-        bool wheel_pressed;
-
-        double snap_radius;
-
-        Point m_center_coordinate;
-        double m_draft_width;
-        double m_draft_height;
-
-
     private:
+        /// Add several shapes for testing (test mode)
         void AddTestShapes(void);
-        void TransformCoordinatesToGlobal(double &x, double &y);
-        void CalculateBestSnapRadius(void);
-//        void TransformCoordinatesFromGlobal(double &x, double &y);
 
-        Screen m_screen;
-
-        // Screen position
-        struct Borders
-        {
-            double left;
-            double right;
-            double top;
-            double bottom;
-        } borders;
-
-        struct MouseCoordinates
-        {
-            double x;
-            double y;
-        } coordinates;
+        // Screen interface implementation
+        ScreenInterface *m_screen_impl;
 
     wxDECLARE_EVENT_TABLE();
 };

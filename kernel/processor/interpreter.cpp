@@ -1,4 +1,5 @@
 #include "interpreter.h"
+#include "drawmanager.h"
 #include <sstream>
 #include <algorithm>
 
