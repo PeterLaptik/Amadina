@@ -10,7 +10,7 @@
 
 // Default background colour value
 // (red=green=blue) - for panel background colour
-static const int DEFAULT_COLOUR_VALUE = 80;
+static const int DEFAULT_COLOUR_VALUE = 0;
 
 
 wxBEGIN_EVENT_TABLE(ViewPanel, wxPanel)
@@ -36,10 +36,13 @@ ViewPanel::ViewPanel(wxWindow *parent,
     int width_px;
     int height_px;
     this->GetSize(&width_px, &height_px);
+    this->SetBackgroundStyle(wxBG_STYLE_PAINT);
+    // Screen implementation initializing
     m_screen_impl = new Screen();
     m_screen_impl->ScreenResize(width_px, height_px);
-    this->SetBackgroundStyle(wxBG_STYLE_PAINT);
-    this->SetBackgroundColour(wxColour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
+    wxPanel::SetBackgroundColour(wxColour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
+    m_screen_impl->SetColour(Colour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
+    // Test shapes
     #ifdef TEST_MODE
         AddTestShapes();
     #endif // TEST_MODE
@@ -122,6 +125,12 @@ void ViewPanel::DeleteSelection()
 DrawManager* ViewPanel::GetDrawManager(void)
 {
     return m_screen_impl->GetDrawManager();
+}
+
+bool ViewPanel::SetBackgroundColour(const wxColour &colour)
+{
+    m_screen_impl->SetColour(Colour(colour.Red(), colour.Green(), colour.Blue()));
+    return wxPanel::SetBackgroundColour(colour);
 }
 
 // Adds shapes for testing

@@ -7,7 +7,7 @@
 class ScreenInterface;
 class DrawManager;
 
-///\brief Drawing panel class implementation for wxWidgets GUI-library.
+///\brief Drawing panel implementation for wxWidgets GUI-library.
 class ViewPanel: public wxPanel
 {
     public:
@@ -42,6 +42,10 @@ class ViewPanel: public wxPanel
         ///\param builder - builder instance
         ///\see AbstractBuilder
         void CreateEntityByPoints(AbstractBuilder *builder);
+
+        /// Sets panel background colour
+        ///\param colour - colour value
+        virtual bool SetBackgroundColour(const wxColour &colour);
 
         //
         // TODO

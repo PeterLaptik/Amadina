@@ -257,7 +257,7 @@ void Screen::RedrawAll(IAdapterDC &dc)
 {
 //    dc.CadClear();
     dc.SetBorders(m_borders.left, m_borders.right, m_borders.top, m_borders.bottom);
-//    dc.SetBackgroundColour(Colour(70, 70, 70));
+    dc.SetBackgroundColour(m_colour);
 
     m_draw_manager.DrawAll(dc);
 

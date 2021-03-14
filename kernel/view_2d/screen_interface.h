@@ -1,6 +1,8 @@
 #ifndef SCREEN_INTERFACE_H_INCLUDED
 #define SCREEN_INTERFACE_H_INCLUDED
 
+#include "../graphics/colour.h"
+
 class IAdapterDC;
 class DrawManager;
 class AbstractBuilder;
@@ -144,6 +146,26 @@ class ScreenInterface
                         double *right,
                         double *top,
                         double *bottom) const = 0;
+
+
+        ///\brief Set screen background colour
+        ///\param colour - colour value
+        virtual void SetColour(const Colour &colour)
+        {
+            m_colour = colour;
+        }
+
+
+        ///\brief Returns colour of the screen
+        ///\return colour value
+        virtual Colour GetColour(void) const
+        {
+            return m_colour;
+        }
+
+    protected:
+        // Screen background colour
+        Colour m_colour;
 };
 
 #endif // SCREEN_INTERFACE_H_INCLUDED
