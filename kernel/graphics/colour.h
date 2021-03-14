@@ -19,6 +19,7 @@ class Colour
         static const Colour RED;
         static const Colour GREEN;
         static const Colour BLUE;
+        static const Colour YELLOW;
 
         /// Default constructor
         Colour()

@@ -100,7 +100,6 @@ void ViewPanel::OnResize(wxSizeEvent &event)
 void ViewPanel::OnPaint(wxPaintEvent &event)
 {
     wxAdapterDC dc(this, this->GetSize());
-    dc.Clear();
     m_screen_impl->RedrawAll(dc);
 }
 

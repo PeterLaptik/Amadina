@@ -255,7 +255,7 @@ bool Screen::CancelCommand()
 
 void Screen::RedrawAll(IAdapterDC &dc)
 {
-//    dc.CadClear();
+    dc.CadClear();
     dc.SetBorders(m_borders.left, m_borders.right, m_borders.top, m_borders.bottom);
     dc.SetBackgroundColour(m_colour);
 

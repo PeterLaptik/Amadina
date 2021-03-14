@@ -150,7 +150,13 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     // Draw snap symbol
     if(min_distance<snap_radius + 1)
     {
-        dc.CadSetColour(Colour(255, 255, 0));
+        // Snap colour
+        const Colour &b_colour = dc.GetBackgroundColour();
+        if(b_colour.IsDark())
+            dc.CadSetColour(Colour::YELLOW);
+        else
+            dc.CadSetColour(Colour::RED);
+
         switch(snap_type)
         {
         case POINT:
