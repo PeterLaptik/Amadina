@@ -30,8 +30,7 @@ class ScreenInterface
         ///\param coord_y - y-coordinate of a mouse position
         ///\param is_ctrl_pressed - is control-button is pressed on a keyboard
         ///\param is_lb_pressed - is mouse left button pressed
-        ///\return true - if the screen has to be refreshed, otherwise - false
-        virtual bool ScreenMouseMove(const int &coord_x, const int &coord_y,
+        virtual void ScreenMouseMove(const int &coord_x, const int &coord_y,
                                      const bool &is_ctrl_pressed,
                                      const bool &is_lb_pressed) = 0;
 
@@ -40,8 +39,7 @@ class ScreenInterface
         ///\param coord_x - x-coordinate of a mouse position
         ///\param coord_y - y-coordinate of a mouse position
         ///\param is_ctrl_pressed - is control-button is pressed on a keyboard
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseLeftButtonClicked(const int &coord_x,
+        virtual void ScreenMouseLeftButtonClicked(const int &coord_x,
                                                 const int &coord_y,
                                                 const bool &is_ctrl_pressed) = 0;
 
@@ -49,23 +47,20 @@ class ScreenInterface
         ///\brief The method should be called on mouse left button released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y) = 0;
+        virtual void ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y) = 0;
 
 
         ///\brief The method should be called on mouse right button pressed down
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseLeftButtonDown(const int &coord_x, const int &coord_y) = 0;
+        virtual void ScreenMouseLeftButtonDown(const int &coord_x, const int &coord_y) = 0;
 
 
         ///\brief The method should be called on mouse right button is clicked on a derived panel
         ///\param coord_x - x-coordinate of a mouse position
         ///\param coord_y - y-coordinate of a mouse position
         ///\param is_ctrl_pressed - is control-button is pressed on a keyboard
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseRightButtonClicked(const int &coord_x,
+        virtual void ScreenMouseRightButtonClicked(const int &coord_x,
                                                 const int &coord_y,
                                                 const bool &is_ctrl_pressed) = 0;
 
@@ -73,15 +68,13 @@ class ScreenInterface
         ///\brief The method should be called on mouse right button released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseRightButtonUp(const int &coord_x, const int &coord_y) = 0;
+        virtual void ScreenMouseRightButtonUp(const int &coord_x, const int &coord_y) = 0;
 
 
         ///\brief The method should be called on mouse right button pressed down
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseRightButtonDown(const int &coord_x, const int &coord_y) = 0;
+        virtual void ScreenMouseRightButtonDown(const int &coord_x, const int &coord_y) = 0;
 
 
         ///\brief The method should be called on mouse wheel event over a screen
@@ -89,8 +82,7 @@ class ScreenInterface
         ///\param direction - mouse wheel motion direction
         ///\param coord_x - x-coordinate of a mouse position
         ///\param coord_y - y-coordinate of a mouse position
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseWheel(const int &direction,
+        virtual void ScreenMouseWheel(const int &direction,
                                       const int &coord_x,
                                       const int &coord_y) = 0;
 
@@ -98,15 +90,13 @@ class ScreenInterface
         ///\brief The method should be called on mouse wheel click down
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseWheelDown(const int &coord_x, const int &coord_y) = 0;
+        virtual void ScreenMouseWheelDown(const int &coord_x, const int &coord_y) = 0;
 
 
         ///\brief The method should be called on mouse wheel click released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseWheelUp(const int &coord_x, const int &coord_y) = 0;
+        virtual void ScreenMouseWheelUp(const int &coord_x, const int &coord_y) = 0;
 
 
         ///\brief Creates a new entity via builder.
@@ -115,8 +105,7 @@ class ScreenInterface
 
 
         ///\brief Resets screen interactive state (executing command etc.)
-        ///\return true if the screen has to be refreshed / repainted
-        virtual bool CancelCommand(void) = 0;
+        virtual void ScreenCancelCommand(void) = 0;
 
 
         ///\brief Returns pointer to a draw manager.

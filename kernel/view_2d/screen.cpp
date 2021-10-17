@@ -50,11 +50,12 @@ void Screen::ScreenResize(const int &width, const int &height)
         m_borders.bottom = m_borders.top - scr_ratio*(m_borders.right - m_borders.left);
 
     CalculateBestSnapRadius();
+    ScreenRefresh();
 }
 
 // The method should be called each time on mouse wheel event over a derived panel.
 // Recalculates screen scale
-bool Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y)
 {
     double zoom_x = ((m_borders.right - m_borders.left)*ZOOM_COEFF - (m_borders.right - m_borders.left))/2;
     double zoom_y = ((m_borders.top - m_borders.bottom)*ZOOM_COEFF - (m_borders.top - m_borders.bottom))/2;
@@ -72,7 +73,7 @@ bool Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const in
         // Ignore scaling if the margin is too small
         if((m_borders.right - m_borders.left<MIN_MARGIN)
            ||(m_borders.top - m_borders.bottom<MIN_MARGIN))
-            return false;
+            return;
 
         m_borders.right -= zoom_x;
         m_borders.left += zoom_x;
@@ -91,16 +92,16 @@ bool Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const in
     m_borders.top -= delta_y;
     m_borders.bottom -= delta_y;
     CalculateBestSnapRadius();
-    return true;
+    ScreenRefresh();
 }
 
 // TODO
-bool Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
+void Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
                                   const int &coord_y,
                                   const bool &is_ctrl_pressed)
 {
     if(is_ctrl_pressed)
-        return false; // Do not pick points on screen dragging
+        return; // Do not pick points on screen dragging
 
     double x = static_cast<double>(coord_x);
     double y = static_cast<double>(coord_y);
@@ -112,29 +113,28 @@ bool Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
     {
     case SCR_PICKING:
         PointPicked(x, y);
-        return true;
+        ScreenRefresh();
+        return;
     case SCR_NOTHING:
         m_draw_manager.SelectInPoint(x, y, m_snap_radius/2);
         break;
     }
-    return false;
+    return;
 }
 
-bool Screen::ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y)
 {
     m_mouse_coord.x = static_cast<double>(coord_x);
     m_mouse_coord.y = static_cast<double>(coord_y);
     TransformCoordinatesToGlobal(m_mouse_coord.x, m_mouse_coord.y);
-    return false;
 }
 
-bool Screen::ScreenMouseWheelUp(const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseWheelUp(const int &coord_x, const int &coord_y)
 {
     m_is_wheel_pressed = false;
-    return false;
 }
 
-bool Screen::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
+void Screen::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
 {
     double x = static_cast<double>(coord_x);
     double y = static_cast<double>(coord_y);
@@ -142,10 +142,9 @@ bool Screen::ScreenMouseWheelDown(const int &coord_x, const int &coord_y)
     m_mouse_coord.x = x;
     m_mouse_coord.y = y;
     m_is_wheel_pressed = true;
-    return false;
 }
 
-bool Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,
+void Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,
                               const bool &is_ctrl_pressed,
                               const bool &is_lb_pressed)
 {
@@ -156,7 +155,8 @@ bool Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,
     {
         m_mouse_coord.x = x;
         m_mouse_coord.y = y;
-        return true;
+        ScreenRefresh();
+        return;
     }
 
     // TODO
@@ -167,7 +167,7 @@ bool Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,
     m_borders.right += delta_x;
     m_borders.top += delta_y;
     m_borders.bottom += delta_y;
-    return true;
+    ScreenRefresh();
 }
 
 // Calculates snap radius value in a real coordinates
@@ -237,11 +237,12 @@ void Screen::CreateEntity(AbstractBuilder *builder)
     if(m_shape_builder!=nullptr)
         delete m_shape_builder;
     m_shape_builder = builder;
+    ScreenRefresh();
 }
 
 // TODO
 // Screen refresh checks
-bool Screen::CancelCommand()
+void Screen::ScreenCancelCommand()
 {
     m_screen_state = SCR_NOTHING;
     if(m_shape_builder)
@@ -250,7 +251,7 @@ bool Screen::CancelCommand()
         m_shape_builder = nullptr;
     }
     m_draw_manager.ClearSelection();
-    return true;
+    ScreenRefresh();
 }
 
 void Screen::RedrawAll(IAdapterDC &dc)

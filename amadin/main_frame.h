@@ -3,7 +3,12 @@
 
 #include "../kernel/view_2d/viewpanel.h"
 #include "../kernel/processor/interpreter.h"
+#include "../kernel/context/context.h"
+#include "widgets/console/uiconsole.h"
+#include "events/events.h"
 #include <wx/aui/aui.h>
+#include <map>
+
 
 static const wxSize MAIN_FRAME_DEFAULT_SIZE = wxSize(640, 480);
 
@@ -25,6 +30,9 @@ class MainFrame : public wxFrame
 	    void OnToolButtonClicked(wxCommandEvent &event);
 	    void OnStickyButtonClicked(wxCommandEvent &event);
 	    void OnKeyPressed(wxKeyEvent &event);
+	    void OnConsoleInputEvent(wxEventConsoleInput &event);
+	    void OnMenuClicked(wxCommandEvent &event);
+	    void CreateMenuBar(void);
 
 	    CommandInterpreter m_interpreter;
 	    ViewPanel *m_active_panel;
@@ -61,6 +69,10 @@ class MainFrame : public wxFrame
         wxAuiToolBar *tool_layer;
         wxAuiNotebook *drawing_container;
 
+        wxMenuBar *m_menu_bar;
+        UiConsole *m_console;
+
+        std::map<ViewPanel*,Context*> m_context_map;
 
         DECLARE_EVENT_TABLE()
 };

@@ -1,5 +1,5 @@
-#ifndef INTERPRETER_H_INCLUDED
-#define INTERPRETER_H_INCLUDED
+#ifndef CAD_INTERPRETER_H_INCLUDED
+#define CAD_INTERPRETER_H_INCLUDED
 
 #include "tokens.h"
 #include <string>
@@ -23,10 +23,10 @@ class Interpreter
         mutable int m_cursor;
 
         void ReadSubExpressions(const std::string &line,
-                                 const char delimiter,
-                                 std::vector<std::string> &tokens);
+                                const char delimiter,
+                                std::vector<std::string> &tokens);
         bool IsTextToken(const std::string &token);
         void CollapseExpression(const std::string &token);
 };
 
-#endif // INTERPRETER_H_INCLUDED
+#endif // CAD_INTERPRETER_H_INCLUDED

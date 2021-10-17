@@ -5,7 +5,7 @@
 #include <wx/display.h>
 #include <wx/msgdlg.h>
 
-static const wxRect DEFAULT_SIZE_RECT = wxRect(0, 0, 800, 600);
+static const wxRect DEFAULT_SIZE_RECT = wxRect(0, 0, 1200, 800);
 static const wxSize DEFAULT_BUTTON_SIZE = wxSize(32, 32);
 
 const int MainFrame::ID_TOOL_DRAFT = wxNewId();
@@ -25,6 +25,8 @@ const int MainFrame::ID_BTN_SNAP_INTERSECTION = wxNewId();
 const int MainFrame::ID_BTN_SNAP_TANGENT = wxNewId();
 const int MainFrame::ID_BTN_SNAP_ANGLE = wxNewId();
 const int MainFrame::ID_NOTEBOOK = wxNewId();
+
+//wxDEFINE_EVENT(wxCONSOLE_INPUT, wxEventConsoleInput);
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
@@ -51,15 +53,37 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
     m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
 
+
     ViewPanel *m_panel2 = new ViewPanel(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
 	m_active_panel = m_panel2;
+
+
+
+	m_console = new UiConsole(this);
+	m_console->SetSize(150, 150);
+	m_mgr.AddPane(m_console,
+            wxAuiPaneInfo().Name(_T("console"))
+               .Caption(_("Console"))
+               .Bottom());
+
+
+
+//    CreateMenuBar();
+//    SetMenuBar(m_menu_bar);
+
 
 	m_mgr.Update();
 	this->Centre(wxBOTH);
 
     cad::command::RegisterDefaultCommands(m_interpreter);
     m_interpreter.SetActivePanel(m_panel2);
+
+
+
+    Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
+//    Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
+//      wxCommandEventHandler(MainFrame::OnMenuClicked));
 }
 
 
@@ -69,11 +93,54 @@ MainFrame::~MainFrame()
 }
 
 
+void MainFrame::CreateMenuBar()
+{
+    // Default menu
+    m_menu_bar = new wxMenuBar();
+    wxMenu *m_menu_file = new wxMenu();
+    wxMenu *m_menu_edit = new wxMenu();
+    wxMenu *m_menu_view = new wxMenu();
+    wxMenu *m_menu_draw = new wxMenu();
+    wxMenu *m_menu_settings = new wxMenu();
+    wxMenu *m_menu_about = new wxMenu();
+
+    m_menu_bar->Append(m_menu_file, _T("File"));
+    m_menu_bar->Append(m_menu_edit, _T("Edit"));
+    m_menu_bar->Append(m_menu_view, _T("View"));
+    m_menu_bar->Append(m_menu_draw, _T("Draw"));
+    m_menu_bar->Append(m_menu_settings, _T("Settings"));
+    m_menu_bar->Append(m_menu_about, _T("About"));
+
+    m_menu_settings->Append(1105, "xx");
+
+}
+
+void MainFrame::OnMenuClicked(wxCommandEvent &event)
+{
+    wxString command = "Command:";
+    command<<event.GetId();
+    wxMessageBox(command);
+}
+
+// Processes console input
+void MainFrame::OnConsoleInputEvent(wxEventConsoleInput &event)
+{
+    wxMessageBox("Input:" + event.GetInput());
+}
+
 wxAuiToolBar* MainFrame::CreateToolbarDraft()
 {
+    int cmd_id;
+    std::string cmd_name;
+
     tool_draft = new wxAuiToolBar(this, ID_TOOL_DRAFT, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
-    tool_draft->AddTool(ID_BTN_DRAW_POINT, cad::command::CMD_POINT, wxBitmap(wxImage(_T("res\\icons\\icon_point.ico"))),
+
+    cmd_id = wxNewId();
+    cmd_name = cad::command::CMD_POINT;
+    tool_draft->AddTool(cmd_id, cmd_name, wxBitmap(wxImage(_T("res\\icons\\icon_point.ico"))),
                         wxNullBitmap, wxITEM_NORMAL, _("Plot point"), wxEmptyString, NULL);
+
+
     tool_draft->AddTool(ID_BTN_DRAW_LINE, cad::command::CMD_LINE, wxBitmap(wxImage(_T("res\\icons\\icon_line.ico"))),
                         wxNullBitmap, wxITEM_NORMAL, _("Draw line"), wxEmptyString, NULL);
     tool_draft->AddTool(ID_BTN_DRAW_LINE_ORTHO, cad::command::CMD_LINE_ORTHOGONAL, wxBitmap(wxImage(_T("res\\icons\\icon_line_ortho.ico"))),
@@ -151,6 +218,7 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
         m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
         break;
     }
+    event.Skip();
 }
 
 void MainFrame::OnToolButtonClicked(wxCommandEvent &event)

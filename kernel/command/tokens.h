@@ -1,7 +1,7 @@
 #ifndef TOKENS_H_INCLUDED
 #define TOKENS_H_INCLUDED
 
-#include "../Amadina/kernel/entities/point.h"
+#include "../entities/point.h"
 #include <string>
 
 class Token

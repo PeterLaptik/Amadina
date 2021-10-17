@@ -3,8 +3,8 @@
 #include "../entities/entity.h"
 
 
-Command::Command(StatefulScreen *screen)
-    : m_is_executing(false), m_screen(screen)
+Command::Command()
+    : m_is_executing(false)
     { }
 
 Command::~Command()

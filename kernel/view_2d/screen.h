@@ -36,8 +36,7 @@ class Screen: public ScreenInterface
         virtual void ScreenResize(const int &width, const int &height);
 
         ///\brief The method should be called each time on mouse move over a screen
-        ///\return true - if the screen has to be refreshed, otherwise - false
-        virtual bool ScreenMouseMove(const int &coord_x, const int &coord_y,
+        virtual void ScreenMouseMove(const int &coord_x, const int &coord_y,
                                      const bool &is_ctrl_pressed,
                                      const bool &is_lb_pressed);
 
@@ -46,46 +45,45 @@ class Screen: public ScreenInterface
         ///\param direction - negative integer value on zoom in / positive integer value on zoom out
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual bool ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y);
+        virtual void ScreenMouseWheel(const int &direction, const int &coord_x, const int &coord_y);
 
         ///\brief The method should be called each time on mouse left button is clicked on a derived panel.
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool ScreenMouseLeftButtonClicked(const int &coord_x,
+        virtual void ScreenMouseLeftButtonClicked(const int &coord_x,
                                                 const int &coord_y,
                                                 const bool &is_ctrl_pressed);
 
         ///\brief The method has been called on mouse left button released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual bool ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y);
+        virtual void ScreenMouseLeftButtonUp(const int &coord_x, const int &coord_y);
 
         ///\brief Empty implementation
-        virtual bool ScreenMouseLeftButtonDown(const int &coord_x, const int &coord_y)
-        { return false; }
+        virtual void ScreenMouseLeftButtonDown(const int &coord_x, const int &coord_y)
+        { }
 
         ///\brief Empty implementation
-        virtual bool ScreenMouseRightButtonClicked(const int &coord_x,
+        virtual void ScreenMouseRightButtonClicked(const int &coord_x,
                                                 const int &coord_y,
                                                 const bool &is_ctrl_pressed)
-        { return false; }
+        { }
 
         ///\brief Empty implementation
-        virtual bool ScreenMouseRightButtonUp(const int &coord_x, const int &coord_y)
-        { return false; }
+        virtual void ScreenMouseRightButtonUp(const int &coord_x, const int &coord_y)
+        { }
 
         ///\brief Empty implementation
-        virtual bool ScreenMouseRightButtonDown(const int &coord_x, const int &coord_y)
-        { return false; }
+        virtual void ScreenMouseRightButtonDown(const int &coord_x, const int &coord_y)
+        { }
 
         ///\brief The method should be called on mouse wheel click released
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual bool ScreenMouseWheelUp(const int &coord_x, const int &coord_y);
+        virtual void ScreenMouseWheelUp(const int &coord_x, const int &coord_y);
 
         ///\brief The method should be called on mouse wheel click down
         ///\param coord_x - x-coordinate of a mouse pointer
         ///\param coord_y - y-coordinate of a mouse pointer
-        virtual bool ScreenMouseWheelDown(const int &coord_x, const int &coord_y);
+        virtual void ScreenMouseWheelDown(const int &coord_x, const int &coord_y);
 
         ///\brief Refresh the screen: draw all entities and signs
         ///\param dc - device context (implementation of IAdapterDC)
@@ -113,8 +111,11 @@ class Screen: public ScreenInterface
                         double *bottom) const;
 
         ///\brief Resets screen interactive state (executing commend etc.)
-        ///\return true is the screen has to be refreshed / repainted
-        virtual bool CancelCommand(void);
+        virtual void ScreenCancelCommand(void);
+
+        ///\brief Refresh screen
+        /// Implementation depends on GUI-library used for the screen panel
+        virtual void ScreenRefresh(void) = 0;
 
         ///\brief Returns pointer to a draw manager.
         /// Each instance of a screen has its own draw manager.

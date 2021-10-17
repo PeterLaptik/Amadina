@@ -3,12 +3,13 @@
 
 #include "wx/panel.h"
 #include "../builders/abstractbuilder.h"
+#include "screen.h"
 
 class ScreenInterface;
 class DrawManager;
 
 ///\brief Drawing panel implementation for wxWidgets GUI-library.
-class ViewPanel: public wxPanel
+class ViewPanel: public wxPanel, private Screen
 {
     public:
         ///\brief Constructor
@@ -47,6 +48,7 @@ class ViewPanel: public wxPanel
         ///\param colour - colour value
         virtual bool SetBackgroundColour(const wxColour &colour);
 
+        virtual void ScreenRefresh(void);
         //
         // TODO
         // Remove draw manager getter:
@@ -70,7 +72,7 @@ class ViewPanel: public wxPanel
         void AddTestShapes(void);
 
         // Screen interface implementation
-        ScreenInterface *m_screen_impl;
+        //ScreenInterface *m_screen_impl;
 
     wxDECLARE_EVENT_TABLE();
 };
