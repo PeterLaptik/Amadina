@@ -4,9 +4,9 @@
 #include <wx/panel.h>
 #include <array>
 
+static const char *CLASS_NAME_UI_CONSOLE = "UI console";
 
 class wxTextCtrl;
-
 
 class UiConsole: public wxPanel
 {
@@ -16,14 +16,13 @@ class UiConsole: public wxPanel
                 const wxPoint& pos = wxDefaultPosition,
                 const wxSize& size = wxDefaultSize,
                 long style = wxTAB_TRAVERSAL | wxNO_BORDER,
-                const wxString& name = wxPanelNameStr);
+                const wxString& name = CLASS_NAME_UI_CONSOLE);
 
         virtual ~UiConsole();
 
         void SetPrompt(const wxString &prompt);
         void ClearPrompt(void);
         wxString GetPrompt(void) const;
-
 
     protected:
         void OnInput(wxCommandEvent &event);

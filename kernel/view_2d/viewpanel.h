@@ -66,6 +66,7 @@ class ViewPanel: public wxPanel, private Screen
         void OnMouseWheel(wxMouseEvent &event);
         void OnMouseWheelDown(wxMouseEvent &event);
         void OnMouseWheelUp(wxMouseEvent &event);
+        void OnKeyPressed(wxKeyEvent &event);
 
     private:
         /// Add several shapes for testing (test mode)

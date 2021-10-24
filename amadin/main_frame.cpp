@@ -1,6 +1,7 @@
 #include "main_frame.h"
 #include "wxchoicelayer.h"
 #include "../kernel/processor/default_commands.h"
+#include "../kernel/builders/point_cmd.h"
 //#include <wx/artprov.h>
 #include <wx/display.h>
 #include <wx/msgdlg.h>
@@ -26,7 +27,6 @@ const int MainFrame::ID_BTN_SNAP_TANGENT = wxNewId();
 const int MainFrame::ID_BTN_SNAP_ANGLE = wxNewId();
 const int MainFrame::ID_NOTEBOOK = wxNewId();
 
-//wxDEFINE_EVENT(wxCONSOLE_INPUT, wxEventConsoleInput);
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
@@ -69,8 +69,8 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 
 
 
-//    CreateMenuBar();
-//    SetMenuBar(m_menu_bar);
+    CreateMenuBar();
+    SetMenuBar(m_menu_bar);
 
 
 	m_mgr.Update();
@@ -79,7 +79,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     cad::command::RegisterDefaultCommands(m_interpreter);
     m_interpreter.SetActivePanel(m_panel2);
 
-
+    CommandMock();
 
     Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
 //    Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
@@ -95,7 +95,7 @@ MainFrame::~MainFrame()
 
 void MainFrame::CreateMenuBar()
 {
-    // Default menu
+    // Create default menus
     m_menu_bar = new wxMenuBar();
     wxMenu *m_menu_file = new wxMenu();
     wxMenu *m_menu_edit = new wxMenu();
@@ -103,14 +103,22 @@ void MainFrame::CreateMenuBar()
     wxMenu *m_menu_draw = new wxMenu();
     wxMenu *m_menu_settings = new wxMenu();
     wxMenu *m_menu_about = new wxMenu();
-
+    // Initialize external holders
+    AmadinaMenuList *menu_list = m_menu.GetMenuList();
+    menu_list->menu_file = m_menu_file;
+    menu_list->menu_edit = m_menu_edit;
+    menu_list->menu_view = m_menu_view;
+    menu_list->menu_draw = m_menu_draw;
+    menu_list->menu_settings = m_menu_settings;
+    menu_list->menu_about = m_menu_about;
+    // Fill menu bar
     m_menu_bar->Append(m_menu_file, _T("File"));
     m_menu_bar->Append(m_menu_edit, _T("Edit"));
     m_menu_bar->Append(m_menu_view, _T("View"));
     m_menu_bar->Append(m_menu_draw, _T("Draw"));
     m_menu_bar->Append(m_menu_settings, _T("Settings"));
     m_menu_bar->Append(m_menu_about, _T("About"));
-
+    // Test
     m_menu_settings->Append(1105, "xx");
 
 }
@@ -200,6 +208,13 @@ wxAuiToolBar* MainFrame::CreateToolbarLayer()
     return tool_layer;
 }
 
+void MainFrame::CommandMock()
+{
+    m_cmd_dispatcher.RegisterCommand(new CmdPoint(), "point");
+    long id = m_menu.AppendMenuCommand("Point", "point", ui::CMD_DRAW);
+    m_cmd_dispatcher.RegisterHandler(id, "point");
+
+}
 
 wxAuiNotebook* MainFrame::CreateNotebookDrawing()
 {
@@ -218,6 +233,12 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
         m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
         break;
     }
+
+    wxWindow *win = wxWindow::FindFocus();
+    //win->GetParent();
+    wxString f = "focus:";
+    f<<win->GetName();
+    f<<"<-"<<win->GetParent()->GetName();
     event.Skip();
 }
 
@@ -235,10 +256,15 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
     // Process command buttons
     // Each command is being kept in tool-item label
     wxAuiToolBar *toolbar = dynamic_cast<wxAuiToolBar*>(obj);
-    if(obj)
+    if(toolbar)
         cmd = toolbar->FindTool(event.GetId())->GetLabel();
 
-    m_interpreter.ExecuteCommand(cmd.ToStdString());
+    Command *xx = m_cmd_dispatcher.GetCommand(event.GetId());
+
+    wxString tmp = "cmd:";
+    tmp<<(xx==nullptr);
+    wxMessageBox(tmp);
+    //m_interpreter.ExecuteCommand(cmd.ToStdString());
 }
 
 void MainFrame::OnStickyButtonClicked(wxCommandEvent &event)

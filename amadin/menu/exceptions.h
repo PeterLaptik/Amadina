@@ -27,4 +27,26 @@ class CommandExists: public std::exception
         std::string m_message;
 };
 
+
+///\brief The exception is thrown if a menu section does not exist
+class MenuDoesNotExist: public std::exception
+{
+    public:
+        MenuDoesNotExist(const std::string &menu)
+            : m_message(PREFIX + menu)
+        { }
+
+        virtual ~MenuDoesNotExist()
+        { }
+
+        virtual char const* what() const
+        {
+            return m_message.c_str();
+        }
+
+    private:
+        const char *PREFIX = "Menu item does not exist: ";
+        std::string m_message;
+};
+
 #endif // EXCEPTIONS_H_INCLUDED

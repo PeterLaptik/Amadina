@@ -18,6 +18,11 @@ void CommandDispatcher::RegisterCommand(Command *cmd, const std::string &name)
     m_command_map.insert(std::pair<std::string,Command*>(name,cmd));
 }
 
+void CommandDispatcher::RegisterHandler(long handler_id, const std::string &cmd_name)
+{
+    m_command_handlers.insert(std::pair<long,std::string>(handler_id,cmd_name));
+}
+
 Command* CommandDispatcher::GetCommand(const std::string &name)
 {
     Command *result = nullptr;
@@ -26,4 +31,13 @@ Command* CommandDispatcher::GetCommand(const std::string &name)
         result = it->second->Clone();
 
     return result;
+}
+
+Command* CommandDispatcher::GetCommand(long handler_id)
+{
+    std::map<long,std::string>::iterator it_name = m_command_handlers.find(handler_id);
+    if(it_name==m_command_handlers.end())
+        return nullptr;
+
+    return GetCommand(it_name->second);
 }

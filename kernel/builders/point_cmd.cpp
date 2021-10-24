@@ -5,3 +5,13 @@ CmdPoint::CmdPoint()
 
 CmdPoint::~CmdPoint()
 { }
+
+void CmdPoint::Execute()
+{
+
+}
+
+Command* CmdPoint::Clone()
+{
+    return new CmdPoint();
+}

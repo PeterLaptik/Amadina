@@ -5,50 +5,38 @@
 
 namespace ui
 {
+    /// Menu section for command
+    enum CommandType
+    {
+        CMD_NO_MENU,
+        CMD_FILE,
+        CMD_EDIT,
+        CMD_VIEW,
+        CMD_DRAW,
+        CMD_SETTINGS,
+        CMD_ABOUT
+    };
+
     ///\brief Main interface for the UI-menu items registration class.
-    /// Appends commands (string command value) and menu aliases into main menu.
+    /// Appends commands (string command value) and menu aliases into a main menu.
     /// Main goal of the class is to provide UI-library independent interface
     /// for command registration in UI-menus.
-    class UiCommands
+    class UiMenuCommands
     {
-        /// Register command in 'File' menu section
-        ///\param menu_name - menu line name
-        ///\param command_name - command
-        virtual void AppendFileMenuItem(const std::string &menu_name,
-                                    const std::string &command_name) = 0;
+        ///\brief Appends appropriate menu choice for the defined command.
+        /// The command name can be got from storage by menu id.
+        /// For this method menu id generation should be implemented in sub-classes
+        ///\param menu_name - menu section name
+        ///\param cmd_name - exact command name
+        ///\param cmd_type - command type enumeration value
+        ///\param id - menu id
+        ///\returns menu id
+        virtual long AppendMenuCommand(const std::string &menu_name,
+                                    const std::string &cmd_name,
+                                    CommandType cmd_type, long id) = 0;
 
-        /// Register command in 'Edit' menu section
-        ///\param menu_name - menu line name
-        ///\param command_name - command
-        virtual void AppendEditMenuItem(const std::string &menu_name,
-                                    const std::string &command_name) = 0;
-
-        /// Register command in 'View' menu section
-        ///\param menu_name - menu line name
-        ///\param command_name - command
-        virtual void AppendViewMenuItem(const std::string &menu_name,
-                                    const std::string &command_name) = 0;
-
-        /// Register command in 'Draw' menu section
-        ///\param menu_name - menu line name
-        ///\param command_name - command
-        virtual void AppendDrawMenuItem(const std::string &menu_name,
-                                    const std::string &command_name) = 0;
-
-        /// Register command in 'Settings' menu section
-        ///\param menu_name - menu line name
-        ///\param command_name - command
-        virtual void AppendSettingsMenuItem(const std::string &menu_name,
-                                    const std::string &command_name) = 0;
-
-        /// Register command in 'About' menu section
-        ///\param menu_name - menu line name
-        ///\param command_name - command
-        virtual void AppendAboutMenuItem(const std::string &menu_name,
-                                    const std::string &command_name) = 0;
-
-        /// Returns command for defined menu id
-        virtual std::string GetMenuCommand(int id) = 0;
+        /// Returns command name for defined menu id
+        virtual std::string GetMenuCommand(long id) = 0;
     };
 }
 

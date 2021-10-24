@@ -44,7 +44,7 @@ UiConsole::~UiConsole()
 #include <wx/msgdlg.h>
 void UiConsole::OnInput(wxCommandEvent &event)
 {
-    //wxMessageBox("input");
+
 }
 
 void UiConsole::OnEnter(wxCommandEvent &event)

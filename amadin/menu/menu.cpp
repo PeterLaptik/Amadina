@@ -1,92 +1,140 @@
 #include "menu.h"
 
-AmadinMenu::AmadinMenu()
-    : menu_file(nullptr),
-        menu_edit(nullptr),
-        menu_view(nullptr),
-        menu_draw(nullptr),
-        menu_settings(nullptr),
-        menu_about(nullptr)
+AmadinaMenu::AmadinaMenu()
 { }
 
-AmadinMenu::~AmadinMenu()
+AmadinaMenu::~AmadinaMenu()
 { }
 
-void AmadinMenu::CheckCommand(const std::string &command) const throw(CommandExists)
+
+long AmadinaMenu::AppendMenuCommand(const std::string &menu_name,
+                                    const std::string &cmd_name,
+                                    CommandType cmd_type, long id)
 {
-    for(std::map<int,std::string>::const_iterator it=menu_command_mapping.begin();
-            it!=menu_command_mapping.end(); ++it)
+    using ui::CommandType;
+    switch(cmd_type)
     {
-        if(it->second==command)
-            throw CommandExists(command);
+        case CommandType::CMD_FILE:
+            return AppendFileMenuItem(menu_name, cmd_name, id);
+        case CommandType::CMD_VIEW:
+            return AppendViewMenuItem(menu_name, cmd_name, id);
+        case CommandType::CMD_EDIT:
+            return AppendEditMenuItem(menu_name, cmd_name, id);
+        case CommandType::CMD_DRAW:
+            return AppendDrawMenuItem(menu_name, cmd_name, id);
+        case CommandType::CMD_SETTINGS:
+            return AppendSettingsMenuItem(menu_name, cmd_name, id);
+        case CommandType::CMD_ABOUT:
+            return AppendAboutMenuItem(menu_name, cmd_name, id);
     }
 }
 
-int AmadinMenu::GenerateMenuId(void) const
+long AmadinaMenu::AppendFileMenuItem(const std::string &menu_name,
+                        const std::string &command_name,
+                        long id) throw(MenuDoesNotExist)
 {
-    return wxNewId();
-}
+    if(!m_menu.menu_file)
+        throw MenuDoesNotExist("File");
 
-void AmadinMenu::AppendFileMenuItem(const std::string &menu_name,
-                        const std::string &command_name)
-{
-    CheckCommand(command_name);
-    int id = GenerateMenuId();
-    menu_file->Append(id, menu_name);
+    if(id==NO_ID)
+        id = GenerateMenuId();
+
+    m_menu.menu_file->Append(id, menu_name);
     menu_command_mapping.insert(std::pair<int,std::string>(id, command_name));
+    return id;
 }
 
-void AmadinMenu::AppendEditMenuItem(const std::string &menu_name,
-                        const std::string &command_name)
+long AmadinaMenu::AppendEditMenuItem(const std::string &menu_name,
+                        const std::string &command_name,
+                        long id) throw(MenuDoesNotExist)
 {
-    CheckCommand(command_name);
-    int id = GenerateMenuId();
-    menu_edit->Append(id, menu_name);
+    if(!m_menu.menu_file)
+        throw MenuDoesNotExist("Edit");
+
+    if(id==NO_ID)
+        id = GenerateMenuId();
+
+    m_menu.menu_edit->Append(id, menu_name);
     menu_command_mapping.insert(std::pair<int,std::string>(id, command_name));
+    return id;
 }
 
-void AmadinMenu::AppendViewMenuItem(const std::string &menu_name,
-                        const std::string &command_name)
+long AmadinaMenu::AppendViewMenuItem(const std::string &menu_name,
+                        const std::string &command_name,
+                        long id) throw(MenuDoesNotExist)
 {
-    CheckCommand(command_name);
-    int id = GenerateMenuId();
-    menu_view->Append(id, menu_name);
+    if(!m_menu.menu_file)
+        throw MenuDoesNotExist("View");
+
+    if(id==NO_ID)
+        id = GenerateMenuId();
+
+    m_menu.menu_view->Append(id, menu_name);
     menu_command_mapping.insert(std::pair<int,std::string>(id, command_name));
+    return id;
 }
 
-void AmadinMenu::AppendDrawMenuItem(const std::string &menu_name,
-                        const std::string &command_name)
+long AmadinaMenu::AppendDrawMenuItem(const std::string &menu_name,
+                        const std::string &command_name,
+                        long id) throw(MenuDoesNotExist)
 {
-    CheckCommand(command_name);
-    int id = GenerateMenuId();
-    menu_draw->Append(id, menu_name);
+    if(!m_menu.menu_file)
+        throw MenuDoesNotExist("Draw");
+
+    if(id==NO_ID)
+        id = GenerateMenuId();
+
+    m_menu.menu_draw->Append(id, menu_name);
     menu_command_mapping.insert(std::pair<int,std::string>(id, command_name));
+    return id;
 }
 
-void AmadinMenu::AppendSettingsMenuItem(const std::string &menu_name,
-                            const std::string &command_name)
+long AmadinaMenu::AppendSettingsMenuItem(const std::string &menu_name,
+                            const std::string &command_name,
+                            long id) throw(MenuDoesNotExist)
 {
-    CheckCommand(command_name);
-    int id = GenerateMenuId();
-    menu_settings->Append(id, menu_name);
+    if(!m_menu.menu_file)
+        throw MenuDoesNotExist("Settings");
+
+    if(id==NO_ID)
+        id = GenerateMenuId();
+
+    m_menu.menu_settings->Append(id, menu_name);
     menu_command_mapping.insert(std::pair<int,std::string>(id, command_name));
+    return id;
 }
 
-void AmadinMenu::AppendAboutMenuItem(const std::string &menu_name,
-                         const std::string &command_name)
+long AmadinaMenu::AppendAboutMenuItem(const std::string &menu_name,
+                         const std::string &command_name,
+                         long id) throw(MenuDoesNotExist)
 {
-    CheckCommand(command_name);
-    int id = GenerateMenuId();
-    menu_about->Append(id, menu_name);
+    if(!m_menu.menu_file)
+        throw MenuDoesNotExist("About");
+
+    if(id==NO_ID)
+        id = GenerateMenuId();
+
+    m_menu.menu_about->Append(id, menu_name);
     menu_command_mapping.insert(std::pair<int,std::string>(id, command_name));
+    return id;
 }
 
-std::string AmadinMenu::GetMenuCommand(int id)
+std::string AmadinaMenu::GetMenuCommand(long id)
 {
     std::string result = "";
-    std::map<int,std::string>::const_iterator it = menu_command_mapping.find(id);
+    std::map<long,std::string>::const_iterator it = menu_command_mapping.find(id);
     if(it!=menu_command_mapping.end())
         result = it->second;
 
     return result;
+}
+
+long AmadinaMenu::GenerateMenuId(void) const
+{
+    return wxNewId();
+}
+
+AmadinaMenuList* AmadinaMenu::GetMenuList()
+{
+    return &m_menu;
 }

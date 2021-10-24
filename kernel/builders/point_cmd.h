@@ -9,8 +9,8 @@ class CmdPoint: public Command
         CmdPoint();
         virtual ~CmdPoint();
 
-//        virtual void Execute(void) = 0;
-//        virtual Command Clone(void) = 0;
+        virtual void Execute(void);
+        virtual Command* Clone(void);
 
     private:
 
