@@ -8,8 +8,8 @@ const Colour Colour::GREEN = Colour(0,255,0);
 const Colour Colour::BLUE = Colour(0,0,255);
 const Colour Colour::YELLOW = Colour(255,255,0);
 
-const int Colour::DARK_BACKGROUND = 70;
-const int Colour::DARK_COLOUR = 30;
-const int Colour::MAX_VALUE = 255;
+const colour_t Colour::DARK_BACKGROUND = 70;
+const colour_t Colour::DARK_COLOUR = 30;
+const colour_t Colour::MAX_VALUE = 255;
 
 

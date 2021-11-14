@@ -88,12 +88,12 @@ class Colour
 
     private:
         // Border R/G/B-values for dark / non-dark colours
-        static const int DARK_BACKGROUND;
-        static const int DARK_COLOUR;
+        static const colour_t DARK_BACKGROUND;
+        static const colour_t DARK_COLOUR;
 
         // Maximum colour value
         // I.e. white colour for R=G=B
-        static const int MAX_VALUE;
+        static const colour_t MAX_VALUE;
 };
 
 

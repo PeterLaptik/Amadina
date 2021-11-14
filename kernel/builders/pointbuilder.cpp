@@ -12,7 +12,7 @@ bool PointBuilder::AppendPoint(const Point &pt)
     return true;
 }
 
-void PointBuilder::Redraw(IAdapterDC &dc, double x, double y)
+void PointBuilder::Redraw(IAdapterDC&, double, double)
 { }
 
 Entity* PointBuilder::Create()

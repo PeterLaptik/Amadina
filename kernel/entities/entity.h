@@ -21,27 +21,27 @@ class Entity
 
         // Highlight the entity
         // May be used to show picked entities
-        virtual void DrawHighlighted(IAdapterDC &dc)
+        virtual void DrawHighlighted(IAdapterDC&)
         { }
 
         // Returns minimum distance between the entity and point
-        virtual double DistanceFrom(const Point &pt) const
+        virtual double DistanceFrom(const Point&) const
         {
             return std::numeric_limits<double>::max();
         }
 
         // Returns points for snap to constraints, edge points etc.
-        virtual void GetSnapPoints(std::vector<Point> &vec) const
+        virtual void GetSnapPoints(std::vector<Point>&) const
         { }
 
         // Returns points for snap to center
-        virtual void GetCenterPoints(std::vector<Point> &vec) const
+        virtual void GetCenterPoints(std::vector<Point>&) const
         { }
 
         // Returns pointers to sub-shapes (primitives).
         // Primitive sub-shapes are: line, circle, point.
         // The result can be used for intersections computing, geometric transformations etc.
-        virtual void GetPrimitives(std::vector<Entity*> &vec)
+        virtual void GetPrimitives(std::vector<Entity*>&)
         { }
 
         void SetLayer(Layer *layer);
