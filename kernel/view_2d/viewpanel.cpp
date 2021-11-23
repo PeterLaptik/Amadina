@@ -5,6 +5,8 @@
 #include "../entities/circle.h"
 #include "../entities/square.h"
 #include <wx/dcclient.h>
+#include "../command/command.h"
+#include <thread>
 
 //#define TEST_MODE
 
@@ -23,6 +25,8 @@ wxBEGIN_EVENT_TABLE(ViewPanel, wxPanel)
     EVT_MIDDLE_DOWN(ViewPanel::OnMouseWheelDown)
     EVT_MIDDLE_UP(ViewPanel::OnMouseWheelUp)
     EVT_CHAR_HOOK(ViewPanel::OnKeyPressed)
+    EVT_ENTER_WINDOW(ViewPanel::OnMouseEnterPanel)
+    EVT_LEAVE_WINDOW(ViewPanel::OnMouseLeavePanel)
 wxEND_EVENT_TABLE()
 
 
@@ -32,7 +36,8 @@ ViewPanel::ViewPanel(wxWindow *parent,
                     const wxSize &size,
                     long style,
                     const wxString &name):
-    wxPanel(parent, winid, pos, size, style, name)
+        wxPanel(parent, winid, pos, size, style, name),
+            m_current_command(nullptr)
 {
     int width_px;
     int height_px;
@@ -43,6 +48,7 @@ ViewPanel::ViewPanel(wxWindow *parent,
     Screen::ScreenResize(width_px, height_px);
     wxPanel::SetBackgroundColour(wxColour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
     Screen::SetColour(Colour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
+    m_context.AssignEnvironment(this, GetDrawManager());
     // Test shapes
     #ifdef TEST_MODE
         AddTestShapes();
@@ -62,8 +68,13 @@ ViewPanel::~ViewPanel()
     //delete m_screen_impl;
 }
 
+// TODO
+int coord_x, coord_y;
+
 void ViewPanel::OnMouseMove(wxMouseEvent &event)
 {
+    coord_x = event.GetX();
+    coord_y = event.GetY();
     Screen::ScreenMouseMove(event.GetX(), event.GetY(),
                             wxGetKeyState(WXK_RAW_CONTROL),
                             wxGetMouseState().LeftIsDown());
@@ -106,6 +117,20 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
 {
     wxAdapterDC dc(this, this->GetSize());
     Screen::RedrawAll(dc);
+    ShowCursor(dc);
+}
+
+void ViewPanel::ShowCursor(wxDC &dc)
+{
+    switch (m_state)
+    {
+        case SCREEN_PICKING_POINT:
+            dc.DrawLine(coord_x-20, coord_y, coord_x+20, coord_y);
+            dc.DrawLine(coord_x, coord_y-20, coord_x, coord_y+20);
+            break;
+
+    }
+
 }
 
 void ViewPanel::CreateEntityByPoints(AbstractBuilder *builder)
@@ -136,6 +161,18 @@ bool ViewPanel::SetBackgroundColour(const wxColour &colour)
     return wxPanel::SetBackgroundColour(colour);
 }
 
+#include<iostream>
+void ViewPanel::AssignCommand(Command *cmd)
+{
+    std::cout<<"start"<<std::endl;
+    if(m_current_command)
+        delete m_current_command;
+    m_current_command = cmd;
+
+    std::thread t(&Command::Execute, m_current_command);
+    t.detach();
+}
+
 // Adds shapes for testing
 void ViewPanel::AddTestShapes()
 {
@@ -143,6 +180,19 @@ void ViewPanel::AddTestShapes()
     Screen::GetDrawManager()->AddEntity(new Point(30,30));
     Screen::GetDrawManager()->AddEntity(new Point(40,40));
 }
+
+void ViewPanel::OnMouseEnterPanel(wxMouseEvent &event)
+{
+    // TODO: hide cursor
+    //SetCursor(wxCursor(*wxHOURGLASS_CURSOR));
+}
+
+void ViewPanel::OnMouseLeavePanel(wxMouseEvent &event)
+{
+
+}
+
+
 
 void ViewPanel::ScreenRefresh()
 {

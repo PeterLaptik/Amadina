@@ -3,7 +3,6 @@
 
 #include "../kernel/view_2d/viewpanel.h"
 #include "../kernel/processor/interpreter.h"
-#include "../kernel/context/context.h"
 #include "../kernel/command/dispatcher.h"
 #include "menu/menu.h"
 #include "widgets/console/uiconsole.h"
@@ -76,10 +75,10 @@ class MainFrame : public wxFrame
         wxMenuBar *m_menu_bar;
         UiConsole *m_console;
 
+        ViewPanel *m_panel2;
+
         AmadinaMenu m_menu;
         CommandDispatcher m_cmd_dispatcher;
-
-        std::map<ViewPanel*,Context*> m_context_map;
 
         DECLARE_EVENT_TABLE()
 };

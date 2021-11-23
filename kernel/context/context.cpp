@@ -1,12 +1,15 @@
 #include "context.h"
 
-Context::Context(DrawManager *manager, Screen *screen)
+Context::Context()
 { }
 
 Context::~Context()
+{ }
+
+void Context::AssignEnvironment(StatefullScreen *screen, DrawManager *draw_manager)
 {
-    delete m_screen;
-    delete m_draw_manager;
+    m_screen = screen;
+    m_draw_manager = draw_manager;
 }
 
 void Context::AssignCommand(const std::string &command)
@@ -14,7 +17,7 @@ void Context::AssignCommand(const std::string &command)
 
 }
 
-Screen* Context::GetScreen(void) const
+StatefullScreen* Context::GetScreen(void) const
 {
     return m_screen;
 }

@@ -3,19 +3,26 @@
 
 #include <vector>
 
-class StatefulScreen;
+class Context;
+class StatefullScreen;
 class Point;
 class Entity;
 
 class Command
 {
     public:
-        Command();
+        Command(Context *context);
+        Command() = delete;
         virtual ~Command();
 
         virtual void Execute(void) = 0;
 
         virtual Command* Clone(void) = 0;
+
+        Context* GetContext(void)
+        {
+            return m_context;
+        }
 
     protected:
         void EnterPoint(void);
@@ -28,7 +35,9 @@ class Command
 
     private:
         volatile bool m_is_executing;
-        StatefulScreen *m_screen;
+        volatile bool m_is_canceled;
+        Context *m_context;
+        StatefullScreen *m_screen;
 
 };
 

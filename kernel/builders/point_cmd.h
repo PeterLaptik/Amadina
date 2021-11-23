@@ -3,10 +3,10 @@
 
 #include "../command/command.h"
 
-class CmdPoint: public Command
+class CmdPoint final: public Command
 {
     public:
-        CmdPoint();
+        CmdPoint(Context *context);
         virtual ~CmdPoint();
 
         virtual void Execute(void);

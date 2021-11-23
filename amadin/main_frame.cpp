@@ -54,7 +54,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
 
 
-    ViewPanel *m_panel2 = new ViewPanel(drawing_container);
+    m_panel2 = new ViewPanel(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
 	m_active_panel = m_panel2;
 
@@ -210,7 +210,7 @@ wxAuiToolBar* MainFrame::CreateToolbarLayer()
 
 void MainFrame::CommandMock()
 {
-    m_cmd_dispatcher.RegisterCommand(new CmdPoint(), "point");
+    m_cmd_dispatcher.RegisterCommand(new CmdPoint(m_panel2->GetContext()), "point");
     long id = m_menu.AppendMenuCommand("Point", "point", ui::CMD_DRAW);
     m_cmd_dispatcher.RegisterHandler(id, "point");
 
@@ -264,6 +264,10 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
     wxString tmp = "cmd:";
     tmp<<(xx==nullptr);
     wxMessageBox(tmp);
+
+    if(xx)
+        m_panel2->AssignCommand(xx);
+
     //m_interpreter.ExecuteCommand(cmd.ToStdString());
 }
 

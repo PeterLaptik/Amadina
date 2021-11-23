@@ -1,15 +1,18 @@
 #ifndef VIEWPANEL_H_INCLUDED
 #define VIEWPANEL_H_INCLUDED
 
-#include "wx/panel.h"
-#include "../builders/abstractbuilder.h"
+#include <wx/panel.h>
 #include "screen.h"
+#include "../builders/abstractbuilder.h"
+#include "../context/context.h"
+
 
 class ScreenInterface;
 class DrawManager;
+class Command;
 
 ///\brief Drawing panel implementation for wxWidgets GUI-library.
-class ViewPanel: public wxPanel, private Screen
+class ViewPanel: public wxPanel, public StatefullScreen, private Screen
 {
     public:
         ///\brief Constructor
@@ -27,6 +30,8 @@ class ViewPanel: public wxPanel, private Screen
 
         ///\brief Destructor
         virtual ~ViewPanel();
+
+        void AssignCommand(Command *cmd);
 
         ///\brief Cancels current command execution.
         /// The method has to be called on escape-button clicked
@@ -56,6 +61,11 @@ class ViewPanel: public wxPanel, private Screen
         //
         DrawManager* GetDrawManager(void);
 
+        Context* GetContext(void)
+        {
+            return &m_context;
+        }
+
     protected:
         // Event handlers
         void OnPaint(wxPaintEvent &event);
@@ -67,10 +77,16 @@ class ViewPanel: public wxPanel, private Screen
         void OnMouseWheelDown(wxMouseEvent &event);
         void OnMouseWheelUp(wxMouseEvent &event);
         void OnKeyPressed(wxKeyEvent &event);
+        void OnMouseEnterPanel(wxMouseEvent &event);
+        void OnMouseLeavePanel(wxMouseEvent &event);
 
     private:
         /// Add several shapes for testing (test mode)
         void AddTestShapes(void);
+        void ShowCursor(wxDC &dc);
+
+        Context m_context;
+        Command *m_current_command;
 
         // Screen interface implementation
         //ScreenInterface *m_screen_impl;

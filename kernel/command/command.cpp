@@ -1,22 +1,27 @@
 #include "command.h"
+#include "../context/context.h"
 #include "../entities/point.h"
 #include "../entities/entity.h"
 
 
-Command::Command()
-    : m_is_executing(false)
-    { }
+Command::Command(Context *context)
+    : m_is_executing(false),
+        m_context(context)
+{
+    m_screen = context->GetScreen();
+}
 
 Command::~Command()
-    { }
+{ }
 
 void Command::EnterPoint()
 {
     m_is_executing = true;
+    m_context->GetScreen()->SetState(SCREEN_PICKING_POINT);
     // Call command
     while(m_is_executing)
         ;
-
+    m_context->GetScreen()->SetState(SCREEN_PICKING_POINT);
 }
 
 void Command::EnterEntity()

@@ -4,19 +4,21 @@
 #include "../command/interpreter.h"
 #include "../view_2d/screen.h"
 
-class Context
+class Context final
 {
     public:
-        Context(DrawManager *manager, Screen *screen);
-        virtual ~Context();
+        Context();
+        ~Context();
 
+        void AssignEnvironment(StatefullScreen *screen, DrawManager *draw_manager);
         void AssignCommand(const std::string &command);
-        Screen* GetScreen(void) const;
+
+        StatefullScreen* GetScreen(void) const;
         DrawManager* GetManager(void) const;
 
     private:
+        StatefullScreen *m_screen;
         DrawManager *m_draw_manager;
-        Screen *m_screen;
         Interpreter m_interpreter;
 };
 
