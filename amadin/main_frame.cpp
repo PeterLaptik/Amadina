@@ -263,7 +263,7 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
 
     wxString tmp = "cmd:";
     tmp<<(xx==nullptr);
-    wxMessageBox(tmp);
+    //wxMessageBox(tmp);
 
     if(xx)
         m_panel2->AssignCommand(xx);

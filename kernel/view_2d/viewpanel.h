@@ -2,6 +2,7 @@
 #define VIEWPANEL_H_INCLUDED
 
 #include <wx/panel.h>
+#include <thread>
 #include "screen.h"
 #include "../builders/abstractbuilder.h"
 #include "../context/context.h"
@@ -87,6 +88,7 @@ class ViewPanel: public wxPanel, public StatefullScreen, private Screen
 
         Context m_context;
         Command *m_current_command;
+        std::thread *m_cmd_thread;;
 
         // Screen interface implementation
         //ScreenInterface *m_screen_impl;

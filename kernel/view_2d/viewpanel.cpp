@@ -37,7 +37,8 @@ ViewPanel::ViewPanel(wxWindow *parent,
                     long style,
                     const wxString &name):
         wxPanel(parent, winid, pos, size, style, name),
-            m_current_command(nullptr)
+            m_current_command(nullptr),
+            m_cmd_thread(nullptr)
 {
     int width_px;
     int height_px;
@@ -162,15 +163,24 @@ bool ViewPanel::SetBackgroundColour(const wxColour &colour)
 }
 
 #include<iostream>
+#include<wx/msgdlg.h>
 void ViewPanel::AssignCommand(Command *cmd)
 {
     std::cout<<"start"<<std::endl;
     if(m_current_command)
+    {
+        m_current_command->Terminate();
+        while(!m_current_command->IsFinished())
+        {
+            // Create timing
+            wxMessageBox("in cycle");
+        }
+        m_cmd_thread->join();
+        delete m_cmd_thread;
         delete m_current_command;
+    }
     m_current_command = cmd;
-
-    std::thread t(&Command::Execute, m_current_command);
-    t.detach();
+    m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
 }
 
 // Adds shapes for testing

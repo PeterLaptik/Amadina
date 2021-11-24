@@ -13,8 +13,7 @@ enum CMDResult
 {
     RES_OK = 0,
     RES_ERROR = 1,
-    RES_CANCEL = 2,
-    RES_FINISHED = 3
+    RES_CANCEL = 2
 };
 
 class Command
@@ -35,18 +34,13 @@ class Command
             return m_context;
         }
 
-        bool IsFinished(void)
+        bool IsFinidhed(void)
         {
             return m_is_finished;
         }
 
     protected:
-        // The flag can be set to true from outside
-        // using method Terminate().
-        // True-value means that code from a general thread
-        // attempts to stop the thread of 'Execute'-method
         volatile bool m_is_finished;
-
         CMDResult EnterPoint(Point *point);
         CMDResult EnterEntity(Entity *entity);
         CMDResult EnterEntities(std::vector<Entity*> *entity_set);
@@ -57,14 +51,7 @@ class Command
         void SetEntities(const std::vector<Entity*> &vec);
 
     private:
-        // Shows if a command is waiting for input:
-        // it means that the command is waiting for
-        // point, entity, set of entities etc.
-        // When data is inputed the state is reset to false
         volatile bool m_is_executing;
-        // Shows if the input canceled
-        // Generally canceled input means
-        // that the command has to be canceled too
         volatile bool m_is_canceled;
 
         Context *m_context;

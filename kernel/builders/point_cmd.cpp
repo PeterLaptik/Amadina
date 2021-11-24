@@ -1,4 +1,5 @@
 #include "point_cmd.h"
+#include "../entities/point.h"
 #include <iostream>
 
 CmdPoint::CmdPoint(Context *context)
@@ -11,10 +12,10 @@ CmdPoint::~CmdPoint()
 
 void CmdPoint::Execute()
 {
-    EnterPoint();
-    std::cout<<"start point"<<std::endl;
-    for(;;){}
-    std::cout<<"end point"<<std::endl;
+    CMDResult result;
+    Point pt;
+    result = EnterPoint(&pt);
+    m_is_finished = true;
 }
 
 Command* CmdPoint::Clone()
