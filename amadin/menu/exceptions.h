@@ -4,6 +4,12 @@
 #include <exception>
 #include <string>
 
+#ifdef __GNUC__
+    #define NO_EXCEPT_VALUE _GLIBCXX_USE_NOEXCEPT
+#else
+    #define NO_EXCEPT_VALUE
+#endif // __GNUC__
+
 ///\brief The exception occurs if the command name trying
 /// to be registered already exists.
 ///\see AmadinMenu
@@ -17,7 +23,7 @@ class CommandExists: public std::exception
         virtual ~CommandExists()
         { }
 
-        virtual char const* what() const
+        virtual char const* what() const NO_EXCEPT_VALUE
         {
             return m_message.c_str();
         }
@@ -39,7 +45,7 @@ class MenuDoesNotExist: public std::exception
         virtual ~MenuDoesNotExist()
         { }
 
-        virtual char const* what() const
+        virtual char const* what() const NO_EXCEPT_VALUE
         {
             return m_message.c_str();
         }

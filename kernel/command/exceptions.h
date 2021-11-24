@@ -1,6 +1,12 @@
 #ifndef EXCEPTIONS_H_INCLUDED
 #define EXCEPTIONS_H_INCLUDED
 
+#ifdef __GNUC__
+    #define NO_EXCEPT_VALUE _GLIBCXX_USE_NOEXCEPT
+#else
+    #define NO_EXCEPT_VALUE
+#endif // __GNUC__
+
 class LexerError: public std::exception
 {
     public:
@@ -15,7 +21,7 @@ class LexerError: public std::exception
         ~LexerError()
         { }
 
-        virtual const char* what() const
+        virtual const char* what() const NO_EXCEPT_VALUE
         {
             return m_text.c_str();
         }
