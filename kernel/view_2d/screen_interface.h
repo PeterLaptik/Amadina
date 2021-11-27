@@ -166,7 +166,7 @@ enum ScreenState
     SCREEN_SELECTING_ENTITY_SET
 };
 
-
+/*
 class StatefullScreen
 {
     public:
@@ -190,5 +190,6 @@ class StatefullScreen
     protected:
         volatile ScreenState m_state;
 };
+*/
 
 #endif // SCREEN_INTERFACE_H_INCLUDED

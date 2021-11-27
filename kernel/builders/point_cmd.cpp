@@ -4,18 +4,17 @@
 
 CmdPoint::CmdPoint(Context *context)
     : Command(context)
-{std::cout<<"ctor point"<<std::endl; }
+{ }
 
 CmdPoint::~CmdPoint()
-{ std::cout<<"dtor point"<<std::endl;}
+{ }
 
-
-void CmdPoint::Execute()
+void CmdPoint::Run()
 {
     CMDResult result;
     Point pt;
     result = EnterPoint(&pt);
-    m_is_finished = true;
+    AppendEntity(new Point(pt));
 }
 
 Command* CmdPoint::Clone()

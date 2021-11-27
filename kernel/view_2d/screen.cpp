@@ -29,6 +29,7 @@ Screen::Screen():
     m_borders.right = DEFAULT_RIGHT_BORDER;
     m_borders.top = DEFAULT_TOP_BORDER;
     m_borders.bottom = DEFAULT_BOTTOM_BORDER;
+    m_context.AssignEnvironment(this, &m_draw_manager);
 }
 
 
@@ -191,6 +192,8 @@ void Screen::TransformCoordinatesToGlobal(double &x, double &y)
 
 void Screen::PointPicked(double x, double y)
 {
+    m_screen_state = SCR_NOTHING;
+    /**
     if(!m_shape_builder)
         return;
 
@@ -220,10 +223,12 @@ void Screen::PointPicked(double x, double y)
             m_shape_builder = nullptr;
         }
     }
+    **/
 }
 
 void Screen::CreateEntity(AbstractBuilder *builder)
 {
+    /**
     if(!builder)
         return;
 
@@ -238,12 +243,25 @@ void Screen::CreateEntity(AbstractBuilder *builder)
         delete m_shape_builder;
     m_shape_builder = builder;
     ScreenRefresh();
+    **/
 }
+
+
+void Screen::AppendEntity(Entity *entity)
+{
+    if(!entity)
+        return;
+    m_draw_manager.ClearSelection();
+    m_draw_manager.AddEntity(entity);
+    ScreenRefresh();
+}
+
 
 // TODO
 // Screen refresh checks
 void Screen::ScreenCancelCommand()
 {
+    /**
     m_screen_state = SCR_NOTHING;
     if(m_shape_builder)
     {
@@ -252,6 +270,7 @@ void Screen::ScreenCancelCommand()
     }
     m_draw_manager.ClearSelection();
     ScreenRefresh();
+    **/
 }
 
 void Screen::RedrawAll(IAdapterDC &dc)
@@ -260,6 +279,7 @@ void Screen::RedrawAll(IAdapterDC &dc)
     dc.SetBorders(m_borders.left, m_borders.right, m_borders.top, m_borders.bottom);
     dc.SetBackgroundColour(m_colour);
 
+    m_context.Update();
     m_draw_manager.DrawAll(dc);
 
     if(m_screen_state==SCR_NOTHING)
@@ -309,3 +329,12 @@ void Screen::GetBorders(double *left,
     *bottom = m_borders.bottom;
 }
 
+void Screen::SetState(InteractiveState state)
+{
+    m_screen_state = state;
+}
+
+InteractiveState Screen::GetState()
+{
+    return m_screen_state;
+}

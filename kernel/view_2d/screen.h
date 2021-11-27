@@ -2,6 +2,7 @@
 #define SCREEN_H_INCLUDED
 
 #include "screen_interface.h"
+#include "../context/context.h"
 #include "../processor/drawmanager.h"
 
 /// Screen interactive state value
@@ -59,21 +60,33 @@ class Screen: public ScreenInterface
 
         ///\brief Empty implementation
         virtual void ScreenMouseLeftButtonDown(const int &coord_x, const int &coord_y)
-        { }
+        {
+            // unreferenced parameters:
+            coord_x, coord_y;
+        }
 
         ///\brief Empty implementation
         virtual void ScreenMouseRightButtonClicked(const int &coord_x,
                                                 const int &coord_y,
                                                 const bool &is_ctrl_pressed)
-        { }
+        {
+            // unreferenced parameters:
+            coord_x, coord_y, is_ctrl_pressed;
+        }
 
         ///\brief Empty implementation
         virtual void ScreenMouseRightButtonUp(const int &coord_x, const int &coord_y)
-        { }
+        {
+            // unreferenced parameters:
+            coord_x, coord_y;
+        }
 
         ///\brief Empty implementation
         virtual void ScreenMouseRightButtonDown(const int &coord_x, const int &coord_y)
-        { }
+        {
+            // unreferenced parameters:
+            coord_x, coord_y;
+        }
 
         ///\brief The method should be called on mouse wheel click released
         ///\param coord_x - x-coordinate of a mouse pointer
@@ -132,6 +145,22 @@ class Screen: public ScreenInterface
         ///\param builder - entity builder instance
         virtual void CreateEntity(AbstractBuilder *builder);
 
+        virtual void AppendEntity(Entity *entity);
+
+        void SetState(InteractiveState state);
+
+        InteractiveState GetState(void);
+
+        Context* GetContext(void)
+        {
+            return &m_context;
+        }
+
+        void SetDataReceiver(DataReciever *receiver)
+        {
+            m_receiver = receiver;
+        }
+
     protected:
 
     private:
@@ -163,6 +192,9 @@ class Screen: public ScreenInterface
         } m_mouse_coord;
 
 
+        Context m_context;
+
+        DataReciever *m_receiver;
         // Draw manager instance
         // All entities, geometric and painting routines are implemented in the DrawManager
         DrawManager m_draw_manager;
@@ -178,7 +210,8 @@ class Screen: public ScreenInterface
 
         // Keeps interactive state of the screen
         // For example: point picking, entity picking, doing nothing etc.
-        InteractiveState m_screen_state;
+        // Should be volatile, because can be changed from other thread
+        volatile InteractiveState m_screen_state;
 
         // Keeps mouse wheel state: pressed or not
         // Needed for screen dragging by pressed mouse wheel

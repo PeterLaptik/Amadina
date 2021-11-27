@@ -49,7 +49,6 @@ ViewPanel::ViewPanel(wxWindow *parent,
     Screen::ScreenResize(width_px, height_px);
     wxPanel::SetBackgroundColour(wxColour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
     Screen::SetColour(Colour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
-    m_context.AssignEnvironment(this, GetDrawManager());
     // Test shapes
     #ifdef TEST_MODE
         AddTestShapes();
@@ -94,6 +93,16 @@ void ViewPanel::OnMouseWheelUp(wxMouseEvent &event)
 
 void ViewPanel::OnMouseLeftButtonDown(wxMouseEvent &event)
 {
+//    switch (m_state)
+//    {
+//        case SCREEN_PICKING_POINT:
+//            if(m_current_command)
+//            {
+//                m_current_command->SetPoint(Point(event.GetX(), event.GetY()));
+//            }
+//            break;
+//
+//    }
     Screen::ScreenMouseLeftButtonClicked(event.GetX(), event.GetY(), wxGetKeyState(WXK_RAW_CONTROL));
 }
 
@@ -121,11 +130,15 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
     ShowCursor(dc);
 }
 
+
+#include<wx/msgdlg.h>
 void ViewPanel::ShowCursor(wxDC &dc)
 {
-    switch (m_state)
+    InteractiveState state = Screen::GetState();
+
+    switch (state)
     {
-        case SCREEN_PICKING_POINT:
+        case SCR_PICKING:
             dc.DrawLine(coord_x-20, coord_y, coord_x+20, coord_y);
             dc.DrawLine(coord_x, coord_y-20, coord_x, coord_y+20);
             break;
@@ -162,11 +175,9 @@ bool ViewPanel::SetBackgroundColour(const wxColour &colour)
     return wxPanel::SetBackgroundColour(colour);
 }
 
-#include<iostream>
-#include<wx/msgdlg.h>
+
 void ViewPanel::AssignCommand(Command *cmd)
 {
-    std::cout<<"start"<<std::endl;
     if(m_current_command)
     {
         m_current_command->Terminate();

@@ -13,7 +13,7 @@ class DrawManager;
 class Command;
 
 ///\brief Drawing panel implementation for wxWidgets GUI-library.
-class ViewPanel: public wxPanel, public StatefullScreen, private Screen
+class ViewPanel: public wxPanel, /*public StatefullScreen, */private Screen
 {
     public:
         ///\brief Constructor
@@ -64,7 +64,7 @@ class ViewPanel: public wxPanel, public StatefullScreen, private Screen
 
         Context* GetContext(void)
         {
-            return &m_context;
+            return Screen::GetContext();
         }
 
     protected:
@@ -86,7 +86,6 @@ class ViewPanel: public wxPanel, public StatefullScreen, private Screen
         void AddTestShapes(void);
         void ShowCursor(wxDC &dc);
 
-        Context m_context;
         Command *m_current_command;
         std::thread *m_cmd_thread;;
 

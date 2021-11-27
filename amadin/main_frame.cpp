@@ -76,6 +76,9 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 	m_mgr.Update();
 	this->Centre(wxBOTH);
 
+
+	Context::AssignCommandDispatcher(&m_cmd_dispatcher);
+
     cad::command::RegisterDefaultCommands(m_interpreter);
     m_interpreter.SetActivePanel(m_panel2);
 
@@ -265,9 +268,11 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
     tmp<<(xx==nullptr);
     //wxMessageBox(tmp);
 
-    if(xx)
-        m_panel2->AssignCommand(xx);
+    //if(xx)
+        //m_panel2->AssignCommand(xx);
 
+    if(xx)
+        m_panel2->GetContext()->ExecuteCommand(xx);
     //m_interpreter.ExecuteCommand(cmd.ToStdString());
 }
 
