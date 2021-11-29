@@ -1,5 +1,6 @@
 #include "Screen.h"
 #include "../builders/abstractbuilder.h"
+#include "../command/command.h"
 
 // Default borders positions
 // I.e. default screen is [0, 0, 200, 200]
@@ -23,7 +24,8 @@ static const int SCREEN_SNAP_RADIUS = 5;
 Screen::Screen():
         m_screen_state(SCR_NOTHING),
         m_is_wheel_pressed(false),
-        m_shape_builder(nullptr)
+        m_shape_builder(nullptr),
+        m_receiver(nullptr)
 {
     m_borders.left = DEFAULT_LEFT_BORDER;
     m_borders.right = DEFAULT_RIGHT_BORDER;
@@ -193,6 +195,9 @@ void Screen::TransformCoordinatesToGlobal(double &x, double &y)
 void Screen::PointPicked(double x, double y)
 {
     m_screen_state = SCR_NOTHING;
+    if(m_receiver)
+        m_receiver->SetPoint(Point(x,y));
+
     /**
     if(!m_shape_builder)
         return;

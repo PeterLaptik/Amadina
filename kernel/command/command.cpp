@@ -5,7 +5,6 @@
 #include "../entities/entity.h"
 #include <thread>
 
-
 Command::Command(Context *context)
     : m_is_executing(false),
         m_is_canceled(false),
@@ -83,7 +82,6 @@ void Command::WaitForInput()
         std::this_thread::yield();
 }
 
-
 void Command::AppendEntity(Entity *entity)
 {
     m_created.push_back(entity);
@@ -93,12 +91,12 @@ void Command::RemoveEntity(Entity *entity)
 {
     m_created.push_back(entity);
 }
-#include<wx/msgdlg.h>
+
 void Command::SetPoint(const Point &point)
 {
     if(!m_point)
         return;
-    wxMessageBox("ffff");
+
     *m_point = point;
     m_is_executing = false;
 }

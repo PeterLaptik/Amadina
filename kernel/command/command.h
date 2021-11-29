@@ -18,7 +18,8 @@ enum CMDResult
 
 class DataReciever
 {
-    virtual void SetPoint(const Point &point) = 0;
+    public:
+        virtual void SetPoint(const Point &point) = 0;
 };
 
 class Command: public DataReciever

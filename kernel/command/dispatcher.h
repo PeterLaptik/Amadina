@@ -43,8 +43,8 @@ class CommandDispatcher
         virtual Command* GetCommand(long handler_id);
 
     private:
-        std::map<std::string, Command*> m_command_map;  // command name - command object pairs
-        std::map<long,std::string> m_command_handlers;  // handler-id - command name pairs
+        std::map<std::string, Command*> m_command_map;  // 'command name - command object' pairs
+        std::map<long,std::string> m_command_handlers;  // 'handler-id - command name' pairs
 };
 
 #endif // DISPATCHER_H_INCLUDED

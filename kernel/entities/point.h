@@ -18,6 +18,14 @@ class Point: public Entity
         virtual ~Point()
         { }
 
+//        Point& operator=(Point p) volatile
+//        {
+//            x = p.x;
+//            y = p.y;
+//            z = p.z;
+//            return *this;
+//        }
+
         bool operator==(const Point &pt);
 
         virtual void Draw(IAdapterDC &dc);

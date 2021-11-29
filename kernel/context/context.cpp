@@ -47,6 +47,7 @@ void Context::AssignCommand(const std::string &command)
 
 }
 
+#include<wx/msgdlg.h>
 void Context::ExecuteCommand(Command *command)
 {
     if(!m_screen)
@@ -62,12 +63,14 @@ void Context::ExecuteCommand(Command *command)
         m_cmd_thread->join();
         delete m_cmd_thread;
         delete m_current_command;
+        m_screen->SetDataReceiver(nullptr);
     }
+
     m_current_command = command;
+    m_screen->SetDataReceiver(m_current_command);
     m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
 }
 
-#include<wx/msgdlg.h>
 void Context::Update()
 {
     if(!m_current_command)
@@ -81,24 +84,21 @@ void Context::Update()
 
     if(m_current_command->IsAccepted())
     {
-        wxMessageBox("2");
         const std::vector<Entity*> created = m_current_command->GetCreated();
         for(auto i: created)
             m_screen->AppendEntity(i);
     }
 
-    wxMessageBox("3");
     // TODO queue
     delete m_cmd_thread;
     delete m_current_command;
     m_cmd_thread = nullptr;
     m_current_command = nullptr;
+    m_screen->SetDataReceiver(nullptr);
 }
 
 void Context::SetCommandFinished(bool is_finished)
 {
-    if(is_finished)
-    wxMessageBox("ddd");
     m_command_finished = is_finished;
 }
 

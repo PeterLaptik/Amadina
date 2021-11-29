@@ -16,6 +16,9 @@ enum InteractiveState
 // Builder should be received for interactive entity creating
 class AbstractBuilder;
 
+//
+class DataReciever;
+
 
 ///\brief Common interactive screen interface implementation.
 /// A widget for drawing can contain the screen interface implementation
