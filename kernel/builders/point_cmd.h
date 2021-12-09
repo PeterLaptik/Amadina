@@ -6,11 +6,11 @@
 class CmdPoint final: public Command
 {
     public:
-        CmdPoint(Context *context);
+        CmdPoint(Context *context = nullptr);
         virtual ~CmdPoint();
 
         virtual void Run(void) final;
-        virtual Command* Clone(void) final;
+        virtual Command* Clone(Context *context = nullptr) final;
 
     private:
 

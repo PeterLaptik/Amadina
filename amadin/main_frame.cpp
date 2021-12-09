@@ -2,6 +2,7 @@
 #include "wxchoicelayer.h"
 #include "../kernel/processor/default_commands.h"
 #include "../kernel/builders/point_cmd.h"
+#include "../wx_binding/wx_binding.h"
 //#include <wx/artprov.h>
 #include <wx/display.h>
 #include <wx/msgdlg.h>
@@ -48,18 +49,20 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 	m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
 
-	m_mgr.AddPane(CreateNotebookDrawing(), wxAuiPaneInfo().Center().CaptionVisible(false).Dock().Resizable().FloatingSize(wxDefaultSize));
-    m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("toolbar_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
-    m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
-    m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+	CreateMenuBar();
+    SetMenuBar(m_menu_bar);
 
+	m_mgr.AddPane(CreateNotebookDrawing(), wxAuiPaneInfo().Center().CaptionVisible(false).Dock().Resizable().FloatingSize(wxDefaultSize));
+//    m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("toolbar_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+//    m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    init_commands(this, &m_mgr, &m_cmd_dispatcher, &m_menu);
 
     m_panel2 = new ViewPanel(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
 	m_active_panel = m_panel2;
 
-
-
+    // Append console input pane
 	m_console = new UiConsole(this);
 	m_console->SetSize(150, 150);
 	m_mgr.AddPane(m_console,
@@ -69,8 +72,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 
 
 
-    CreateMenuBar();
-    SetMenuBar(m_menu_bar);
+
 
 
 	m_mgr.Update();
@@ -79,10 +81,10 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 
 	Context::AssignCommandDispatcher(&m_cmd_dispatcher);
 
-    cad::command::RegisterDefaultCommands(m_interpreter);
+//    cad::command::RegisterDefaultCommands(m_interpreter);
     m_interpreter.SetActivePanel(m_panel2);
 
-    CommandMock();
+//    CommandMock();
 
     Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
 //    Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
@@ -121,9 +123,6 @@ void MainFrame::CreateMenuBar()
     m_menu_bar->Append(m_menu_draw, _T("Draw"));
     m_menu_bar->Append(m_menu_settings, _T("Settings"));
     m_menu_bar->Append(m_menu_about, _T("About"));
-    // Test
-    m_menu_settings->Append(1105, "xx");
-
 }
 
 void MainFrame::OnMenuClicked(wxCommandEvent &event)
@@ -247,7 +246,7 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
 
 void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
 {
-    wxString cmd;
+    //wxString cmd;
     int button_id = event.GetId();
     wxObject *obj = event.GetEventObject();
     // Process sticky buttons (preferences, variables etc.)
@@ -258,22 +257,16 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
     }
     // Process command buttons
     // Each command is being kept in tool-item label
-    wxAuiToolBar *toolbar = dynamic_cast<wxAuiToolBar*>(obj);
-    if(toolbar)
-        cmd = toolbar->FindTool(event.GetId())->GetLabel();
+//    wxAuiToolBar *toolbar = dynamic_cast<wxAuiToolBar*>(obj);
+//    if(toolbar)
+//        cmd = toolbar->FindTool(event.GetId())->GetLabel();
 
-    Command *xx = m_cmd_dispatcher.GetCommand(event.GetId());
-
-    wxString tmp = "cmd:";
-    tmp<<(xx==nullptr);
-    //wxMessageBox(tmp);
-
-    //if(xx)
-        //m_panel2->AssignCommand(xx);
-
-    if(xx)
-        m_panel2->GetContext()->ExecuteCommand(xx);
-    //m_interpreter.ExecuteCommand(cmd.ToStdString());
+    Command *cmd = m_cmd_dispatcher.GetCommand(event.GetId());
+    if(cmd)
+    {
+        Context *c = m_panel2->GetContext();
+        c->ExecuteCommand(cmd->Clone(c));
+    }
 }
 
 void MainFrame::OnStickyButtonClicked(wxCommandEvent &event)

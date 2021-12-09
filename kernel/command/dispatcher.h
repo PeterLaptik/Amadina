@@ -42,7 +42,7 @@ class CommandDispatcher
         /// after returning. So it should be deleted manually
         virtual Command* GetCommand(long handler_id);
 
-    private:
+    //private:
         std::map<std::string, Command*> m_command_map;  // 'command name - command object' pairs
         std::map<long,std::string> m_command_handlers;  // 'handler-id - command name' pairs
 };

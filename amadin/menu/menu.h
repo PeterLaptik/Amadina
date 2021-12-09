@@ -6,13 +6,12 @@
 #include <map>
 #include <wx/menu.h>
 
-static const int NO_ID = -1;
-
-using ui::CommandType;
-
 // Exception
 class MenuDoesNotExist;
 
+using ui::CommandType;
+
+static const int NO_ID = -1;
 
 ///\brief Holder for main frame menus pointers
 struct AmadinaMenuList

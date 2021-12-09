@@ -25,10 +25,9 @@ class DataReciever
 class Command: public DataReciever
 {
     public:
-        Command(Context *context);
-
-        /// Command start out of context is not allowed
-        Command() = delete;
+        /// Command start out of context is not allowed:
+        /// Only for prototypes
+        Command(Context *context = nullptr);
 
         virtual ~Command();
 
@@ -44,7 +43,7 @@ class Command: public DataReciever
         /// Creates copy of a command.
         /// Each new command is implicitly created
         /// by cloning of existing prototype
-        virtual Command* Clone(void) = 0;
+        virtual Command* Clone(Context *context = nullptr) = 0;
 
         Context* GetContext(void)
         {
@@ -143,7 +142,7 @@ class Command: public DataReciever
         std::vector<Entity*> *m_entity_set;
         // Environment data
         Context *m_context;
-        Screen *m_screen;
+        //Screen *m_screen;
         // Command state
         bool m_is_accepted;
 };

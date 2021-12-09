@@ -5,6 +5,8 @@
 
 namespace ui
 {
+    static const int NO_ID = -1;
+
     /// Menu section for command
     enum CommandType
     {
@@ -23,20 +25,21 @@ namespace ui
     /// for command registration in UI-menus.
     class UiMenuCommands
     {
-        ///\brief Appends appropriate menu choice for the defined command.
-        /// The command name can be got from storage by menu id.
-        /// For this method menu id generation should be implemented in sub-classes
-        ///\param menu_name - menu section name
-        ///\param cmd_name - exact command name
-        ///\param cmd_type - command type enumeration value
-        ///\param id - menu id
-        ///\returns menu id
-        virtual long AppendMenuCommand(const std::string &menu_name,
-                                    const std::string &cmd_name,
-                                    CommandType cmd_type, long id) = 0;
+        public:
+            ///\brief Appends appropriate menu choice for the defined command.
+            /// The command name can be got from storage by menu id.
+            /// For this method menu id generation should be implemented in sub-classes
+            ///\param menu_name - menu section name
+            ///\param cmd_name - exact command name
+            ///\param cmd_type - command type enumeration value
+            ///\param id - menu id
+            ///\returns menu id
+            virtual long AppendMenuCommand(const std::string &menu_name,
+                                        const std::string &cmd_name,
+                                        CommandType cmd_type, long id=NO_ID) = 0;
 
-        /// Returns command name for defined menu id
-        virtual std::string GetMenuCommand(long id) = 0;
+            /// Returns command name for defined menu id
+            virtual std::string GetMenuCommand(long id) = 0;
     };
 }
 

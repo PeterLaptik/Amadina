@@ -22,7 +22,7 @@ void CmdPoint::Run()
 
 }
 
-Command* CmdPoint::Clone()
+Command* CmdPoint::Clone(Context *context)
 {
-    return new CmdPoint(GetContext());
+    return new CmdPoint(context);
 }
