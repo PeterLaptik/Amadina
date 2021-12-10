@@ -7,6 +7,7 @@ class Context;
 class Screen;
 class Point;
 class Entity;
+class IAdapterDC;
 
 enum CMDResult
 {
@@ -16,13 +17,15 @@ enum CMDResult
     RES_FINISHED = 3
 };
 
-class DataReciever
+class EntityBuilder
 {
     public:
         virtual void SetPoint(const Point &point) = 0;
+        virtual void Redraw(IAdapterDC &dc, double x, double y)
+        { }
 };
 
-class Command: public DataReciever
+class Command: public EntityBuilder
 {
     public:
         /// Command start out of context is not allowed:
@@ -43,7 +46,7 @@ class Command: public DataReciever
         /// Creates copy of a command.
         /// Each new command is implicitly created
         /// by cloning of existing prototype
-        virtual Command* Clone(Context *context = nullptr) = 0;
+        virtual Command* Clone(Context *context) = 0;
 
         Context* GetContext(void)
         {

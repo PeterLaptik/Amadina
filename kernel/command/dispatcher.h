@@ -1,12 +1,11 @@
 #ifndef DISPATCHER_H_INCLUDED
 #define DISPATCHER_H_INCLUDED
 
-#include "uicommands.h"
 #include <string>
 #include <map>
 
-
 class Command;
+class Context;
 
 ///\brief Global command registrar and dispatcher.
 /// Keeps mappings for commands objects:
@@ -35,16 +34,22 @@ class CommandDispatcher
         ///\brief Returns command object by command name
         /// The command object is not handled by the dispatcher
         /// after returning. So it should be deleted manually
-        virtual Command* GetCommand(const std::string &name);
+        ///\param name - command name
+        ///\param context - executing context (see Context-class)
+        virtual Command* GetCommand(const std::string &name, Context *context);
 
         ///\brief Returns command object by handler id
         /// The command object is not handled by the dispatcher
         /// after returning. So it should be deleted manually
-        virtual Command* GetCommand(long handler_id);
+        ///\param name - command name
+        ///\param context - executing context (see Context-class)
+        virtual Command* GetCommand(long handler_id, Context *context);
 
-    //private:
-        std::map<std::string, Command*> m_command_map;  // 'command name - command object' pairs
-        std::map<long,std::string> m_command_handlers;  // 'handler-id - command name' pairs
+    private:
+        // 'command name - command object' pairs
+        std::map<std::string, Command*> m_command_map;
+        // 'handler-id - command name' pairs
+        std::map<long,std::string> m_command_handlers;
 };
 
 #endif // DISPATCHER_H_INCLUDED

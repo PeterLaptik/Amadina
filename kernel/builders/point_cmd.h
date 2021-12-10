@@ -10,7 +10,7 @@ class CmdPoint final: public Command
         virtual ~CmdPoint();
 
         virtual void Run(void) final;
-        virtual Command* Clone(Context *context = nullptr) final;
+        virtual Command* Clone(Context *context) final;
 
     private:
 

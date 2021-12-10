@@ -23,21 +23,21 @@ void CommandDispatcher::RegisterHandler(long handler_id, const std::string &cmd_
     m_command_handlers.insert(std::pair<long,std::string>(handler_id, cmd_name));
 }
 
-Command* CommandDispatcher::GetCommand(const std::string &name)
+Command* CommandDispatcher::GetCommand(const std::string &name, Context *context)
 {
     Command *result = nullptr;
     std::map<std::string,Command*>::iterator it = m_command_map.find(name);
-    if(it!=m_command_map.end())
-        result = it->second->Clone();
+    if(it!=m_command_map.end() && context!=nullptr)
+        result = it->second->Clone(context);
 
     return result;
 }
 
-Command* CommandDispatcher::GetCommand(long handler_id)
+Command* CommandDispatcher::GetCommand(long handler_id, Context *context)
 {
     std::map<long,std::string>::iterator it = m_command_handlers.find(handler_id);
     if(it==m_command_handlers.end())
         return nullptr;
 
-    return GetCommand(it->second);
+    return GetCommand(it->second, context);
 }

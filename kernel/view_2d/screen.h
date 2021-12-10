@@ -17,7 +17,7 @@ enum InteractiveState
 class AbstractBuilder;
 
 //
-class DataReciever;
+class EntityBuilder;
 
 
 ///\brief Common interactive screen interface implementation.
@@ -159,7 +159,7 @@ class Screen: public ScreenInterface
             return &m_context;
         }
 
-        void SetDataReceiver(DataReciever *receiver)
+        void SetDataReceiver(EntityBuilder *receiver)
         {
             m_receiver = receiver;
         }
@@ -197,7 +197,7 @@ class Screen: public ScreenInterface
 
         Context m_context;
 
-        DataReciever *m_receiver;
+        EntityBuilder *m_receiver;
         // Draw manager instance
         // All entities, geometric and painting routines are implemented in the DrawManager
         DrawManager m_draw_manager;

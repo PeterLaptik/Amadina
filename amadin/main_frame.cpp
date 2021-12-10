@@ -8,7 +8,7 @@
 #include <wx/msgdlg.h>
 
 static const wxRect DEFAULT_SIZE_RECT = wxRect(0, 0, 1200, 800);
-static const wxSize DEFAULT_BUTTON_SIZE = wxSize(32, 32);
+//static const wxSize DEFAULT_BUTTON_SIZE = wxSize(32, 32);
 
 const int MainFrame::ID_TOOL_DRAFT = wxNewId();
 const int MainFrame::ID_TOOL_SNAP = wxNewId();
@@ -53,10 +53,10 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     SetMenuBar(m_menu_bar);
 
 	m_mgr.AddPane(CreateNotebookDrawing(), wxAuiPaneInfo().Center().CaptionVisible(false).Dock().Resizable().FloatingSize(wxDefaultSize));
-//    m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("toolbar_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
-    m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    //m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("toolbar_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    //m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
 //    m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
-    init_commands(this, &m_mgr, &m_cmd_dispatcher, &m_menu);
+    init_commands(dynamic_cast<wxFrame*>(this), &m_mgr, &m_cmd_dispatcher, &m_menu);
 
     m_panel2 = new ViewPanel(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
@@ -255,18 +255,12 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
         OnStickyButtonClicked(event);
         return;
     }
-    // Process command buttons
-    // Each command is being kept in tool-item label
-//    wxAuiToolBar *toolbar = dynamic_cast<wxAuiToolBar*>(obj);
-//    if(toolbar)
-//        cmd = toolbar->FindTool(event.GetId())->GetLabel();
 
-    Command *cmd = m_cmd_dispatcher.GetCommand(event.GetId());
+    // Start executing regular command
+    Context *context = m_panel2->GetContext();
+    Command *cmd = m_cmd_dispatcher.GetCommand(event.GetId(), context);
     if(cmd)
-    {
-        Context *c = m_panel2->GetContext();
-        c->ExecuteCommand(cmd->Clone(c));
-    }
+        context->ExecuteCommand(cmd);
 }
 
 void MainFrame::OnStickyButtonClicked(wxCommandEvent &event)

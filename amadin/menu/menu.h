@@ -6,9 +6,7 @@
 #include <map>
 #include <wx/menu.h>
 
-// Exception
 class MenuDoesNotExist;
-
 using ui::CommandType;
 
 static const int NO_ID = -1;

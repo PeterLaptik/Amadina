@@ -14,10 +14,7 @@ Command::Command(Context *context)
         m_entity_set(nullptr),
         m_context(context),
         m_is_accepted(true)
-{
-
-    //m_screen = context->GetScreen();
-}
+{ }
 
 Command::~Command()
 {

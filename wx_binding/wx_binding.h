@@ -1,10 +1,11 @@
 #ifndef WX_BINDING_H_INCLUDED
 #define WX_BINDING_H_INCLUDED
 
-class wxAuiManager;
 class wxFrame;
+class wxAuiManager;
 
 class CommandDispatcher;
+
 namespace ui
 {
     class UiMenuCommands;

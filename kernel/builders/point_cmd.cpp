@@ -11,15 +11,15 @@ CmdPoint::~CmdPoint()
 
 void CmdPoint::Run()
 {
-    CMDResult result;
     Point pt;
+    CMDResult result;
+
     result = EnterPoint(&pt);
     if(result==RES_OK)
     {
         Point *p = new Point(pt);
         AppendEntity(p);
     }
-
 }
 
 Command* CmdPoint::Clone(Context *context)

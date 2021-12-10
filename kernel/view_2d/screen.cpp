@@ -194,9 +194,10 @@ void Screen::TransformCoordinatesToGlobal(double &x, double &y)
 
 void Screen::PointPicked(double x, double y)
 {
+    Point *snap_point = m_draw_manager.GetSnapPoint();
     m_screen_state = SCR_NOTHING;
     if(m_receiver)
-        m_receiver->SetPoint(Point(x,y));
+        m_receiver->SetPoint(snap_point ? *snap_point : Point(x,y));
 
     /**
     if(!m_shape_builder)
@@ -283,6 +284,9 @@ void Screen::RedrawAll(IAdapterDC &dc)
     dc.CadClear();
     dc.SetBorders(m_borders.left, m_borders.right, m_borders.top, m_borders.bottom);
     dc.SetBackgroundColour(m_colour);
+
+    if(m_receiver)
+        m_receiver->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
 
     m_context.Update();
     m_draw_manager.DrawAll(dc);

@@ -57,7 +57,8 @@ class DrawManager
         std::vector<Entity*> m_selected_entities;
 
         // Snap points
-        Point *m_snap_point;    // last found snap point. The value is reset to null-pointer on each screen refresh
+        // last found snap point. The value is reset to null-pointer on each screen refresh
+        Point *m_snap_point;
 
         std::vector<Point> m_snap_grid;
         std::vector<std::pair<Entity*,Point>> m_snap_points;

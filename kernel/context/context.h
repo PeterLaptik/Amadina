@@ -22,7 +22,7 @@ class Context final
         void AssignCommand(const std::string &command);
         void ExecuteCommand(Command *command);
 
-        void Update(void);
+        void Update();
 
         void SetCommandFinished(bool is_finished = true);
 
