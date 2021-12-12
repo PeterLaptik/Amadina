@@ -1,12 +1,14 @@
 #include "viewpanel.h"
-#include "screen.h"
-#include "../graphics/dcadapter_wx.h"
-#include "../entities/line.h"
-#include "../entities/circle.h"
-#include "../entities/square.h"
+#include "dcadapter_wx.h"
 #include <wx/dcclient.h>
-#include "../command/command.h"
 #include <thread>
+// Kernel dependencies:
+#include "view_2d/screen.h"
+#include "entities/line.h"
+#include "entities/circle.h"
+#include "entities/square.h"
+#include "command/command.h"
+
 
 //#define TEST_MODE
 

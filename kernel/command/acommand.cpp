@@ -1,8 +1,8 @@
-#include "../acommand.h"
-#include "../../command/dispatcher.h"
-#include "../../builders/point_cmd.h"
-#include "../../builders/line_cmd.h"
-#include "../../builders/circle_cmd.h"
+#include "../api/acommand.h"
+#include "dispatcher.h"
+#include "../builders/point_cmd.h"
+#include "../builders/line_cmd.h"
+#include "../builders/circle_cmd.h"
 
 void register_kernel_commands(CommandDispatcher *dispatcher)
 {

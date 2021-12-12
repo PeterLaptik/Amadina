@@ -2,7 +2,9 @@
 #define DCADAPTER_WX_H_INCLUDED
 
 #include <wx/dcbuffer.h>
-#include "../entities/point.h"
+
+// Kernel dependencies
+#include "entities/point.h"
 
 class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 {

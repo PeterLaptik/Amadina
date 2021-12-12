@@ -1,10 +1,11 @@
-#include "wx_binding.h"
-#include "../kernel/api/acommand.h"
-#include "../kernel/command/dispatcher.h"
-#include "../kernel/command/uicommands.h"
-//#include "../kernel/builders/point_cmd.h"
+#include "../wx_binding.h"
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
+// Kernel dependensies
+#include "api/acommand.h"
+#include "command/dispatcher.h"
+#include "command/uicommands.h"
+
 
 // Generates new toolbar
 wxAuiToolBar* create_tool_bar(wxFrame *parent);

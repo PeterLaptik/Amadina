@@ -4,12 +4,13 @@
 #include "entity.h"
 #include "point.h"
 #include "../geometry/intersections.h"
+#include "../api/exports.h"
 
 // Forward declaration for intersections calculations
 class Circle;
 
 
-class Line: public Entity
+class DLL_EXPORT Line: public Entity
 {
     public:
         Line();

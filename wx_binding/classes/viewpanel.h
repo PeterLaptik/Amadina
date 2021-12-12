@@ -3,17 +3,21 @@
 
 #include <wx/panel.h>
 #include <thread>
-#include "screen.h"
-#include "../builders/abstractbuilder.h"
-#include "../context/context.h"
+#include "view_2d/screen.h"
+#include "context/context.h"
 
+#ifdef BUILD_DLL
+    #define DLL_EXPORT __declspec(dllexport)
+#else
+    #define DLL_EXPORT __declspec(dllimport)
+#endif
 
 class ScreenInterface;
 class DrawManager;
 class Command;
 
 ///\brief Drawing panel implementation for wxWidgets GUI-library.
-class ViewPanel: public wxPanel, /*public StatefullScreen, */private Screen
+class DLL_EXPORT ViewPanel: public wxPanel, private Screen
 {
     public:
         ///\brief Constructor

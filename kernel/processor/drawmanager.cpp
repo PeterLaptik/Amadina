@@ -153,9 +153,9 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
         // Snap colour
         const Colour &b_colour = dc.GetBackgroundColour();
         if(b_colour.IsDark())
-            dc.CadSetColour(Colour::YELLOW);
+            dc.CadSetColour(Colours::YELLOW);
         else
-            dc.CadSetColour(Colour::RED);
+            dc.CadSetColour(Colours::RED);
 
         switch(snap_type)
         {

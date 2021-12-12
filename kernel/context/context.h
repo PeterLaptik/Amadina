@@ -2,6 +2,7 @@
 #define CONTEXT_H_INCLUDED
 
 #include "../command/interpreter.h"
+#include "../api/exports.h"
 #include <thread>
 
 class Screen;
@@ -9,7 +10,7 @@ class DrawManager;
 class Command;
 class CommandDispatcher;
 
-class Context final
+class DLL_EXPORT Context final
 {
     public:
         Context();

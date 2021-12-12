@@ -2,6 +2,7 @@
 #define COMMAND_H_INCLUDED
 
 #include <vector>
+#include "../api/exports.h"
 
 class Context;
 class Screen;
@@ -17,7 +18,7 @@ enum CMDResult
     RES_FINISHED = 3
 };
 
-class EntityBuilder
+class DLL_EXPORT EntityBuilder
 {
     public:
         virtual void SetPoint(const Point &point) = 0;
@@ -25,7 +26,7 @@ class EntityBuilder
         { }
 };
 
-class Command: public EntityBuilder
+class DLL_EXPORT Command: public EntityBuilder
 {
     public:
         /// Command start out of context is not allowed:

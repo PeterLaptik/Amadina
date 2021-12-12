@@ -1,14 +1,15 @@
 #ifndef MAIN_FRAME_H_INCLUDED
 #define MAIN_FRAME_H_INCLUDED
 
-#include "../kernel/view_2d/viewpanel.h"
-#include "../kernel/processor/interpreter.h"
-#include "../kernel/command/dispatcher.h"
+//#include "../kernel/view_2d/viewpanel.h"
+//#include "../kernel/processor/interpreter.h"
+#include "command/dispatcher.h"
 #include "menu/menu.h"
 #include "widgets/console/uiconsole.h"
 #include "events/events.h"
 #include <wx/aui/aui.h>
 #include <map>
+#include "../wx_binding/classes/viewpanel.h"
 
 
 static const wxSize MAIN_FRAME_DEFAULT_SIZE = wxSize(640, 480);
@@ -19,7 +20,7 @@ class MainFrame : public wxFrame
     public:
 		MainFrame(wxWindow* parent,
             wxWindowID id = wxID_ANY,
-            const wxString& title = wxT("Amadin drafter"),
+            const wxString& title = wxT("Amadina drafter"),
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = MAIN_FRAME_DEFAULT_SIZE,
             long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
@@ -35,7 +36,7 @@ class MainFrame : public wxFrame
 	    void OnMenuClicked(wxCommandEvent &event);
 	    void CreateMenuBar(void);
 
-	    CommandInterpreter m_interpreter;
+	    //CommandInterpreter m_interpreter;
 	    ViewPanel *m_active_panel;
 
 

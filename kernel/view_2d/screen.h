@@ -24,7 +24,7 @@ class EntityBuilder;
 /// A widget for drawing can contain the screen interface implementation
 /// or to be a derived class from the screen interface.
 /// Any events (like mouse move, mouse click etc.) are to be received by the screen.
-class Screen: public ScreenInterface
+class DLL_EXPORT Screen: public ScreenInterface
 {
     public:
         /// Default constructor

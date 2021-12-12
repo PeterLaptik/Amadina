@@ -6,10 +6,11 @@
 #include <limits>
 #include <vector>
 #include <set>
+#include "../api/exports.h"
 
 // Abstract entity that can be drawn on a screen
 // Each element of a drawing has to implement the interface
-class Entity
+class DLL_EXPORT Entity
 {
     public:
         Entity();

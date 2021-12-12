@@ -2,14 +2,16 @@
 #define LAYER_H_INCLUDED
 
 #include "../graphics/colour.h"
+#include "../graphics/colours.h"
 #include <string>
+#include "../api/exports.h"
 
 class IAdapterDC;
 
-class Layer
+class DLL_EXPORT Layer
 {
     public:
-        Layer(const std::string &name, const Colour &colour = Colour::BLACK);
+        Layer(const std::string &name, const Colour &colour = Colours::BLACK);
         virtual ~Layer();
 
         void Apply(IAdapterDC &dc) const;

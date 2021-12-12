@@ -2,6 +2,7 @@
 #define SCREEN_INTERFACE_H_INCLUDED
 
 #include "../graphics/colour.h"
+#include "../api/exports.h"
 
 class IAdapterDC;
 class DrawManager;
@@ -10,7 +11,7 @@ class AbstractBuilder;
 ///\brief Common widget interface for interactive drawing.
 /// A drafting panel can contain the screen interface implementation
 /// or to be a derived class from the screen interface.
-class ScreenInterface
+class DLL_EXPORT ScreenInterface
 {
     public:
         ///\brief Refresh the screen: draw all entities and signs
@@ -156,40 +157,5 @@ class ScreenInterface
         // Screen background colour
         Colour m_colour;
 };
-
-
-enum ScreenState
-{
-    SCREEN_NO_STATE,
-    SCREEN_PICKING_POINT,
-    SCREEN_PICKING_ENTITY,
-    SCREEN_SELECTING_ENTITY_SET
-};
-
-/*
-class StatefullScreen
-{
-    public:
-        StatefullScreen()
-            : m_state(SCREEN_NO_STATE)
-        { }
-
-        virtual ~StatefullScreen()
-        { }
-
-        virtual void SetState(ScreenState state)
-        {
-            m_state = state;
-        }
-
-        virtual ScreenState GetState(void)
-        {
-            return m_state;
-        }
-
-    protected:
-        volatile ScreenState m_state;
-};
-*/
 
 #endif // SCREEN_INTERFACE_H_INCLUDED

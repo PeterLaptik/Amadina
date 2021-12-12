@@ -13,14 +13,6 @@ static const colour_t DEFAULT_VALUE = 90;
 class Colour
 {
     public:
-        // Predefined colour values
-        static const Colour BLACK;
-        static const Colour WHITE;
-        static const Colour RED;
-        static const Colour GREEN;
-        static const Colour BLUE;
-        static const Colour YELLOW;
-
         /// Default constructor
         Colour()
             : R(DEFAULT_VALUE), G(DEFAULT_VALUE), B(DEFAULT_VALUE)
@@ -61,7 +53,7 @@ class Colour
         ///\return is a dark colour
         bool IsDark(void) const
         {
-            return IsGrey() && (R<=DARK_COLOUR);
+            return IsGrey() && (R<=Colour::DARK_COLOUR);
         }
 
         ///\brief Inverses colour value.
@@ -74,27 +66,25 @@ class Colour
             if((!background.IsGrey())||(!this->IsGrey()))
                 return; // do not inverse for non-grey colours
 
-            bool is_dark_colour = R<=DARK_COLOUR;
-            bool is_dark_background = background.R<=DARK_BACKGROUND;
+            bool is_dark_colour = R<=Colour::DARK_COLOUR;
+            bool is_dark_background = background.R<=Colour::DARK_BACKGROUND;
             // Black colours on a dark background
             if((is_dark_background)&&(is_dark_colour))
             {
-                R = MAX_VALUE - R;
-                G = MAX_VALUE - G;
-                B = MAX_VALUE - B;
+                R = Colour::MAX_VALUE - R;
+                G = Colour::MAX_VALUE - G;
+                B = Colour::MAX_VALUE - B;
                 return;
             }
         }
 
-    private:
         // Border R/G/B-values for dark / non-dark colours
-        static const colour_t DARK_BACKGROUND;
-        static const colour_t DARK_COLOUR;
+        static const colour_t DARK_BACKGROUND = 70;
+        static const colour_t DARK_COLOUR = 30;
 
         // Maximum colour value
         // I.e. white colour for R=G=B
-        static const colour_t MAX_VALUE;
+        static const colour_t MAX_VALUE = 255;
 };
-
 
 #endif // COLOUR_H_INCLUDED

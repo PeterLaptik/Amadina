@@ -82,7 +82,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 	Context::AssignCommandDispatcher(&m_cmd_dispatcher);
 
 //    cad::command::RegisterDefaultCommands(m_interpreter);
-    m_interpreter.SetActivePanel(m_panel2);
+    //m_interpreter.SetActivePanel(m_panel2);
 
 //    CommandMock();
 
@@ -140,6 +140,7 @@ void MainFrame::OnConsoleInputEvent(wxEventConsoleInput &event)
 
 wxAuiToolBar* MainFrame::CreateToolbarDraft()
 {
+    /*
     int cmd_id;
     std::string cmd_name;
 
@@ -163,6 +164,8 @@ wxAuiToolBar* MainFrame::CreateToolbarDraft()
                         wxNullBitmap, wxITEM_NORMAL, _("Draw square"), wxEmptyString, NULL);
     tool_draft->Realize();
     return tool_draft;
+    */
+    return nullptr;
 }
 
 wxAuiToolBar* MainFrame::CreateToolbarSnap()
@@ -198,8 +201,8 @@ wxAuiToolBar* MainFrame::CreateToolbarLayer()
     choice->SetReadOnly();
     std::vector<Layer> layers;
     Layer l1("name1");
-    Layer l2("name2", Colour::BLUE);
-    Layer l3("name3", Colour::GREEN);
+    Layer l2("name2", Colours::BLUE);
+    Layer l3("name3", Colours::GREEN);
     layers.push_back(l1);
     layers.push_back(l2);
     layers.push_back(l3);
@@ -229,10 +232,10 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
     switch(code)
     {
     case WXK_ESCAPE:
-        m_interpreter.ExecuteCommand(cad::command::CMD_CANCEL);
+        //m_interpreter.ExecuteCommand(cad::command::CMD_CANCEL);
         break;
     case WXK_DELETE:
-        m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
+        //m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
         break;
     }
 
@@ -272,6 +275,6 @@ void MainFrame::OnStickyButtonClicked(wxCommandEvent &event)
 
     item->SetSticky(!item->IsSticky());
     cmd<<item->GetLabel()<<" "<<item->IsSticky();
-    m_interpreter.ExecuteCommand(cmd.ToStdString());
+    //m_interpreter.ExecuteCommand(cmd.ToStdString());
     this->Refresh();
 }

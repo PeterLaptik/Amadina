@@ -4,8 +4,9 @@
 #include "entity.h"
 #include "point.h"
 #include "line.h"
+#include "../api/exports.h"
 
-class Square: public Entity
+class DLL_EXPORT Square: public Entity
 {
     public:
         Square(Point pt, double width, double height);

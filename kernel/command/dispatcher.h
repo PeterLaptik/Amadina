@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include "../api/exports.h"
 
 class Command;
 class Context;
@@ -13,7 +14,7 @@ class Context;
 /// Commands have to be able to be cloned:
 /// the dispatcher keeps a command prototype
 /// and does not return command itself but it's clone.
-class CommandDispatcher
+class DLL_EXPORT CommandDispatcher
 {
     public:
         CommandDispatcher();

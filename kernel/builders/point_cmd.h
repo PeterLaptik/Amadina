@@ -2,8 +2,9 @@
 #define POINT_CMD_H_INCLUDED
 
 #include "../command/command.h"
+#include "../api/exports.h"
 
-class CmdPoint final: public Command
+class DLL_EXPORT CmdPoint final: public Command
 {
     public:
         CmdPoint(Context *context = nullptr);

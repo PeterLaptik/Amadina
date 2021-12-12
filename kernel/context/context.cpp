@@ -47,7 +47,6 @@ void Context::AssignCommand(const std::string &command)
 
 }
 
-#include<wx/msgdlg.h>
 void Context::ExecuteCommand(Command *command)
 {
     if(!m_screen)

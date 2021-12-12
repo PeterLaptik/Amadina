@@ -3,8 +3,9 @@
 
 #include "entity.h"
 #include "../graphics/dc.h"
+#include "../api/exports.h"
 
-class Point: public Entity
+class DLL_EXPORT Point: public Entity
 {
     public:
         Point():

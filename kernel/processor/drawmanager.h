@@ -4,11 +4,12 @@
 #include "../entities/point.h"
 #include "../entities/entity.h"
 #include "../graphics/dc.h"
+#include "../api/exports.h"
 #include <vector>
 #include <map>
 #include <unordered_map>
 
-class DrawManager
+class DLL_EXPORT DrawManager
 {
     public:
         DrawManager();
