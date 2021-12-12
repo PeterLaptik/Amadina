@@ -1,5 +1,4 @@
 #include "drawmanager.h"
-#include "default_commands.h"
 #include "../geometry/intersections.h"
 #include <algorithm>
 
@@ -57,8 +56,8 @@ void DrawManager::DrawAll(IAdapterDC &dc)
     //Colour default_black(255,255,255);
     m_snap_point = nullptr;
     // Show grid if necessary
-    pref_iterator = m_preferences.find(cad::preferences::PREF_GRID_SHOW);
-    if((pref_iterator!=m_preferences.end())&&(static_cast<bool>(pref_iterator->second)==true))
+//    pref_iterator = m_preferences.find(cad::preferences::PREF_GRID_SHOW);
+//    if((pref_iterator!=m_preferences.end())&&(static_cast<bool>(pref_iterator->second)==true))
         ShowGrid(dc);
 
     // Draw all entities
@@ -91,7 +90,7 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     double min_distance = snap_radius + 1;
     m_snap_point = nullptr;
     // Snap points
-    if(m_preferences.find(cad::preferences::PREF_SNAP_POINT)->second)
+    if(true/*m_preferences.find(cad::preferences::PREF_SNAP_POINT)->second*/)
     {
         for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_points.begin(); it!=m_snap_points.end(); ++it)
         {
@@ -105,7 +104,7 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
         }
     }
     // Snap center points
-    if(m_preferences.find(cad::preferences::PREF_SNAP_CENTER)->second)
+    if(true/*m_preferences.find(cad::preferences::PREF_SNAP_CENTER)->second*/)
     {
         for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_center.begin(); it!=m_snap_center.end(); ++it)
         {
@@ -119,7 +118,7 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
         }
     }
     // Intersection points
-    if(m_preferences.find(cad::preferences::PREF_SNAP_INTERSECTION)->second)
+    if(true/*m_preferences.find(cad::preferences::PREF_SNAP_INTERSECTION)->second*/)
     {
         for(std::vector<std::pair<std::pair<Entity*,Entity*>,Point>>::iterator it=m_snap_intersections.begin(); it!=m_snap_intersections.end(); ++it)
         {
@@ -134,7 +133,7 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     }
     // Find snap points among grid points
     // Apply snap if grid is shown
-    if((m_preferences.find(cad::preferences::PREF_SNAP_GRID)->second)&&(m_preferences.find(cad::preferences::PREF_GRID_SHOW)->second))
+    if(true/*(m_preferences.find(cad::preferences::PREF_SNAP_GRID)->second)&&(m_preferences.find(cad::preferences::PREF_GRID_SHOW)->second)*/)
     {
         for(std::vector<Point>::iterator it=m_snap_grid.begin(); it!=m_snap_grid.end(); ++it)
         {
@@ -265,6 +264,19 @@ void DrawManager::DeleteSelection()
     m_selected_entities.clear();
 }
 
+void DrawManager::DeleteEntity(Entity *entity)
+{
+    m_elements.erase(std::remove_if(m_elements.begin(), m_elements.end(),
+                        [entity](Entity *x)
+                        {
+                            if(x==entity)
+                                return true;
+                            else
+                                return false;
+                        }),
+                        m_elements.end());
+}
+
 // Finds snap points and appends them into a lists.
 // Snap points are found once when an entity is being appended.
 void DrawManager::AppendSnapPointsFor(Entity *entity)
@@ -367,7 +379,7 @@ void DrawManager::ShowGrid(IAdapterDC &dc)
     // Draw grid
     dc.CadSetColour(Colour(255, 255, 255));
     m_snap_grid.clear();
-    bool snap_to_grid = m_preferences.find(cad::preferences::PREF_SNAP_GRID)->second;
+    bool snap_to_grid = true; //m_preferences.find(cad::preferences::PREF_SNAP_GRID)->second;
     for(double i=x_step*x_multiplier; i<right; i+=x_step)
         for(double j=y_step*y_multiplier; j<top; j+=y_step)
         {
@@ -382,16 +394,16 @@ void DrawManager::ShowGrid(IAdapterDC &dc)
 // Initial GUI controls states are to be synchronized with the default values
 void DrawManager::AssignDefaultPreferences()
 {
-    m_preferences = {
-        {cad::preferences::PREF_GRID_SHOW, 1},
-        {cad::preferences::PREF_SNAP_GRID, 0},
-        {cad::preferences::PREF_SNAP_POINT, 1},
-        {cad::preferences::PREF_SNAP_CENTER, 1},
-        {cad::preferences::PREF_SNAP_INTERSECTION, 1},
-        {cad::preferences::PREF_SNAP_ORTHO, 1},
-        {cad::preferences::PREF_SNAP_TANGENT, 1},
-        {cad::preferences::PREF_SNAP_ANGLE, 1}
-    };
+//    m_preferences = {
+//        {cad::preferences::PREF_GRID_SHOW, 1},
+//        {cad::preferences::PREF_SNAP_GRID, 0},
+//        {cad::preferences::PREF_SNAP_POINT, 1},
+//        {cad::preferences::PREF_SNAP_CENTER, 1},
+//        {cad::preferences::PREF_SNAP_INTERSECTION, 1},
+//        {cad::preferences::PREF_SNAP_ORTHO, 1},
+//        {cad::preferences::PREF_SNAP_TANGENT, 1},
+//        {cad::preferences::PREF_SNAP_ANGLE, 1}
+//    };
 }
 
 bool DrawManager::HasPreference(const std::string &pref) const

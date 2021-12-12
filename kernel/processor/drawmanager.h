@@ -21,6 +21,8 @@ class DLL_EXPORT DrawManager
 
         void SelectInPoint(double x, double y, double snap_radius);
 
+        void DeleteEntity(Entity *entity);
+
         void DeleteSelection(void);
 
         void ClearSelection(void);

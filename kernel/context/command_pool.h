@@ -1,15 +1,27 @@
 #ifndef COMMAND_POOL_H_INCLUDED
 #define COMMAND_POOL_H_INCLUDED
 
-class CommandPool
+#include "../api/exports.h"
+#include <deque>
+
+class Command;
+
+class DLL_EXPORT CommandPool
 {
     public:
-        CommandPool(Context *context);
-        ~CommandPool();
+        CommandPool();
+        virtual ~CommandPool();
+
+        void Append(Command *command);
+        void Undo(void);
+        void Redo(void);
+        void Clear(void);
+        bool HasAccepted(void);
+        bool HasDismissed(void);
 
     private:
-        std::thread m_current_thread;
-
+        std::deque<Command*> m_accepted;
+        std::deque<Command*> m_dismissed;
 
 };
 
