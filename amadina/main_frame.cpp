@@ -2,7 +2,7 @@
 #include "wxchoicelayer.h"
 #include "builders/point_cmd.h"
 #include "wx_binding.h"
-//#include <wx/artprov.h>
+#include <wx/artprov.h>
 #include <wx/display.h>
 #include <wx/msgdlg.h>
 
@@ -52,7 +52,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     SetMenuBar(m_menu_bar);
 
 	m_mgr.AddPane(CreateNotebookDrawing(), wxAuiPaneInfo().Center().CaptionVisible(false).Dock().Resizable().FloatingSize(wxDefaultSize));
-    //m_mgr.AddPane(CreateToolbarDraft(), wxAuiPaneInfo().Name(_T("toolbar_draft")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    m_mgr.AddPane(CreateMainToolBar(), wxAuiPaneInfo().Name(_T("main_toolbar")).ToolbarPane().Caption(_("menu")).Layer(10).Top().Gripper());
     //m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
 //    m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
     init_commands(dynamic_cast<wxFrame*>(this), &m_mgr, &m_cmd_dispatcher, &m_menu);
@@ -167,9 +167,31 @@ wxAuiToolBar* MainFrame::CreateToolbarDraft()
     return nullptr;
 }
 
+wxAuiToolBar* MainFrame::CreateMainToolBar()
+{
+    tool_main = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
+    tool_main->AddTool(wxNewId(), wxT("save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE),
+                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
+    tool_main->AddTool(wxNewId(), wxT("undo"), wxArtProvider::GetBitmap(wxART_UNDO),
+                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
+    tool_main->AddTool(wxNewId(), wxT("redo"), wxArtProvider::GetBitmap(wxART_REDO),
+                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
+    return tool_main;
+}
+
+void MainFrame::DefaultOperation(const wxString &name)
+{
+    Context *context = m_panel2->GetContext();
+    // Undo / redo
+    if(name=="undo")
+        context->Undo();
+    else if(name=="redo")
+        context->Redo();
+}
+
 wxAuiToolBar* MainFrame::CreateToolbarSnap()
 {
-//    tool_snap = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
+    //tool_snap = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
 //    (tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, cad::preferences::PREF_GRID_SHOW, wxBitmap(wxImage(_T("res\\icons\\icon_grid.ico"))),
 //                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL))->SetSticky(true);
 //    (tool_snap->AddTool(ID_BTN_SNAP_GRID, cad::preferences::PREF_SNAP_GRID, wxBitmap(wxImage(_T("res\\icons\\icon_snap_grid.ico"))),
@@ -255,6 +277,14 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
     if(obj==tool_snap)
     {
         OnStickyButtonClicked(event);
+        return;
+    }
+
+    if(obj==tool_main)
+    {
+        wxAuiToolBarItem *item = tool_main->FindTool(event.GetId());
+        if(item)
+            DefaultOperation(item->GetLabel());
         return;
     }
 

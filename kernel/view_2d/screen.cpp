@@ -25,13 +25,13 @@ Screen::Screen():
         m_screen_state(SCR_NOTHING),
         m_is_wheel_pressed(false),
         m_shape_builder(nullptr),
+        m_context(this),
         m_receiver(nullptr)
 {
     m_borders.left = DEFAULT_LEFT_BORDER;
     m_borders.right = DEFAULT_RIGHT_BORDER;
     m_borders.top = DEFAULT_TOP_BORDER;
     m_borders.bottom = DEFAULT_BOTTOM_BORDER;
-    m_context.AssignEnvironment(this, &m_draw_manager);
 }
 
 

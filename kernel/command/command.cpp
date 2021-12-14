@@ -33,11 +33,12 @@ void Command::Execute()
     if(!m_context)  // Not allowed execution for prototypes
         return;     // each command has to be executed in a context
 
-    m_context->SetCommandFinished(false);
+    CommandExecutor *executor = m_context->GetExecutor();
+    executor->SetCommandFinished(false);
     m_is_finished = false;
     Run();
     m_is_finished = true;
-    m_context->SetCommandFinished(true);
+    executor->SetCommandFinished(true);
 }
 
 CMDResult Command::EnterPoint(Point *point)

@@ -10,8 +10,9 @@ void Context::AssignCommandDispatcher(CommandDispatcher *dispatcher)
     m_dispatcher = dispatcher;
 }
 
-Context::Context()
-    : m_screen(nullptr),
+Context::Context(Screen *screen)
+    : m_executor(this, &m_pool),
+    m_screen(screen),
     m_draw_manager(nullptr),
     m_current_command(nullptr),
     m_cmd_thread(nullptr),
@@ -35,13 +36,6 @@ Context::~Context()
         delete m_current_command;
 }
 
-void Context::AssignEnvironment(Screen *screen,
-                                DrawManager *draw_manager)
-{
-    m_screen = screen;
-    m_draw_manager = draw_manager;
-}
-
 void Context::AssignCommand(const std::string &command)
 {
 
@@ -49,56 +43,18 @@ void Context::AssignCommand(const std::string &command)
 
 void Context::ExecuteCommand(Command *command)
 {
-    if(!m_screen)
-    {
-        delete command;
-        return;
-    }
-
-    if(m_current_command)
-    {
-        m_current_command->Terminate();
-        /* TODO check time-out */
-        m_cmd_thread->join();
-        delete m_cmd_thread;
-        delete m_current_command;
-        m_screen->SetDataReceiver(nullptr);
-    }
-
-    m_current_command = command;
-    m_screen->SetDataReceiver(m_current_command);
-    m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
+    m_executor.Execute(command);
 }
 
 void Context::Update()
 {
-    if(!m_current_command)
-        return;
-
-    if(m_command_finished!=true)
-        return;
-
-    /* TODO check time-out */
-    m_cmd_thread->join();
-
-    if(m_current_command->IsAccepted())
-    {
-        const std::vector<Entity*> created = m_current_command->GetCreated();
-        for(auto i: created)
-            m_screen->AppendEntity(i);
-    }
-
-    // TODO queue
-    delete m_cmd_thread;
-    delete m_current_command;
-    m_cmd_thread = nullptr;
-    m_current_command = nullptr;
-    m_screen->SetDataReceiver(nullptr);
+    m_executor.Update();
 }
 
-void Context::SetCommandFinished(bool is_finished)
+
+CommandExecutor* Context::GetExecutor()
 {
-    m_command_finished = is_finished;
+    return &m_executor;
 }
 
 Screen* Context::GetScreen(void) const

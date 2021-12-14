@@ -45,6 +45,8 @@ class MainFrame : public wxFrame
 	    wxAuiToolBar* CreateToolbarSnap(void);
 	    wxAuiToolBar* CreateToolbarLayer(void);
 	    wxAuiNotebook* CreateNotebookDrawing(void);
+	    wxAuiToolBar* CreateMainToolBar(void);
+	    void DefaultOperation(const wxString &name);
 
 	    // Controls ids
 	    static const int ID_NOTEBOOK;
@@ -68,6 +70,7 @@ class MainFrame : public wxFrame
         void CommandMock(void);
 
         wxAuiManager m_mgr;
+        wxAuiToolBar *tool_main;
         wxAuiToolBar *tool_draft;
         wxAuiToolBar *tool_snap;
         wxAuiToolBar *tool_layer;

@@ -2,6 +2,7 @@
 #define CONTEXT_H_INCLUDED
 
 #include "command_pool.h"
+#include "command_executor.h"
 #include "../command/interpreter.h"
 #include "../api/exports.h"
 #include <thread>
@@ -11,19 +12,16 @@ class DrawManager;
 class Command;
 class CommandDispatcher;
 
-///\brief Screen information holder and command executor
+///\brief Screen panel information holder and indirect command executor.
+/// The class appears a facade for other objects
+/// which implement main functionality for interacting
+/// between logical and graphical system parts
 class DLL_EXPORT Context final
 {
     public:
-        Context();
+        Context(Screen *screen);
 
-        ~Context();
-
-        /// Assigns a screen for the context.
-        /// Each context can work only for defined screen / draw manager.
-        /// Context without assigned screen does not work properly
-        void AssignEnvironment(Screen *screen,
-                               DrawManager *draw_manager);
+        ~Context(void);
 
         /// Assigns command dispatcher.
         /// The static method neet to be called once
@@ -46,10 +44,22 @@ class DLL_EXPORT Context final
         /// Should be called after each screen state change
         void Update();
 
+        void Undo(void)
+        {
+            m_pool.Undo();
+        }
+
+        void Redo(void)
+        {
+            m_pool.Redo();
+        }
+
         /// Sets command state to finish.
         /// Callback for command thread
         ///\param is_finished - is command finished
-        void SetCommandFinished(bool is_finished = true);
+//        void SetCommandFinished(bool is_finished = true);
+
+        CommandExecutor* GetExecutor(void);
 
         /// Returns context's screen
         Screen* GetScreen(void) const;
@@ -58,6 +68,8 @@ class DLL_EXPORT Context final
         DrawManager* GetManager(void) const;
 
     private:
+        CommandExecutor m_executor;
+
         // Accepted and dismissed commands
         CommandPool m_pool;
 
