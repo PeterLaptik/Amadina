@@ -1,9 +1,12 @@
 #include "context.h"
+#include "callable.h"
 #include "../view_2d/screen.h"
 #include "../command/command.h"
 #include "../command/dispatcher.h"
 
+
 CommandDispatcher* Context::m_dispatcher = nullptr;
+
 
 void Context::AssignCommandDispatcher(CommandDispatcher *dispatcher)
 {
@@ -13,32 +16,21 @@ void Context::AssignCommandDispatcher(CommandDispatcher *dispatcher)
 Context::Context(Screen *screen)
     : m_executor(this, &m_pool),
     m_screen(screen),
-    m_draw_manager(nullptr),
-    m_current_command(nullptr),
-    m_cmd_thread(nullptr),
-    m_command_finished(false)
+    m_pool(this),
+    m_frame(nullptr)
 { }
 
 Context::~Context()
-{
-    // Remove executing thread and command
-    // if exist
-    if(m_cmd_thread)
-    {
-        // Stop command executing before delete
-        if(m_current_command)
-            m_current_command->Terminate();
-        m_cmd_thread->join();
-        delete m_cmd_thread;
-    }
-
-    if(m_current_command)
-        delete m_current_command;
-}
+{ }
 
 void Context::AssignCommand(const std::string &command)
 {
 
+}
+
+void Context::SetParentFrame(CallableFrame *frame)
+{
+    m_frame = frame;
 }
 
 void Context::ExecuteCommand(Command *command)
@@ -46,9 +38,16 @@ void Context::ExecuteCommand(Command *command)
     m_executor.Execute(command);
 }
 
+void Context::TerminateCommand()
+{
+    m_executor.Terminate();
+}
+
 void Context::Update()
 {
-    m_executor.Update();
+    bool has_changes = m_executor.Update();
+    if(has_changes && m_frame)
+        m_frame->SetUndoRedoState(m_pool.HasAccepted(), m_pool.HasDismissed());
 }
 
 
@@ -64,5 +63,23 @@ Screen* Context::GetScreen(void) const
 
 DrawManager* Context::GetManager(void) const
 {
-    return m_draw_manager;
+    return m_screen->GetDrawManager();
+}
+
+void Context::Undo()
+{
+    m_pool.Undo();
+    m_screen->ScreenRefresh();
+}
+
+void Context::Redo()
+{
+    m_pool.Redo();
+    m_screen->ScreenRefresh();
+}
+
+void Context::GetUndoRedoState(bool &undo, bool &redo)
+{
+    undo = m_pool.HasAccepted();
+    redo = m_pool.HasDismissed();
 }

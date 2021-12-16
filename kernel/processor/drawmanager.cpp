@@ -275,6 +275,7 @@ void DrawManager::DeleteEntity(Entity *entity)
                                 return false;
                         }),
                         m_elements.end());
+    //RemoveSnapPointsFor(entity);
 }
 
 // Finds snap points and appends them into a lists.

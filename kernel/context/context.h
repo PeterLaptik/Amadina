@@ -11,6 +11,7 @@ class Screen;
 class DrawManager;
 class Command;
 class CommandDispatcher;
+class CallableFrame;
 
 ///\brief Screen panel information holder and indirect command executor.
 /// The class appears a facade for other objects
@@ -40,19 +41,15 @@ class DLL_EXPORT Context final
         /// The command is handled by the context
         void ExecuteCommand(Command *command);
 
+        void TerminateCommand(void);
+
         /// Callback for screen updating on command accept.
         /// Should be called after each screen state change
         void Update();
 
-        void Undo(void)
-        {
-            m_pool.Undo();
-        }
-
-        void Redo(void)
-        {
-            m_pool.Redo();
-        }
+        void Undo(void);
+        void Redo(void);
+        void GetUndoRedoState(bool &undo, bool &redo);
 
         /// Sets command state to finish.
         /// Callback for command thread
@@ -60,6 +57,8 @@ class DLL_EXPORT Context final
 //        void SetCommandFinished(bool is_finished = true);
 
         CommandExecutor* GetExecutor(void);
+
+        void SetParentFrame(CallableFrame *frame);
 
         /// Returns context's screen
         Screen* GetScreen(void) const;
@@ -75,24 +74,26 @@ class DLL_EXPORT Context final
 
         // Environmental objects:
         Screen *m_screen;
-        DrawManager *m_draw_manager;
+
+
+        CallableFrame *m_frame;
 
         // Command interpreter:
         // parses data inputed from a console
         Interpreter m_interpreter;
 
         // Executing command
-        Command *m_current_command;
+//        Command *m_current_command;
 
         // Each command executes in a separate thread:
-        std::thread *m_cmd_thread;
+//        std::thread *m_cmd_thread;
 
         // The flag shows whether a command is finished.
         // Flag can be changed from outside --
         // executing command thread.
         // The value is checked in the 'Update'-method
         // which is to be called on every screen refresh
-        volatile bool m_command_finished;
+//        volatile bool m_command_finished;
 
         // Command dispatcher is a common object
         // for all screens and contexts

@@ -44,6 +44,11 @@ class DLL_EXPORT Command: public EntityBuilder
 
         virtual void Run(void) = 0;
 
+        virtual bool IsMultiCommand(void) const
+        {
+            return false;
+        }
+
         /// Creates copy of a command.
         /// Each new command is implicitly created
         /// by cloning of existing prototype
@@ -63,6 +68,11 @@ class DLL_EXPORT Command: public EntityBuilder
         bool IsFinished(void)
         {
             return m_is_finished;
+        }
+
+        bool IsCanceled(void)
+        {
+            return m_is_canceled;
         }
 
         void SetPoint(const Point &point);

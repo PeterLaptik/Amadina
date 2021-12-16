@@ -10,12 +10,13 @@
 #include <wx/aui/aui.h>
 #include <map>
 #include "../wx_binding/classes/viewpanel.h"
+#include "context/callable.h"
 
 
 static const wxSize MAIN_FRAME_DEFAULT_SIZE = wxSize(640, 480);
 
 
-class MainFrame : public wxFrame
+class MainFrame : public wxFrame, public CallableFrame
 {
     public:
 		MainFrame(wxWindow* parent,
@@ -26,6 +27,7 @@ class MainFrame : public wxFrame
             long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
 		virtual ~MainFrame();
 
+		void SetUndoRedoState(bool can_undo, bool can_redo);
 
 
 	protected:
@@ -66,6 +68,9 @@ class MainFrame : public wxFrame
         static const int ID_BTN_SNAP_ORTHO;
         static const int ID_BTN_SNAP_TANGENT;
         static const int ID_BTN_SNAP_ANGLE;
+
+        static const int ID_BTN_UNDO;
+        static const int ID_BTN_REDO;
 
         void CommandMock(void);
 

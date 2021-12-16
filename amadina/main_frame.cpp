@@ -26,7 +26,8 @@ const int MainFrame::ID_BTN_SNAP_INTERSECTION = wxNewId();
 const int MainFrame::ID_BTN_SNAP_TANGENT = wxNewId();
 const int MainFrame::ID_BTN_SNAP_ANGLE = wxNewId();
 const int MainFrame::ID_NOTEBOOK = wxNewId();
-
+const int MainFrame::ID_BTN_UNDO = wxNewId();
+const int MainFrame::ID_BTN_REDO = wxNewId();
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
@@ -60,6 +61,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     m_panel2 = new ViewPanel(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
 	m_active_panel = m_panel2;
+	m_panel2->GetContext()->SetParentFrame(this);
 
     // Append console input pane
 	m_console = new UiConsole(this);
@@ -68,9 +70,6 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
             wxAuiPaneInfo().Name(_T("console"))
                .Caption(_("Console"))
                .Bottom());
-
-
-
 
 
 
@@ -85,6 +84,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 
 //    CommandMock();
 
+    DefaultOperation("");
     Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
 //    Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
 //      wxCommandEventHandler(MainFrame::OnMenuClicked));
@@ -172,21 +172,44 @@ wxAuiToolBar* MainFrame::CreateMainToolBar()
     tool_main = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
     tool_main->AddTool(wxNewId(), wxT("save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE),
                         wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
-    tool_main->AddTool(wxNewId(), wxT("undo"), wxArtProvider::GetBitmap(wxART_UNDO),
+    tool_main->AddTool(ID_BTN_UNDO, wxT("undo"), wxArtProvider::GetBitmap(wxART_UNDO),
                         wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
-    tool_main->AddTool(wxNewId(), wxT("redo"), wxArtProvider::GetBitmap(wxART_REDO),
+    tool_main->AddTool(ID_BTN_REDO, wxT("redo"), wxArtProvider::GetBitmap(wxART_REDO),
                         wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
     return tool_main;
 }
 
 void MainFrame::DefaultOperation(const wxString &name)
 {
+    bool undo;
+    bool redo;
     Context *context = m_panel2->GetContext();
+
     // Undo / redo
     if(name=="undo")
+    {
         context->Undo();
+    }
     else if(name=="redo")
+    {
         context->Redo();
+    }
+
+
+    context->GetUndoRedoState(undo, redo);
+    tool_main->EnableTool(ID_BTN_UNDO, undo);
+    tool_main->EnableTool(ID_BTN_REDO, redo);
+}
+
+void MainFrame::SetUndoRedoState(bool can_undo, bool can_redo)
+{
+    bool undo;
+    bool redo;
+    Context *context = m_panel2->GetContext();
+    context->GetUndoRedoState(undo, redo);
+    tool_main->EnableTool(ID_BTN_UNDO, undo);
+    tool_main->EnableTool(ID_BTN_REDO, redo);
+    tool_main->Refresh();
 }
 
 wxAuiToolBar* MainFrame::CreateToolbarSnap()
@@ -249,23 +272,25 @@ wxAuiNotebook* MainFrame::CreateNotebookDrawing()
 
 void MainFrame::OnKeyPressed(wxKeyEvent &event)
 {
+    bool processed = false;
     int code = event.GetKeyCode();
     switch(code)
     {
     case WXK_ESCAPE:
-        //m_interpreter.ExecuteCommand(cad::command::CMD_CANCEL);
+        // Cancel screen selection
+        m_panel2->GetDrawManager()->ClearSelection();
+        m_panel2->GetContext()->TerminateCommand();
+        m_panel2->ScreenRefresh();
+        processed = true;
         break;
     case WXK_DELETE:
         //m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
         break;
     }
 
-    wxWindow *win = wxWindow::FindFocus();
-    //win->GetParent();
-    wxString f = "focus:";
-    f<<win->GetName();
-    f<<"<-"<<win->GetParent()->GetName();
-    event.Skip();
+    // Send to console
+    if(!processed)
+        event.Skip();
 }
 
 void MainFrame::OnToolButtonClicked(wxCommandEvent &event)

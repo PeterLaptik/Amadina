@@ -11,16 +11,25 @@ CmdLine::~CmdLine()
 
 Command* CmdLine::Clone(Context *context)
 {
-    return new CmdLine(context);
+    CmdLine *clone = new CmdLine(context);
+    if(m_pt1_picked)
+    {
+        clone->pt1 = pt2;
+        clone->m_pt1_picked = true;
+    }
+    return clone;
 }
 
 void CmdLine::Run()
 {
     CMDResult result;
 
-    result = EnterPoint(&pt1);
-    if(result!=RES_OK)
-        return;
+    if(!m_pt1_picked)
+    {
+        result = EnterPoint(&pt1);
+        if(result!=RES_OK)
+            return;
+    }
 
     m_pt1_picked = true;
     result = EnterPoint(&pt2);
@@ -28,7 +37,6 @@ void CmdLine::Run()
         return;
 
     AppendEntity(new Line(pt1, pt2));
-    Line *line = new Line(pt1, pt2);
 }
 
 void CmdLine::Redraw(IAdapterDC &dc, double x, double y)
@@ -37,4 +45,9 @@ void CmdLine::Redraw(IAdapterDC &dc, double x, double y)
         return;
 
     dc.CadDrawLine(pt1, Point(x,y));
+}
+
+bool CmdLine::IsMultiCommand() const
+{
+    return true;
 }

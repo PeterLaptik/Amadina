@@ -5,6 +5,13 @@
 #include "../entities/entity.h"
 #include <thread>
 
+#ifdef __MINGW32__
+    #define CMD_WAIT_FOR_INPUT std::this_thread::sleep_for(std::chrono::milliseconds(50))
+#else
+    #define CMD_WAIT_FOR_INPUT std::this_thread::yield()
+#endif // __MINGW32__
+
+
 Command::Command(Context *context)
     : m_is_executing(false),
         m_is_canceled(false),
@@ -16,14 +23,15 @@ Command::Command(Context *context)
         m_is_accepted(true)
 { }
 
+
 Command::~Command()
 {
+    for(auto i: m_removed)
+        delete i;
+
     if(!m_is_accepted)
     {
         for(auto i: m_created)
-            delete i;
-
-        for(auto i: m_removed)
             delete i;
     }
 }
@@ -78,7 +86,7 @@ CMDResult Command::EnterEntities(std::vector<Entity*> *entity_set)
 void Command::WaitForInput()
 {
     while(m_is_executing && !m_is_canceled && !m_is_finished)
-        std::this_thread::yield();
+        CMD_WAIT_FOR_INPUT;
 }
 
 void Command::AppendEntity(Entity *entity)

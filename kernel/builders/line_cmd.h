@@ -14,6 +14,7 @@ class CmdLine final: public Command
         virtual void Run(void) final;
         virtual void Redraw(IAdapterDC &dc, double x, double y);
         virtual Command* Clone(Context *context) final;
+        virtual bool IsMultiCommand(void) const final;
 
     private:
         bool m_pt1_picked;

@@ -81,7 +81,6 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         void OnMouseWheel(wxMouseEvent &event);
         void OnMouseWheelDown(wxMouseEvent &event);
         void OnMouseWheelUp(wxMouseEvent &event);
-        void OnKeyPressed(wxKeyEvent &event);
         void OnMouseEnterPanel(wxMouseEvent &event);
         void OnMouseLeavePanel(wxMouseEvent &event);
 

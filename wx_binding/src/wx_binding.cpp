@@ -47,26 +47,27 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
                              CommandDispatcher *dispatcher,
                              ui::UiMenuCommands *commands)
 {
-    wxBitmap img(wxImage(_T("res\\icons\\icon_point.ico")));
+    wxBitmap img_pt(wxImage(_T("res\\icons\\icon_point.ico")));
     // Draw point
     // Button
-    long id = add_tool("point", "Point", &img, toolbar);
+    long id = add_tool("point", "Point", &img_pt, toolbar);
     dispatcher->RegisterHandler(id, "point");
      // Menu
     id = commands->AppendMenuCommand("Point", "point", ui::CMD_DRAW);
     dispatcher->RegisterHandler(id, "point");
 
     // Draw line
-    img = wxImage(_T("res\\icons\\icon_line.ico"));
-    id = add_tool("line", "Line", &img, toolbar);
+
+    wxBitmap img_line(wxImage(_T("res\\icons\\icon_line.ico")));
+    id = add_tool("line", "Line", &img_line, toolbar);
     dispatcher->RegisterHandler(id, "line");
      // Menu
     id = commands->AppendMenuCommand("Line", "line", ui::CMD_DRAW);
     dispatcher->RegisterHandler(id, "line");
 
     // Draw line
-    img = wxImage(_T("res\\icons\\icon_circle.ico"));
-    id = add_tool("circle", "Circle", &img, toolbar);
+    wxBitmap img_circle(wxImage(_T("res\\icons\\icon_circle.ico")));
+    id = add_tool("circle", "Circle", &img_circle, toolbar);
     dispatcher->RegisterHandler(id, "circle");
      // Menu
     id = commands->AppendMenuCommand("Line", "line", ui::CMD_DRAW);

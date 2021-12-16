@@ -5,11 +5,13 @@
 #include <deque>
 
 class Command;
+class Context;
 
 class DLL_EXPORT CommandPool
 {
     public:
-        CommandPool();
+        CommandPool(Context *context);
+        CommandPool() = delete;
         virtual ~CommandPool();
 
         void Append(Command *command);
@@ -20,6 +22,7 @@ class DLL_EXPORT CommandPool
         bool HasDismissed(void);
 
     private:
+        Context *m_context;
         std::deque<Command*> m_accepted;
         std::deque<Command*> m_dismissed;
 

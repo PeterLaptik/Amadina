@@ -26,7 +26,6 @@ wxBEGIN_EVENT_TABLE(ViewPanel, wxPanel)
     EVT_MOUSEWHEEL(ViewPanel::OnMouseWheel)
     EVT_MIDDLE_DOWN(ViewPanel::OnMouseWheelDown)
     EVT_MIDDLE_UP(ViewPanel::OnMouseWheelUp)
-    EVT_CHAR_HOOK(ViewPanel::OnKeyPressed)
     EVT_ENTER_WINDOW(ViewPanel::OnMouseEnterPanel)
     EVT_LEAVE_WINDOW(ViewPanel::OnMouseLeavePanel)
 wxEND_EVENT_TABLE()
@@ -56,14 +55,6 @@ ViewPanel::ViewPanel(wxWindow *parent,
         AddTestShapes();
     #endif // TEST_MODE
 }
-
-
-void ViewPanel::OnKeyPressed(wxKeyEvent &event)
-{
-    // mock-method for wxWidgets-based panel
-    // excludes UB on char hook event skipping in main frame
-}
-
 
 ViewPanel::~ViewPanel()
 {

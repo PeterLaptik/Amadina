@@ -16,7 +16,9 @@ class CommandExecutor final
 
          void Execute(Command *cmd);
 
-         void Update(void);
+         void Terminate(void);
+
+         bool Update(void);
 
          /// Sets command state to finish.
          /// Callback for command thread
