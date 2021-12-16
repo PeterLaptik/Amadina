@@ -26,11 +26,15 @@ Command::Command(Context *context)
 
 Command::~Command()
 {
-    for(auto i: m_removed)
-        delete i;
-
-    if(!m_is_accepted)
+    if(m_is_accepted)
     {
+        // Created entities are handled by drawing manager
+        for(auto i: m_removed)
+        delete i;
+    }
+    else
+    {
+        // Removed entities are restored and handled by drawing manager
         for(auto i: m_created)
             delete i;
     }
@@ -41,12 +45,16 @@ void Command::Execute()
     if(!m_context)  // Not allowed execution for prototypes
         return;     // each command has to be executed in a context
 
+    // Context screen availability check has to be preformed at upper level
+    // (in command executor). Context with null-screen is not allowed!
     CommandExecutor *executor = m_context->GetExecutor();
+    m_context->GetScreen()->SetEntityBuilder(this);
     executor->SetCommandFinished(false);
     m_is_finished = false;
-    Run();
+    Run();  // main command loop
     m_is_finished = true;
     executor->SetCommandFinished(true);
+    m_context->GetScreen()->SetEntityBuilder(nullptr);
 }
 
 CMDResult Command::EnterPoint(Point *point)

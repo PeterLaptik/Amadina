@@ -159,7 +159,7 @@ class DLL_EXPORT Screen: public ScreenInterface
             return &m_context;
         }
 
-        void SetDataReceiver(EntityBuilder *receiver)
+        void SetEntityBuilder(EntityBuilder *receiver)
         {
             m_receiver = receiver;
         }

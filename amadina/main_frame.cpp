@@ -184,6 +184,7 @@ void MainFrame::DefaultOperation(const wxString &name)
     bool undo;
     bool redo;
     Context *context = m_panel2->GetContext();
+    context->TerminateCommand();
 
     // Undo / redo
     if(name=="undo")
@@ -280,8 +281,8 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
         // Cancel screen selection
         m_panel2->GetDrawManager()->ClearSelection();
         m_panel2->GetContext()->TerminateCommand();
-        m_panel2->ScreenRefresh();
         processed = true;
+        m_panel2->ScreenRefresh();
         break;
     case WXK_DELETE:
         //m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
