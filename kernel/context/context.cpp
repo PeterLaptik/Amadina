@@ -69,13 +69,13 @@ DrawManager* Context::GetManager(void) const
 void Context::Undo()
 {
     m_pool.Undo();
-    m_screen->ScreenRefresh();
+    m_screen->RefreshScreen();
 }
 
 void Context::Redo()
 {
     m_pool.Redo();
-    m_screen->ScreenRefresh();
+    m_screen->RefreshScreen();
 }
 
 void Context::GetUndoRedoState(bool &undo, bool &redo)

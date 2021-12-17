@@ -10,6 +10,7 @@ class DLL_EXPORT Square: public Entity
 {
     public:
         Square(Point pt, double width, double height);
+        Square() = delete;
         virtual ~Square();
 
         virtual void Draw(IAdapterDC &dc);
@@ -27,8 +28,6 @@ class DLL_EXPORT Square: public Entity
     protected:
 
     private:
-        Square();
-
         Point m_center;
         double m_width;
         double m_height;

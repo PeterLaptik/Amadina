@@ -58,7 +58,7 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         ///\param colour - colour value
         virtual bool SetBackgroundColour(const wxColour &colour);
 
-        virtual void ScreenRefresh(void);
+        virtual void RefreshScreen(void);
         //
         // TODO
         // Remove draw manager getter:

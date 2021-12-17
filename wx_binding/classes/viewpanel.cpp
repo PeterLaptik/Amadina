@@ -206,9 +206,7 @@ void ViewPanel::OnMouseLeavePanel(wxMouseEvent &event)
 
 }
 
-
-
-void ViewPanel::ScreenRefresh()
+void ViewPanel::RefreshScreen()
 {
     this->Refresh();
 }

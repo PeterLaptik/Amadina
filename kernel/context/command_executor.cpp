@@ -82,7 +82,7 @@ bool CommandExecutor::Update()
     Command *clone = nullptr;
 
     Screen *screen = m_context->GetScreen();
-    if(m_current_command->IsAccepted() && !m_current_command->IsCanceled())
+    if(/*m_current_command->IsAccepted() && */!m_current_command->IsCanceled())
     {
         // Append created entities to a drawing manager
         const std::vector<Entity*> created = m_current_command->GetCreated();
@@ -100,9 +100,11 @@ bool CommandExecutor::Update()
     delete m_current_command;
     m_cmd_thread = nullptr;
     m_current_command = nullptr;
-    // Next execution if multi-command
+
+    // Next execution for multi-command
     if(clone)
         Execute(clone);
+
     return true;
 }
 

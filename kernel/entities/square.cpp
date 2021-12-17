@@ -2,8 +2,6 @@
 #include "line.h"
 #include <algorithm>
 
-Square::Square()
-{ }
 
 Square::Square(Point pt, double width, double height)
         : m_center(pt), m_width(width), m_height(height)

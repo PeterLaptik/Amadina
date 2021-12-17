@@ -131,7 +131,7 @@ class DLL_EXPORT Screen: public ScreenInterface
 
         ///\brief Refresh screen
         /// Implementation depends on GUI-library used for the screen panel
-        virtual void ScreenRefresh(void) = 0;
+        virtual void RefreshScreen(void) = 0;
 
         ///\brief Returns pointer to a draw manager.
         /// Each instance of a screen has its own draw manager.

@@ -13,7 +13,7 @@ class wxEventConsoleInput: public wxCommandEvent
 {
     public:
         wxEventConsoleInput(wxString input, wxEventType commandType = wxCONSOLE_INPUT, int id = 0)
-                    :  m_input(input), wxCommandEvent(commandType, id)
+                    :  wxCommandEvent(commandType, id), m_input(input)
         { }
 
         wxEventConsoleInput(const wxEventConsoleInput& event)

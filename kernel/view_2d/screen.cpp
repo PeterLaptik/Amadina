@@ -53,7 +53,7 @@ void Screen::ScreenResize(const int &width, const int &height)
         m_borders.bottom = m_borders.top - scr_ratio*(m_borders.right - m_borders.left);
 
     CalculateBestSnapRadius();
-    ScreenRefresh();
+    RefreshScreen();
 }
 
 // The method should be called each time on mouse wheel event over a derived panel.
@@ -95,7 +95,7 @@ void Screen::ScreenMouseWheel(const int &direction, const int &coord_x, const in
     m_borders.top -= delta_y;
     m_borders.bottom -= delta_y;
     CalculateBestSnapRadius();
-    ScreenRefresh();
+    RefreshScreen();
 }
 
 // TODO
@@ -116,7 +116,7 @@ void Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
     {
     case SCR_PICKING:
         PointPicked(x, y);
-        ScreenRefresh();
+        RefreshScreen();
         return;
     case SCR_NOTHING:
         m_draw_manager.SelectInPoint(x, y, m_snap_radius/2);
@@ -158,7 +158,7 @@ void Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,
     {
         m_mouse_coord.x = x;
         m_mouse_coord.y = y;
-        ScreenRefresh();
+        RefreshScreen();
         return;
     }
 
@@ -170,7 +170,7 @@ void Screen::ScreenMouseMove(const int &coord_x, const int &coord_y,
     m_borders.right += delta_x;
     m_borders.top += delta_y;
     m_borders.bottom += delta_y;
-    ScreenRefresh();
+    RefreshScreen();
 }
 
 // Calculates snap radius value in a real coordinates
@@ -259,7 +259,7 @@ void Screen::AppendEntity(Entity *entity)
         return;
     m_draw_manager.ClearSelection();
     m_draw_manager.AddEntity(entity);
-    ScreenRefresh();
+    RefreshScreen();
 }
 
 

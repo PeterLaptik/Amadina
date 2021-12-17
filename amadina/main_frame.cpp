@@ -282,7 +282,6 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
         m_panel2->GetDrawManager()->ClearSelection();
         m_panel2->GetContext()->TerminateCommand();
         processed = true;
-        m_panel2->ScreenRefresh();
         break;
     case WXK_DELETE:
         //m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);

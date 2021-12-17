@@ -40,6 +40,13 @@ Command::~Command()
     }
 }
 
+/**
+* TODO: Recheck screen updating
+* Current implementation -- 'm_context->GetScreen()->RefreshScreen()' (see below).
+* The implementation calls 'Refresh'-method of screen panel,
+* i.e. the call from a worker thread
+**/
+
 void Command::Execute()
 {
     if(!m_context)  // Not allowed execution for prototypes
@@ -55,6 +62,7 @@ void Command::Execute()
     m_is_finished = true;
     executor->SetCommandFinished(true);
     m_context->GetScreen()->SetEntityBuilder(nullptr);
+    m_context->GetScreen()->RefreshScreen();
 }
 
 CMDResult Command::EnterPoint(Point *point)
@@ -66,10 +74,12 @@ CMDResult Command::EnterPoint(Point *point)
     m_is_executing = true;
     m_is_canceled = false;
     m_context->GetScreen()->SetState(SCR_PICKING);
+    m_context->GetScreen()->RefreshScreen();
 
     WaitForInput();
 
     m_context->GetScreen()->SetState(SCR_NOTHING);
+    m_context->GetScreen()->RefreshScreen();
     m_point = nullptr;
     m_is_executing = false;
     return !m_is_canceled && !m_is_finished ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
