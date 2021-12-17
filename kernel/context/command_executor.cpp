@@ -3,6 +3,7 @@
 #include "../command/command.h"
 #include "../view_2d/screen.h"
 
+
 CommandExecutor::CommandExecutor(Context *context, CommandPool *pool)
     : m_context(context),
     m_command_pool(pool),
@@ -11,6 +12,7 @@ CommandExecutor::CommandExecutor(Context *context, CommandPool *pool)
     m_command_finished(false)
 { }
 
+
 CommandExecutor::~CommandExecutor()
 {
     // Remove executing thread and command
@@ -18,16 +20,14 @@ CommandExecutor::~CommandExecutor()
     if(m_cmd_thread)
     {
         // Stop command executing before delete
-        if(m_current_command)
-            m_current_command->Terminate();
+        m_current_command->Terminate();
         m_cmd_thread->join();
         delete m_cmd_thread;
-    }
-
-    if(m_current_command)
         delete m_current_command;
+    }
 }
 
+// Starts command execution
 void CommandExecutor::Execute(Command *cmd)
 {
     Screen *screen = m_context->GetScreen();
@@ -44,16 +44,24 @@ void CommandExecutor::Execute(Command *cmd)
         m_cmd_thread->join();
         delete m_cmd_thread;
         delete m_current_command;
+        m_cmd_thread = nullptr;
+        m_current_command = nullptr;
     }
     else if(m_cmd_thread)
     {
         // Additional check: must be unreachable case
         // (thread without assigned command is not allowed)
+        /* TODO check time-out */
         m_cmd_thread->join();
         delete m_cmd_thread;
+        m_cmd_thread = nullptr;
     }
 
+    if(cmd==nullptr)
+        return;
+
     // Assign new command
+    screen->RefreshScreen();
     m_current_command = cmd;
     m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
 }
@@ -82,12 +90,15 @@ bool CommandExecutor::Update()
     Command *clone = nullptr;
 
     Screen *screen = m_context->GetScreen();
-    if(/*m_current_command->IsAccepted() && */!m_current_command->IsCanceled())
+    if(!m_current_command->IsCanceled())
     {
         // Append created entities to a drawing manager
         const std::vector<Entity*> created = m_current_command->GetCreated();
         for(auto i: created)
             screen->AppendEntity(i);
+        const std::vector<Entity*> removed = m_current_command->GetCreated();
+        /* TODO removed entities */
+
         // Save command
         m_command_pool->Append(m_current_command);
         // Create clone (if the command is multi-command)

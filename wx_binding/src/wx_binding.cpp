@@ -72,6 +72,10 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
      // Menu
     id = commands->AppendMenuCommand("Line", "line", ui::CMD_DRAW);
     dispatcher->RegisterHandler(id, "line");
+
+
+    id = add_tool("delete", "Delete", &img_circle, toolbar);
+    dispatcher->RegisterHandler(id, "delete");
 }
 
 

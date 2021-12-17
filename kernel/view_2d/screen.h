@@ -9,7 +9,8 @@
 enum InteractiveState
 {
     SCR_NOTHING,    // nothing
-    SCR_PICKING     // panel is waiting for point pick
+    SCR_PICKING,    // panel is waiting for point pick
+    SCR_SELECTING   // panel is waiting for entities pick
 };
 
 

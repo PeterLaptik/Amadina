@@ -5,6 +5,13 @@
 #include "../entities/entity.h"
 #include <thread>
 
+/**
+* TODO: Recheck screen updating
+* Current implementation -- 'm_context->GetScreen()->RefreshScreen()' (see below).
+* The implementation calls 'Refresh'-method of a screen panel,
+* i.e. makes the call from a worker thread which can be harmful
+**/
+
 #ifdef __MINGW32__
     #define CMD_WAIT_FOR_INPUT std::this_thread::sleep_for(std::chrono::milliseconds(50))
 #else
@@ -13,9 +20,9 @@
 
 
 Command::Command(Context *context)
-    : m_is_executing(false),
+    : m_is_finished(false),
+        m_is_executing(false),
         m_is_canceled(false),
-        m_is_finished(false),
         m_point(nullptr),
         m_entity(nullptr),
         m_entity_set(nullptr),
@@ -26,7 +33,7 @@ Command::Command(Context *context)
 
 Command::~Command()
 {
-    if(m_is_accepted)
+    if(m_is_accepted && !m_is_canceled)
     {
         // Created entities are handled by drawing manager
         for(auto i: m_removed)
@@ -39,13 +46,6 @@ Command::~Command()
             delete i;
     }
 }
-
-/**
-* TODO: Recheck screen updating
-* Current implementation -- 'm_context->GetScreen()->RefreshScreen()' (see below).
-* The implementation calls 'Refresh'-method of screen panel,
-* i.e. the call from a worker thread
-**/
 
 void Command::Execute()
 {
@@ -62,7 +62,7 @@ void Command::Execute()
     m_is_finished = true;
     executor->SetCommandFinished(true);
     m_context->GetScreen()->SetEntityBuilder(nullptr);
-    m_context->GetScreen()->RefreshScreen();
+    //m_context->GetScreen()->RefreshScreen();
 }
 
 CMDResult Command::EnterPoint(Point *point)
@@ -74,12 +74,12 @@ CMDResult Command::EnterPoint(Point *point)
     m_is_executing = true;
     m_is_canceled = false;
     m_context->GetScreen()->SetState(SCR_PICKING);
-    m_context->GetScreen()->RefreshScreen();
+    //m_context->GetScreen()->RefreshScreen();
 
     WaitForInput();
 
     m_context->GetScreen()->SetState(SCR_NOTHING);
-    m_context->GetScreen()->RefreshScreen();
+    //m_context->GetScreen()->RefreshScreen();
     m_point = nullptr;
     m_is_executing = false;
     return !m_is_canceled && !m_is_finished ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
@@ -90,6 +90,10 @@ CMDResult Command::EnterEntity(Entity *entity)
     if(m_is_canceled || m_is_finished)
         return CMDResult::RES_CANCEL;
 
+
+
+
+
     return !m_is_canceled ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
 }
 
@@ -98,6 +102,18 @@ CMDResult Command::EnterEntities(std::vector<Entity*> *entity_set)
     if(m_is_canceled || m_is_finished)
         return CMDResult::RES_CANCEL;
 
+    m_entity_set = entity_set;
+    m_is_executing = true;
+    m_is_canceled = false;
+    m_context->GetScreen()->SetState(SCR_SELECTING);
+    //m_context->GetScreen()->RefreshScreen();
+
+    WaitForInput();
+
+    m_context->GetScreen()->SetState(SCR_NOTHING);
+    //m_context->GetScreen()->RefreshScreen();
+    m_entity_set = nullptr;
+    m_is_executing = false;
     return (!m_is_canceled && !m_is_finished) ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
 }
 
@@ -124,4 +140,13 @@ void Command::SetPoint(const Point &point)
 
     *m_point = point;
     m_is_executing = false;
+}
+
+void Command::SetEntities(const std::vector<Entity*> &selection)
+{
+    if(!m_entity_set)
+        return;
+
+    for(auto i: selection)
+        m_entity_set->push_back(i);
 }

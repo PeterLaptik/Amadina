@@ -76,6 +76,7 @@ class DLL_EXPORT Command: public EntityBuilder
         }
 
         void SetPoint(const Point &point);
+        void SetEntities(const std::vector<Entity*> &selection);
 
         void Accept(void)
         {
@@ -156,7 +157,6 @@ class DLL_EXPORT Command: public EntityBuilder
         std::vector<Entity*> *m_entity_set;
         // Environment data
         Context *m_context;
-        //Screen *m_screen;
         // Command state
         bool m_is_accepted;
 };

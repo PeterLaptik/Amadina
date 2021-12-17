@@ -281,6 +281,9 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
         // Cancel screen selection
         m_panel2->GetDrawManager()->ClearSelection();
         m_panel2->GetContext()->TerminateCommand();
+        // TODO
+        // May be extra-call. Depends on wx-version and compiller
+        m_panel2->RefreshScreen();
         processed = true;
         break;
     case WXK_DELETE:

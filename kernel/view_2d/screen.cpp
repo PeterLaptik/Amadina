@@ -195,41 +195,9 @@ void Screen::TransformCoordinatesToGlobal(double &x, double &y)
 void Screen::PointPicked(double x, double y)
 {
     Point *snap_point = m_draw_manager.GetSnapPoint();
-    m_screen_state = SCR_NOTHING;
-    if(m_receiver)
+    //m_screen_state = SCR_NOTHING;
+    if(m_receiver && m_screen_state==SCR_PICKING)
         m_receiver->SetPoint(snap_point ? *snap_point : Point(x,y));
-
-    /**
-    if(!m_shape_builder)
-        return;
-
-    Point pt(x,y);
-    Point *snap_point = m_draw_manager.GetSnapPoint();
-    if(snap_point)
-        pt = *snap_point;
-
-    bool result = m_shape_builder->AppendPoint(pt);
-    bool multishape = m_shape_builder->IsMultiBuild();
-    if((result)&&(!multishape))
-    {
-        Entity *entity = m_shape_builder->Create();
-        m_draw_manager.AddEntity(entity);
-        m_screen_state = SCR_NOTHING;
-        delete m_shape_builder;
-        m_shape_builder = nullptr;
-    }
-    if((result)&&(multishape))
-    {
-        Entity *entity = m_shape_builder->Create();
-        m_draw_manager.AddEntity(entity);
-        if(!entity)
-        {
-            m_screen_state = SCR_NOTHING;
-            delete m_shape_builder;
-            m_shape_builder = nullptr;
-        }
-    }
-    **/
 }
 
 void Screen::CreateEntity(AbstractBuilder *builder)

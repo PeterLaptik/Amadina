@@ -135,7 +135,12 @@ void ViewPanel::ShowCursor(wxDC &dc)
             dc.DrawLine(coord_x-20, coord_y, coord_x+20, coord_y);
             dc.DrawLine(coord_x, coord_y-20, coord_x, coord_y+20);
             break;
-
+        case SCR_SELECTING:
+            dc.DrawLine(coord_x-10, coord_y-10, coord_x-10, coord_y+10);
+            dc.DrawLine(coord_x+10, coord_y+10, coord_x-10, coord_y+10);
+            dc.DrawLine(coord_x-10, coord_y+10, coord_x-10, coord_y-10);
+            dc.DrawLine(coord_x+10, coord_y-10, coord_x+10, coord_y+10);
+            break;
     }
 
 }
