@@ -1,6 +1,7 @@
 #include "../wx_binding.h"
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
+#include <wx/artprov.h>
 // Kernel dependensies
 #include "api/acommand.h"
 #include "command/dispatcher.h"
@@ -74,7 +75,7 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
     dispatcher->RegisterHandler(id, "line");
 
 
-    id = add_tool("delete", "Delete", &img_circle, toolbar);
+    id = add_tool("delete", "Delete", &wxArtProvider::GetBitmap(wxART_ERROR), toolbar);
     dispatcher->RegisterHandler(id, "delete");
 }
 

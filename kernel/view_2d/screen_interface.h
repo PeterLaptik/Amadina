@@ -77,6 +77,12 @@ class DLL_EXPORT ScreenInterface
         ///\param coord_y - y-coordinate of a mouse pointer
         virtual void ScreenMouseRightButtonDown(const int &coord_x, const int &coord_y) = 0;
 
+        ///\brief The method receives information about pressed key.
+        /// There is no need to process each key pressed,
+        /// only necessary key codes can be processed depending
+        /// on interaction logic.
+        ///\param key - key ASCII code
+        virtual void ScreenKeyPressed(char key) = 0;
 
         ///\brief The method should be called on mouse wheel event over a screen
         /// (mouse wheel rotation)

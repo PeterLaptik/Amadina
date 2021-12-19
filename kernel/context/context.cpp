@@ -47,7 +47,7 @@ void Context::Update()
 {
     bool has_changes = m_executor.Update();
     if(has_changes && m_frame)
-        m_frame->SetUndoRedoState(m_pool.HasAccepted(), m_pool.HasDismissed());
+        m_frame->SetUndoRedoState(m_pool.HasAcceptedCommands(), m_pool.HasDismissedCommands());
 }
 
 
@@ -80,6 +80,6 @@ void Context::Redo()
 
 void Context::GetUndoRedoState(bool &undo, bool &redo)
 {
-    undo = m_pool.HasAccepted();
-    redo = m_pool.HasDismissed();
+    undo = m_pool.HasAcceptedCommands();
+    redo = m_pool.HasDismissedCommands();
 }

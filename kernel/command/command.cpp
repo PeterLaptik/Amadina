@@ -47,6 +47,11 @@ Command::~Command()
     }
 }
 
+bool Command::IsMultiCommand(void) const
+{
+    return false;
+}
+
 void Command::Execute()
 {
     if(!m_context)  // Not allowed execution for prototypes
@@ -62,7 +67,6 @@ void Command::Execute()
     m_is_finished = true;
     executor->SetCommandFinished(true);
     m_context->GetScreen()->SetEntityBuilder(nullptr);
-    //m_context->GetScreen()->RefreshScreen();
 }
 
 CMDResult Command::EnterPoint(Point *point)
@@ -74,12 +78,10 @@ CMDResult Command::EnterPoint(Point *point)
     m_is_executing = true;
     m_is_canceled = false;
     m_context->GetScreen()->SetState(SCR_PICKING);
-    //m_context->GetScreen()->RefreshScreen();
 
     WaitForInput();
 
     m_context->GetScreen()->SetState(SCR_NOTHING);
-    //m_context->GetScreen()->RefreshScreen();
     m_point = nullptr;
     m_is_executing = false;
     return !m_is_canceled && !m_is_finished ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
@@ -89,10 +91,6 @@ CMDResult Command::EnterEntity(Entity *entity)
 {
     if(m_is_canceled || m_is_finished)
         return CMDResult::RES_CANCEL;
-
-
-
-
 
     return !m_is_canceled ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
 }
@@ -106,12 +104,10 @@ CMDResult Command::EnterEntities(std::vector<Entity*> *entity_set)
     m_is_executing = true;
     m_is_canceled = false;
     m_context->GetScreen()->SetState(SCR_SELECTING);
-    //m_context->GetScreen()->RefreshScreen();
 
     WaitForInput();
 
     m_context->GetScreen()->SetState(SCR_NOTHING);
-    //m_context->GetScreen()->RefreshScreen();
     m_entity_set = nullptr;
     m_is_executing = false;
     return (!m_is_canceled && !m_is_finished) ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
@@ -130,13 +126,16 @@ void Command::AppendEntity(Entity *entity)
 
 void Command::RemoveEntity(Entity *entity)
 {
-    m_created.push_back(entity);
+    m_removed.push_back(entity);
 }
 
 void Command::SetPoint(const Point &point)
 {
     if(!m_point)
+    {
+        m_is_canceled = true;
         return;
+    }
 
     *m_point = point;
     m_is_executing = false;
@@ -144,9 +143,61 @@ void Command::SetPoint(const Point &point)
 
 void Command::SetEntities(const std::vector<Entity*> &selection)
 {
+
     if(!m_entity_set)
+    {
+        m_is_canceled = true;
         return;
+    }
 
     for(auto i: selection)
         m_entity_set->push_back(i);
+
+    m_is_executing = false;
+}
+
+Context* Command::GetContext()
+{
+    return m_context;
+}
+
+const std::vector<Entity*>& Command::GetCreated() const
+{
+    return m_created;
+}
+
+const std::vector<Entity*>& Command::GetRemoved() const
+{
+    return m_removed;
+}
+
+void Command::Terminate()
+{
+    m_is_finished = true;
+    m_is_canceled = true;
+}
+
+bool Command::IsFinished() const
+{
+    return m_is_finished;
+}
+
+bool Command::IsCanceled() const
+{
+    return m_is_canceled;
+}
+
+void Command::Accept()
+{
+    m_is_accepted = true;
+}
+
+void Command::Dismiss()
+{
+    m_is_accepted = false;
+}
+
+bool Command::IsAccepted() const
+{
+    return m_is_accepted;
 }

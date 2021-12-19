@@ -2,7 +2,6 @@
 #define VIEWPANEL_H_INCLUDED
 
 #include <wx/panel.h>
-#include <thread>
 #include "view_2d/screen.h"
 #include "context/context.h"
 
@@ -36,7 +35,7 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         ///\brief Destructor
         virtual ~ViewPanel();
 
-        void AssignCommand(Command *cmd);
+//        void AssignCommand(Command *cmd);
 
         ///\brief Cancels current command execution.
         /// The method has to be called on escape-button clicked
@@ -53,6 +52,13 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         ///\param builder - builder instance
         ///\see AbstractBuilder
         void CreateEntityByPoints(AbstractBuilder *builder);
+
+        ///\brief The method receives information about pressed key.
+        /// There is no need to process each key pressed,
+        /// only necessary key codes can be processed depending
+        /// on interaction logic.
+        ///\param key - key ASCII code
+        void ScreenKeyPressed(char key);
 
         /// Sets panel background colour
         ///\param colour - colour value
@@ -89,8 +95,8 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         void AddTestShapes(void);
         void ShowCursor(wxDC &dc);
 
-        Command *m_current_command;
-        std::thread *m_cmd_thread;;
+//        Command *m_current_command;
+//        std::thread *m_cmd_thread;;
 
         // Screen interface implementation
         //ScreenInterface *m_screen_impl;

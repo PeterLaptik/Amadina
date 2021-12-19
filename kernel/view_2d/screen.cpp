@@ -118,8 +118,10 @@ void Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
         PointPicked(x, y);
         RefreshScreen();
         return;
+    case SCR_SELECTING:
     case SCR_NOTHING:
         m_draw_manager.SelectInPoint(x, y, m_snap_radius/2);
+        RefreshScreen();
         break;
     }
     return;
@@ -192,6 +194,22 @@ void Screen::TransformCoordinatesToGlobal(double &x, double &y)
     y = m_borders.bottom + (static_cast<double>(m_height) - y)/static_cast<double>(m_height)*(m_borders.top - m_borders.bottom);
 }
 
+void Screen::ScreenKeyPressed(char key)
+{
+    // Selection accepted
+    switch(key)
+    {
+        case 13:
+            if(m_screen_state==SCR_SELECTING && m_receiver)
+            {
+                m_receiver->SetEntities(m_draw_manager.GetSelection());
+                m_draw_manager.ClearSelection();
+                m_context.Update();
+            }
+            break;
+    }
+}
+
 void Screen::PointPicked(double x, double y)
 {
     Point *snap_point = m_draw_manager.GetSnapPoint();
@@ -230,6 +248,15 @@ void Screen::AppendEntity(Entity *entity)
     RefreshScreen();
 }
 
+void Screen::DeleteEntity(Entity *entity)
+{
+    if(!entity)
+        return;
+    m_draw_manager.ClearSelection();
+    m_draw_manager.DeleteEntity(entity);
+    RefreshScreen();
+}
+
 
 // TODO
 // Screen refresh checks
@@ -264,7 +291,8 @@ void Screen::RedrawAll(IAdapterDC &dc)
         m_draw_manager.ShowSnapEntities(dc, m_mouse_coord.x, m_mouse_coord.y, m_snap_radius/2);
     }
 
-    if(m_screen_state!=SCR_NOTHING)
+    if(m_screen_state!=SCR_NOTHING
+       && m_screen_state!=SCR_SELECTING)
     {
         m_draw_manager.ShowSnapPoints(dc, m_mouse_coord.x, m_mouse_coord.y, m_snap_radius);
     }

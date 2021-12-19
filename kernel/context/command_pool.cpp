@@ -1,15 +1,16 @@
 #include "command_pool.h"
 #include "context.h"
 #include "../command/command.h"
-#include "../processor/drawmanager.h"
-
+#include "../view_2d/screen.h"
 
 CommandPool::CommandPool(Context *context)
     : m_context(context)
 { }
 
+
 CommandPool::~CommandPool()
 { }
+
 
 void CommandPool::Append(Command *command)
 {
@@ -21,6 +22,16 @@ void CommandPool::Append(Command *command)
     m_dismissed.clear();
 
     command->Accept();
+
+    // Update drawing manager
+    Screen *screen = m_context->GetScreen();
+    const std::vector<Entity*> created = command->GetCreated();
+    for(auto i: created)
+        screen->AppendEntity(i);
+    const std::vector<Entity*> removed = command->GetRemoved();
+    for(auto i: removed)
+        screen->DeleteEntity(i);
+
     m_accepted.push_back(command);
 }
 
@@ -32,14 +43,14 @@ void CommandPool::Undo()
     Command *cmd = m_accepted.back();
     cmd->Dismiss();
 
-    DrawManager *mgr = m_context->GetManager();
+    Screen *screen = m_context->GetScreen();
     const std::vector<Entity*>& created = cmd->GetCreated();
     for(auto entity: created)
-        mgr->DeleteEntity(entity);
+        screen->DeleteEntity(entity);
 
     const std::vector<Entity*>& removed = cmd->GetRemoved();
     for(auto entity: removed)
-        mgr->AddEntity(entity);
+        screen->AppendEntity(entity);
 
     m_dismissed.push_back(cmd);
     m_accepted.pop_back();
@@ -53,14 +64,14 @@ void CommandPool::Redo()
     Command *cmd = m_dismissed.back();
     cmd->Accept();
 
-    DrawManager *mgr = m_context->GetManager();
+    Screen *screen = m_context->GetScreen();;
     const std::vector<Entity*>& created = cmd->GetCreated();
     for(auto entity: created)
-        mgr->AddEntity(entity);
+        screen->AppendEntity(entity);
 
     const std::vector<Entity*>& removed = cmd->GetRemoved();
     for(auto entity: removed)
-        mgr->DeleteEntity(entity);
+        screen->DeleteEntity(entity);
 
     m_accepted.push_back(cmd);
     m_dismissed.pop_back();
@@ -77,12 +88,12 @@ void CommandPool::Clear()
     m_accepted.clear();
 }
 
-bool CommandPool::HasAccepted()
+bool CommandPool::HasAcceptedCommands()
 {
     return m_accepted.size();
 }
 
-bool CommandPool::HasDismissed()
+bool CommandPool::HasDismissedCommands()
 {
     return m_dismissed.size();
 }

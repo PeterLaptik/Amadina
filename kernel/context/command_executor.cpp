@@ -1,7 +1,6 @@
 #include "command_executor.h"
 #include "context.h"
 #include "../command/command.h"
-#include "../view_2d/screen.h"
 
 
 CommandExecutor::CommandExecutor(Context *context, CommandPool *pool)
@@ -61,7 +60,6 @@ void CommandExecutor::Execute(Command *cmd)
         return;
 
     // Assign new command
-    screen->RefreshScreen();
     m_current_command = cmd;
     m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
 }
@@ -88,22 +86,13 @@ bool CommandExecutor::Update()
     // then new clone must be created for execution.
     // It must be repeated until execution is not canceled explicitly
     Command *clone = nullptr;
-
-    Screen *screen = m_context->GetScreen();
     if(!m_current_command->IsCanceled())
     {
-        // Append created entities to a drawing manager
-        const std::vector<Entity*> created = m_current_command->GetCreated();
-        for(auto i: created)
-            screen->AppendEntity(i);
-        const std::vector<Entity*> removed = m_current_command->GetCreated();
-        /* TODO removed entities */
-
         // Save command
         m_command_pool->Append(m_current_command);
         // Create clone (if the command is multi-command)
         if(m_current_command->IsMultiCommand() && !m_current_command->IsCanceled())
-            clone = m_current_command->Clone(screen->GetContext());
+            clone = m_current_command->Clone(m_context);
         m_current_command = nullptr;
     }
 
@@ -121,7 +110,7 @@ bool CommandExecutor::Update()
 
 void CommandExecutor::Terminate()
 {
-    if(m_current_command)
+    if(m_current_command && !m_current_command->IsFinished())
         m_current_command->Terminate();
 }
 

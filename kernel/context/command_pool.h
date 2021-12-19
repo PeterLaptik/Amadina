@@ -7,6 +7,7 @@
 class Command;
 class Context;
 
+///\bried Keeps command stack and implements undo/redo operations
 class DLL_EXPORT CommandPool
 {
     public:
@@ -18,14 +19,13 @@ class DLL_EXPORT CommandPool
         void Undo(void);
         void Redo(void);
         void Clear(void);
-        bool HasAccepted(void);
-        bool HasDismissed(void);
+        bool HasAcceptedCommands(void);
+        bool HasDismissedCommands(void);
 
     private:
         Context *m_context;
         std::deque<Command*> m_accepted;
         std::deque<Command*> m_dismissed;
-
 };
 
 #endif // COMMAND_POOL_H_INCLUDED

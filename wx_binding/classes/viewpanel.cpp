@@ -37,9 +37,7 @@ ViewPanel::ViewPanel(wxWindow *parent,
                     const wxSize &size,
                     long style,
                     const wxString &name):
-        wxPanel(parent, winid, pos, size, style, name),
-            m_current_command(nullptr),
-            m_cmd_thread(nullptr)
+        wxPanel(parent, winid, pos, size, style, name)
 {
     int width_px;
     int height_px;
@@ -109,6 +107,11 @@ void ViewPanel::OnMouseWheel(wxMouseEvent &event)
     Screen::ScreenMouseWheel(event.GetWheelRotation(), event.GetX(), event.GetY());
 }
 
+void ViewPanel::ScreenKeyPressed(char key)
+{
+    Screen::ScreenKeyPressed(key);
+}
+
 void ViewPanel::OnResize(wxSizeEvent &event)
 {
     int width, height;
@@ -123,12 +126,11 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
     ShowCursor(dc);
 }
 
+static const int SIZE_SQUARE = 5;
 
-#include<wx/msgdlg.h>
 void ViewPanel::ShowCursor(wxDC &dc)
 {
     InteractiveState state = Screen::GetState();
-
     switch (state)
     {
         case SCR_PICKING:
@@ -136,13 +138,16 @@ void ViewPanel::ShowCursor(wxDC &dc)
             dc.DrawLine(coord_x, coord_y-20, coord_x, coord_y+20);
             break;
         case SCR_SELECTING:
-            dc.DrawLine(coord_x-10, coord_y-10, coord_x-10, coord_y+10);
-            dc.DrawLine(coord_x+10, coord_y+10, coord_x-10, coord_y+10);
-            dc.DrawLine(coord_x-10, coord_y+10, coord_x-10, coord_y-10);
-            dc.DrawLine(coord_x+10, coord_y-10, coord_x+10, coord_y+10);
+            dc.DrawLine(coord_x-SIZE_SQUARE, coord_y-SIZE_SQUARE,
+                        coord_x-SIZE_SQUARE, coord_y+SIZE_SQUARE);
+            dc.DrawLine(coord_x+SIZE_SQUARE, coord_y+SIZE_SQUARE,
+                        coord_x-SIZE_SQUARE, coord_y+SIZE_SQUARE);
+            dc.DrawLine(coord_x+SIZE_SQUARE, coord_y+SIZE_SQUARE,
+                        coord_x+SIZE_SQUARE, coord_y-SIZE_SQUARE);
+            dc.DrawLine(coord_x-SIZE_SQUARE, coord_y-SIZE_SQUARE,
+                        coord_x+SIZE_SQUARE, coord_y-SIZE_SQUARE);
             break;
     }
-
 }
 
 void ViewPanel::CreateEntityByPoints(AbstractBuilder *builder)
@@ -174,23 +179,22 @@ bool ViewPanel::SetBackgroundColour(const wxColour &colour)
 }
 
 
-void ViewPanel::AssignCommand(Command *cmd)
-{
-    if(m_current_command)
-    {
-        m_current_command->Terminate();
-        while(!m_current_command->IsFinished())
-        {
-            // Create timing
-            wxMessageBox("in cycle");
-        }
-        m_cmd_thread->join();
-        delete m_cmd_thread;
-        delete m_current_command;
-    }
-    m_current_command = cmd;
-    m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
-}
+//void ViewPanel::AssignCommand(Command *cmd)
+//{
+//    if(m_current_command)
+//    {
+//        m_current_command->Terminate();
+//        while(!m_current_command->IsFinished())
+//        {
+//            // Create timing
+//        }
+//        m_cmd_thread->join();
+//        delete m_cmd_thread;
+//        delete m_current_command;
+//    }
+//    m_current_command = cmd;
+//    m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
+//}
 
 // Adds shapes for testing
 void ViewPanel::AddTestShapes()

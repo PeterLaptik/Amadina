@@ -22,10 +22,40 @@ class DLL_EXPORT EntityBuilder
 {
     public:
         virtual void SetPoint(const Point &point) = 0;
+        virtual void SetEntities(const std::vector<Entity*> &selection) = 0;
         virtual void Redraw(IAdapterDC &dc, double x, double y)
         { }
 };
 
+///\brief Base command class.
+/// Each command for drawing/editing (excepting of specific interactions)
+/// has to be a sub-class of this class.
+/// The class provides a common interface for using and executing commands
+/// and contains main interactions routines which are used in sub-classes.
+///
+/// Main command logic executes in an overridden method run
+/// using separate thread.
+/// Following protected methods are used for interactions with screen context:
+/// SetPoint (waits for picked point on a screen),
+/// SetEntities (waits for entered entities on a screen)
+/// All above methods are executed in a thread of a method 'Run'.
+///
+/// Commands should use methods AppendEntity/RemoveEntity
+/// to add created entities and entities removed from a screen.
+/// 'AppendEntity' appends new created entity to list of created objects.
+/// 'RemoveEntity' appends existing entity from a screen to list
+/// of removed objects.
+/// Undo/redo, base destructor, and others procedures do not handle objects
+/// which were not added via AppendEntity/RemoveEntity.
+/// Do not delete entities removed from a screen manually.
+/// Delete only objects not handled by AppendEntity/RemoveEntity.
+///
+/// Each command is kept as a prototype in a registration system.
+/// So 'Clone' method should be overridden for every command.
+///
+/// Example of usage see in kernel/builders:
+/// line_cmd.h, point_cmd, etc
+///
 class DLL_EXPORT Command: public EntityBuilder
 {
     public:
@@ -33,6 +63,8 @@ class DLL_EXPORT Command: public EntityBuilder
         /// Only for prototypes
         Command(Context *context = nullptr);
 
+        /// Base destructor.
+        /// Handles lists of appended, removed entities
         virtual ~Command();
 
         /// Main execute method.
@@ -41,67 +73,48 @@ class DLL_EXPORT Command: public EntityBuilder
         /// and true after 'Run' is executed
         void Execute(void);
 
-
+        ///\brief Main command logic.
+        /// Executes as a part of 'Execute'-method
         virtual void Run(void) = 0;
 
-        virtual bool IsMultiCommand(void) const
-        {
-            return false;
-        }
+        /// Shows whether a command be executed multiply times.
+        /// If yes, then command executor will clone previous command
+        /// to start once more. It action is repeatable until
+        /// user cancels command explicitly.
+        ///\return true - if command can be executed multiply times
+        virtual bool IsMultiCommand(void) const;
 
         /// Creates copy of a command.
         /// Each new command is implicitly created
         /// by cloning of existing prototype
         virtual Command* Clone(Context *context) = 0;
 
-        Context* GetContext(void)
-        {
-            return m_context;
-        }
+        /// Returns command context
+        ///\return context object
+        Context* GetContext();
 
-        void Terminate(void)
-        {
-            m_is_finished = true;
-            m_is_canceled = true;
-        }
+        /// Tries terminate command from outside.
+        /// When command is terminated it will be deleted
+        /// with its thread
+        void Terminate(void);
 
-        bool IsFinished(void)
-        {
-            return m_is_finished;
-        }
+        /// Returns is command execution finished
+        ///\return is command finished
+        bool IsFinished(void) const;
 
-        bool IsCanceled(void)
-        {
-            return m_is_canceled;
-        }
+        /// Returns is command canceled
+        ///\return is command canceled
+        bool IsCanceled(void) const;
 
         void SetPoint(const Point &point);
         void SetEntities(const std::vector<Entity*> &selection);
 
-        void Accept(void)
-        {
-            m_is_accepted = true;
-        }
+        void Accept(void);
+        void Dismiss(void);
+        bool IsAccepted(void) const;
 
-        void Dismiss(void)
-        {
-            m_is_accepted = false;
-        }
-
-        bool IsAccepted(void)
-        {
-            return m_is_accepted;
-        }
-
-        const std::vector<Entity*>& GetCreated(void)
-        {
-            return m_created;
-        }
-
-        const std::vector<Entity*>& GetRemoved(void)
-        {
-            return m_removed;
-        }
+        const std::vector<Entity*>& GetCreated(void) const;
+        const std::vector<Entity*>& GetRemoved(void) const;
 
     protected:
         CMDResult EnterPoint(Point *point);

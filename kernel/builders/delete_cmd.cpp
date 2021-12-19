@@ -8,6 +8,7 @@ CmdDelete::CmdDelete(Context *context)
 CmdDelete::~CmdDelete()
 { }
 
+
 Command* CmdDelete::Clone(Context *context)
 {
     return new CmdDelete(context);
@@ -20,4 +21,7 @@ void CmdDelete::Run()
     result = EnterEntities(&selection);
     if(result!=RES_OK)
         return;
+
+    for(auto i: selection)
+        RemoveEntity(i);
 }

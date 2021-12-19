@@ -43,7 +43,6 @@ class MainFrame : public wxFrame, public CallableFrame
 
 
 	private:
-	    wxAuiToolBar* CreateToolbarDraft(void);
 	    wxAuiToolBar* CreateToolbarSnap(void);
 	    wxAuiToolBar* CreateToolbarLayer(void);
 	    wxAuiNotebook* CreateNotebookDrawing(void);

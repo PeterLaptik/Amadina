@@ -137,36 +137,6 @@ void MainFrame::OnConsoleInputEvent(wxEventConsoleInput &event)
     wxMessageBox("Input:" + event.GetInput());
 }
 
-wxAuiToolBar* MainFrame::CreateToolbarDraft()
-{
-    /*
-    int cmd_id;
-    std::string cmd_name;
-
-    tool_draft = new wxAuiToolBar(this, ID_TOOL_DRAFT, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
-
-    cmd_id = wxNewId();
-    cmd_name = cad::command::CMD_POINT;
-    tool_draft->AddTool(cmd_id, cmd_name, wxBitmap(wxImage(_T("res\\icons\\icon_point.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Plot point"), wxEmptyString, NULL);
-
-
-    tool_draft->AddTool(ID_BTN_DRAW_LINE, cad::command::CMD_LINE, wxBitmap(wxImage(_T("res\\icons\\icon_line.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Draw line"), wxEmptyString, NULL);
-    tool_draft->AddTool(ID_BTN_DRAW_LINE_ORTHO, cad::command::CMD_LINE_ORTHOGONAL, wxBitmap(wxImage(_T("res\\icons\\icon_line_ortho.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Draw line orthogonal"), wxEmptyString, NULL);
-    tool_draft->AddTool(ID_BTN_DRAW_CIRCLE, cad::command::CMD_CIRCLE, wxBitmap(wxImage(_T("res\\icons\\icon_circle.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Draw circle"), wxEmptyString, NULL);
-    tool_draft->AddTool(ID_BTN_DRAW_SQUARE_CENTER, cad::command::CMD_SQUARE_CENTER, wxBitmap(wxImage(_T("res\\icons\\icon_square.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Draw square from center"), wxEmptyString, NULL);
-    tool_draft->AddTool(ID_BTN_DRAW_SQUARE_POINTS, cad::command::CMD_SQUARE, wxBitmap(wxImage(_T("res\\icons\\icon_square_pt.ico"))),
-                        wxNullBitmap, wxITEM_NORMAL, _("Draw square"), wxEmptyString, NULL);
-    tool_draft->Realize();
-    return tool_draft;
-    */
-    return nullptr;
-}
-
 wxAuiToolBar* MainFrame::CreateMainToolBar()
 {
     tool_main = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
@@ -277,6 +247,10 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
     int code = event.GetKeyCode();
     switch(code)
     {
+    case WXK_RETURN:
+        m_panel2->ScreenKeyPressed(WXK_RETURN);
+        m_panel2->RefreshScreen();
+        break;
     case WXK_ESCAPE:
         // Cancel screen selection
         m_panel2->GetDrawManager()->ClearSelection();
@@ -284,10 +258,13 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
         // TODO
         // May be extra-call. Depends on wx-version and compiller
         m_panel2->RefreshScreen();
-        processed = true;
+        processed = true; // ignore ESC for console input
         break;
     case WXK_DELETE:
-        //m_interpreter.ExecuteCommand(cad::command::CMD_DELETE);
+        Context *context = m_panel2->GetContext();
+        Command *cmd = m_cmd_dispatcher.GetCommand("delete", context);
+        if(cmd)
+            context->ExecuteCommand(cmd);
         break;
     }
 
@@ -298,7 +275,6 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
 
 void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
 {
-    //wxString cmd;
     int button_id = event.GetId();
     wxObject *obj = event.GetEventObject();
     // Process sticky buttons (preferences, variables etc.)

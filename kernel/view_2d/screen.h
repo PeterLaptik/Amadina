@@ -102,6 +102,13 @@ class DLL_EXPORT Screen: public ScreenInterface
         ///\param coord_y - y-coordinate of a mouse pointer
         virtual void ScreenMouseWheelDown(const int &coord_x, const int &coord_y);
 
+        ///\brief The method receives information about pressed key.
+        /// There is no need to process each key pressed,
+        /// only necessary key codes can be processed depending
+        /// on interaction logic.
+        ///\param key - key ASCII code
+        virtual void ScreenKeyPressed(char key);
+
         ///\brief Refresh the screen: draw all entities and signs
         ///\param dc - device context (implementation of IAdapterDC)
         ///\see IAdapterDC
@@ -150,6 +157,12 @@ class DLL_EXPORT Screen: public ScreenInterface
         virtual void CreateEntity(AbstractBuilder *builder);
 
         virtual void AppendEntity(Entity *entity);
+
+//        virtual void AppendEntities(std::vector<Entity*> entities);
+
+        virtual void DeleteEntity(Entity *entity);
+
+//        virtual void DeleteEntities(std::vector<Entity*> entities);
 
         void SetState(InteractiveState state);
 

@@ -27,6 +27,11 @@ class DLL_EXPORT DrawManager
 
         void ClearSelection(void);
 
+        const std::vector<Entity*>& GetSelection(void) const
+        {
+            return m_selected_entities;
+        }
+
         void ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap_radius);
 
         void ShowSnapEntities(IAdapterDC &dc, double x, double y, double snap_radius);
