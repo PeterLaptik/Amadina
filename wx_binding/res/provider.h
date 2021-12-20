@@ -1,0 +1,27 @@
+#ifndef PROVIDER_H_INCLUDED
+#define PROVIDER_H_INCLUDED
+
+#include <wx/bitmap.h>
+
+enum ICONS
+{
+    ICON_POINT,
+    ICON_LINE,
+    ICON_CIRCLE,
+    ICON_SQUARE,
+    ICON_SQUARE_PT,
+    ICON_DELETE,
+    ICON_GRID,
+    ICON_LAYERS,
+    ICON_SNAP_ANGLES,
+    ICON_SNAP_CENTER,
+    ICON_SNAP_GRID,
+    ICON_SNAP_INTERSECTION,
+    ICON_SNAP_ORTHO,
+    ICON_SNAP_POINT,
+    ICON_SNAP_TANGENT
+};
+
+wxBitmap get_icon(ICONS icon);
+
+#endif // PROVIDER_H_INCLUDED
