@@ -75,7 +75,7 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
     dispatcher->RegisterHandler(id, "line");
 
 
-    id = add_tool("delete", "Delete", &wxArtProvider::GetBitmap(wxART_ERROR), toolbar);
+    id = add_tool("delete", "Delete", &img_circle, toolbar);
     dispatcher->RegisterHandler(id, "delete");
 }
 

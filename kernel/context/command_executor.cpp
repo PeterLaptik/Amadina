@@ -6,23 +6,16 @@
 CommandExecutor::CommandExecutor(Context *context, CommandPool *pool)
     : m_context(context),
     m_command_pool(pool),
-    m_cmd_thread(nullptr),
-    m_current_command(nullptr),
     m_command_finished(false)
 { }
 
 
 CommandExecutor::~CommandExecutor()
 {
-    // Remove executing thread and command
-    // if exist
-    if(m_cmd_thread)
+    if(ptr_cmd)
     {
-        // Stop command executing before delete
-        m_current_command->Terminate();
-        m_cmd_thread->join();
-        delete m_cmd_thread;
-        delete m_current_command;
+        ptr_cmd->Terminate();
+        ptr_thread->join();
     }
 }
 
@@ -36,32 +29,28 @@ void CommandExecutor::Execute(Command *cmd)
         return;
     }
     // Terminate and remove current command if executing
-    if(m_current_command)
+    if(ptr_cmd)
     {
-        m_current_command->Terminate();
+        ptr_cmd->Terminate();
         /* TODO check time-out */
-        m_cmd_thread->join();
-        delete m_cmd_thread;
-        delete m_current_command;
-        m_cmd_thread = nullptr;
-        m_current_command = nullptr;
+        ptr_thread->join();
+        ptr_thread.reset(nullptr);
+        ptr_cmd.reset(nullptr);
     }
-    else if(m_cmd_thread)
+    else if(ptr_thread)
     {
         // Additional check: must be unreachable case
         // (thread without assigned command is not allowed)
-        /* TODO check time-out */
-        m_cmd_thread->join();
-        delete m_cmd_thread;
-        m_cmd_thread = nullptr;
+        ptr_thread->join();
+        ptr_thread.reset(nullptr);
     }
 
     if(cmd==nullptr)
         return;
 
     // Assign new command
-    m_current_command = cmd;
-    m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
+    ptr_cmd.reset(cmd);
+    ptr_thread.reset(new std::thread(&Command::Execute, ptr_cmd.get()));
 }
 
 // Works only for existing finished command
@@ -73,33 +62,29 @@ void CommandExecutor::Execute(Command *cmd)
 // Returns true if drawing manager was updated
 bool CommandExecutor::Update()
 {
-    if(!m_current_command)
+    if(!ptr_cmd)
         return false;
 
     if(!m_command_finished)
         return false;
 
     /* TODO check time-out */
-    m_cmd_thread->join();
+    ptr_thread->join();
 
     // If command is multi-command
     // then new clone must be created for execution.
     // It must be repeated until execution is not canceled explicitly
     Command *clone = nullptr;
-    if(!m_current_command->IsCanceled())
+    if(!ptr_cmd->IsCanceled())
     {
-        // Save command
-        m_command_pool->Append(m_current_command);
         // Create clone (if the command is multi-command)
-        if(m_current_command->IsMultiCommand() && !m_current_command->IsCanceled())
-            clone = m_current_command->Clone(m_context);
-        m_current_command = nullptr;
+        if(ptr_cmd->IsMultiCommand() && !ptr_cmd->IsCanceled())
+            clone = ptr_cmd->Clone(m_context);
+        // Save command
+        m_command_pool->Append(ptr_cmd.release());
     }
-
-    delete m_cmd_thread;
-    delete m_current_command;
-    m_cmd_thread = nullptr;
-    m_current_command = nullptr;
+    ptr_thread.reset(nullptr);
+    ptr_cmd.reset(nullptr);
 
     // Next execution for multi-command
     if(clone)
@@ -110,8 +95,8 @@ bool CommandExecutor::Update()
 
 void CommandExecutor::Terminate()
 {
-    if(m_current_command && !m_current_command->IsFinished())
-        m_current_command->Terminate();
+    if(ptr_cmd && !ptr_cmd->IsFinished())
+        ptr_cmd->Terminate();
 }
 
 void CommandExecutor::SetCommandFinished(bool is_finished)

@@ -12,6 +12,7 @@ class DLL_EXPORT CmdPoint final: public Command
 
         virtual void Run(void) final;
         virtual Command* Clone(Context *context) final;
+        virtual bool IsMultiCommand(void) const;
 
     private:
 

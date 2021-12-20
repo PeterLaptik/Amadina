@@ -65,10 +65,9 @@ class CommandExecutor
         CommandPool *m_command_pool;
 
         // Current command thread
-        std::thread *m_cmd_thread;
-
+        std::unique_ptr<std::thread> ptr_thread;
         // Current command
-        Command *m_current_command;
+        std::unique_ptr<Command> ptr_cmd;
 
         // The flag shows whether a command is finished.
         // Flag can be changed from outside --

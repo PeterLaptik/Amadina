@@ -26,3 +26,8 @@ Command* CmdPoint::Clone(Context *context)
 {
     return new CmdPoint(context);
 }
+
+bool CmdPoint::IsMultiCommand() const
+{
+    return true;
+}
