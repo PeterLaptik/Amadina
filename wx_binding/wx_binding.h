@@ -21,13 +21,14 @@ namespace ui
 // Entry point
 // GUI-dependent initializations
 // Creates tool-bars/menus/buttons
-// and initialize kernel commands
+// and initializes kernel commands
 void DLL_EXPORT init_commands(wxFrame *parent,
                        wxAuiManager *mgr,
                        CommandDispatcher *dispatcher,
                        ui::UiMenuCommands *commands);
 
 
+// Returns new instance of screen (panel)
 DLL_EXPORT ViewPanel* create_screen(wxAuiNotebook *parent, ViewPanel* panel);
 
 #endif // WX_BINDING_H_INCLUDED

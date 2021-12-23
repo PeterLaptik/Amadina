@@ -1,12 +1,13 @@
 #include "../wx_binding.h"
+#include "../res/provider.h"
 #include <wx/frame.h>
 #include <wx/aui/aui.h>
 #include <wx/artprov.h>
-// Kernel dependensies
+
+// Kernel dependencies
 #include "api/acommand.h"
 #include "command/dispatcher.h"
 #include "command/uicommands.h"
-
 
 // Generates new toolbar
 wxAuiToolBar* create_tool_bar(wxFrame *parent);
@@ -19,12 +20,17 @@ void add_toolbar_to_aui_manager(wxAuiToolBar *toolbar,
 
 // Adds tool to an existing toolbar
 long add_tool(wxString name, wxString tooltip,
-              wxBitmap *bitmap, wxAuiToolBar *toolbar);
+              wxBitmap bitmap, wxAuiToolBar *toolbar);
 
 // Appending and registration commands
 void append_drawing_commands(wxAuiToolBar *toolbar,
                              CommandDispatcher *dispatcher,
                              ui::UiMenuCommands *commands);
+
+void append_edit_commands(wxAuiToolBar *toolbar,
+                             CommandDispatcher *dispatcher,
+                             ui::UiMenuCommands *commands);
+
 
 
 //////////////////////////////////
@@ -39,58 +45,62 @@ void init_commands(wxFrame *parent,
                     ui::UiMenuCommands *commands)
 {
     register_kernel_commands(dispatcher);
+    // Drawing
     wxAuiToolBar *drafting_bar = create_tool_bar(parent);
     append_drawing_commands(drafting_bar, dispatcher, commands);
-    add_toolbar_to_aui_manager(drafting_bar, "drawing", "drafting_toolbar", mgr);
+    add_toolbar_to_aui_manager(drafting_bar, "drawing", "drawing_toolbar", mgr);
+    // Editing
+    wxAuiToolBar *edit_bar = create_tool_bar(parent);
+    append_edit_commands(edit_bar, dispatcher, commands);
+    add_toolbar_to_aui_manager(edit_bar, "edit", "edit_toolbar", mgr);
 }
+
 
 void append_drawing_commands(wxAuiToolBar *toolbar,
                              CommandDispatcher *dispatcher,
                              ui::UiMenuCommands *commands)
 {
-    wxBitmap img_pt(wxImage(_T("res\\icons\\icon_point.ico")));
     // Draw point
-    // Button
-    long id = add_tool("point", "Point", &img_pt, toolbar);
+    long id = add_tool("point", "Point", get_icon(ICON_POINT), toolbar);
     dispatcher->RegisterHandler(id, "point");
-     // Menu
     id = commands->AppendMenuCommand("Point", "point", ui::CMD_DRAW);
     dispatcher->RegisterHandler(id, "point");
 
     // Draw line
-
-    wxBitmap img_line(wxImage(_T("res\\icons\\icon_line.ico")));
-    id = add_tool("line", "Line", &img_line, toolbar);
+    id = add_tool("line", "Line", get_icon(ICON_LINE), toolbar);
     dispatcher->RegisterHandler(id, "line");
-     // Menu
     id = commands->AppendMenuCommand("Line", "line", ui::CMD_DRAW);
     dispatcher->RegisterHandler(id, "line");
 
-    // Draw line
-    wxBitmap img_circle(wxImage(_T("res\\icons\\icon_circle.ico")));
-    id = add_tool("circle", "Circle", &img_circle, toolbar);
+    // Draw circle
+    id = add_tool("circle", "Circle", get_icon(ICON_CIRCLE), toolbar);
     dispatcher->RegisterHandler(id, "circle");
-     // Menu
     id = commands->AppendMenuCommand("Line", "line", ui::CMD_DRAW);
     dispatcher->RegisterHandler(id, "line");
+}
 
 
-    id = add_tool("delete", "Delete", &img_circle, toolbar);
+void append_edit_commands(wxAuiToolBar *toolbar,
+                             CommandDispatcher *dispatcher,
+                             ui::UiMenuCommands *commands)
+{
+    long id = add_tool("delete", "Delete", get_icon(ICON_DELETE), toolbar);
     dispatcher->RegisterHandler(id, "delete");
 }
 
 
+// Adds tool to existing toolbar
 long add_tool(wxString name, wxString tooltip,
-              wxBitmap *bitmap, wxAuiToolBar *toolbar)
+              wxBitmap bitmap, wxAuiToolBar *toolbar)
 {
     long id = wxNewId();
-    wxAuiToolBarItem *item = toolbar->AddTool(id, name, *bitmap,
-                    *bitmap, wxITEM_NORMAL,
+    wxAuiToolBarItem *item = toolbar->AddTool(id, name, bitmap,
+                    bitmap, wxITEM_NORMAL,
                     tooltip, wxEmptyString, NULL);
     return id;
 }
 
-
+// Creates new toolbar
 wxAuiToolBar* create_tool_bar(wxFrame *parent)
 {
     wxAuiToolBar *toolbar =  new wxAuiToolBar(parent,
@@ -101,6 +111,7 @@ wxAuiToolBar* create_tool_bar(wxFrame *parent)
     return toolbar;
 }
 
+// Adds a toolbar to aui manager
 void add_toolbar_to_aui_manager(wxAuiToolBar *toolbar,
                                 wxString caption,
                                 wxString unique_name,
