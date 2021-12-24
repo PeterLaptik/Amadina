@@ -75,8 +75,8 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
     // Draw circle
     id = add_tool("circle", "Circle", get_icon(ICON_CIRCLE), toolbar);
     dispatcher->RegisterHandler(id, "circle");
-    id = commands->AppendMenuCommand("Line", "line", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "line");
+    id = commands->AppendMenuCommand("Circle", "circle", ui::CMD_DRAW);
+    dispatcher->RegisterHandler(id, "circle");
 }
 
 
@@ -86,6 +86,10 @@ void append_edit_commands(wxAuiToolBar *toolbar,
 {
     long id = add_tool("delete", "Delete", get_icon(ICON_DELETE), toolbar);
     dispatcher->RegisterHandler(id, "delete");
+    id = add_tool("copy", "Copy", get_icon(ICON_COPY), toolbar);
+    id = add_tool("cut", "Cut", get_icon(ICON_CUT), toolbar);
+    id = add_tool("paste", "Paste", get_icon(ICON_PASTE), toolbar);
+    id = add_tool("move", "Move", get_icon(ICON_MOVE), toolbar);
 }
 
 

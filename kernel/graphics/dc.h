@@ -2,13 +2,12 @@
 #define DC_H_INCLUDED
 
 class Point;
-
 class Colour;
-
 class Layer;
 
-// Abstract device context for plotting
-// Any implementation for a concrete widget type has to implement this interface
+///\brief Device context interface for screen interface.
+/// Contains methods to be implemented for screen implementations
+/// and appears an adapter for GUI-dependent contexts
 class IAdapterDC
 {
     public:
@@ -39,12 +38,6 @@ class IAdapterDC
         virtual const Colour& GetBackgroundColour(void) const = 0;
 
         virtual void SetBackgroundColour(const Colour &colour) = 0;
-
-    protected:
-
-    private:
-
-
 };
 
 #endif // DC_H_INCLUDED

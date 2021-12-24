@@ -61,10 +61,10 @@ Screen* Context::GetScreen(void) const
     return m_screen;
 }
 
-DrawManager* Context::GetManager(void) const
-{
-    return m_screen->GetDrawManager();
-}
+//DrawManager* Context::GetManager(void) const
+//{
+//    return m_screen->GetDrawManager();
+//}
 
 void Context::Undo()
 {

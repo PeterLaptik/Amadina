@@ -3,7 +3,9 @@
 #include <wx/mstream.h>
 #include "icons.h"
 
+// Creates bitmap from raw array
 wxBitmap create_image(const unsigned char *data, int size);
+
 
 wxBitmap get_icon(ICONS icon)
 {
@@ -18,7 +20,15 @@ wxBitmap get_icon(ICONS icon)
         case ICON_CIRCLE:
             return create_image(icon_circle_ico, icon_circle_ico_size);
         case ICON_DELETE:
-            break;
+            return create_image(icon_delete_ico, icon_delete_ico_size);
+        case ICON_COPY:
+            return create_image(icon_copy_ico, icon_copy_ico_size);
+        case ICON_MOVE:
+            return create_image(icon_move_ico, icon_move_ico_size);
+        case ICON_CUT:
+            return create_image(icon_cut_ico, icon_cut_ico_size);
+        case ICON_PASTE:
+            return create_image(icon_paste_ico, icon_paste_ico_size);
     }
 
     return no_bitmap;

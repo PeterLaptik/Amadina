@@ -5,6 +5,8 @@
 #include "../context/context.h"
 #include "../processor/drawmanager.h"
 
+class EntityBuilder;
+
 /// Screen interactive state value
 enum InteractiveState
 {
@@ -14,17 +16,12 @@ enum InteractiveState
 };
 
 
-// Builder should be received for interactive entity creating
-class AbstractBuilder;
-
-//
-class EntityBuilder;
-
-
-///\brief Common interactive screen interface implementation.
-/// A widget for drawing can contain the screen interface implementation
-/// or to be a derived class from the screen interface.
-/// Any events (like mouse move, mouse click etc.) are to be received by the screen.
+///\brief Interactive screen interface implementation.
+/// This is a common GUI-independent implementation.
+/// A widget for drawing can contain this screen interface implementation
+/// or to be a derived class from this screen interface.
+/// For the both cases any events (like mouse move, mouse click etc.)
+/// are to be received by the screen.
 class DLL_EXPORT Screen: public ScreenInterface
 {
     public:
@@ -134,35 +131,20 @@ class DLL_EXPORT Screen: public ScreenInterface
                         double *top,
                         double *bottom) const;
 
-        ///\brief Resets screen interactive state (executing commend etc.)
-        virtual void ScreenCancelCommand(void);
-
         ///\brief Refresh screen
         /// Implementation depends on GUI-library used for the screen panel
         virtual void RefreshScreen(void) = 0;
 
-        ///\brief Returns pointer to a draw manager.
-        /// Each instance of a screen has its own draw manager.
-        ///\see DrawManager
-        ///\return Pointer to a draw manager instance
-        virtual DrawManager* GetDrawManager(void);
-
-        ///\brief Creates a new entity via builder.
-        /// The process of creation is interactive
-        /// and consists of an atomic steps (like pick point, pick entity etc).
-        /// Creating process can be canceled by CancelCommand method.
-        /// The builder instance is handled by the screen after receiving
-        /// and is not to be deleted outside.
-        ///\param builder - entity builder instance
-        virtual void CreateEntity(AbstractBuilder *builder);
+        virtual void ClearSelection(void);
 
         virtual void AppendEntity(Entity *entity);
 
-//        virtual void AppendEntities(std::vector<Entity*> entities);
+        virtual void AppendEntities(const std::vector<Entity*> &entities);
 
         virtual void DeleteEntity(Entity *entity);
 
-//        virtual void DeleteEntities(std::vector<Entity*> entities);
+        virtual void DeleteEntities(const std::vector<Entity*> &entities);
+
 
         void SetState(InteractiveState state);
 
@@ -233,11 +215,6 @@ class DLL_EXPORT Screen: public ScreenInterface
         // Keeps mouse wheel state: pressed or not
         // Needed for screen dragging by pressed mouse wheel
         bool m_is_wheel_pressed;
-
-        // Builder for entity
-        // Exists during entity creation process only,
-        // at a free state points to null-pointer
-        AbstractBuilder *m_shape_builder;
 };
 
 #endif // SCREEN_H_INCLUDED

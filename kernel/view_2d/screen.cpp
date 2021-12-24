@@ -24,7 +24,6 @@ static const int SCREEN_SNAP_RADIUS = 5;
 Screen::Screen():
         m_screen_state(SCR_NOTHING),
         m_is_wheel_pressed(false),
-        m_shape_builder(nullptr),
         m_context(this),
         m_receiver(nullptr)
 {
@@ -213,31 +212,15 @@ void Screen::ScreenKeyPressed(char key)
 void Screen::PointPicked(double x, double y)
 {
     Point *snap_point = m_draw_manager.GetSnapPoint();
-    //m_screen_state = SCR_NOTHING;
     if(m_receiver && m_screen_state==SCR_PICKING)
         m_receiver->SetPoint(snap_point ? *snap_point : Point(x,y));
 }
 
-void Screen::CreateEntity(AbstractBuilder *builder)
+void Screen::ClearSelection()
 {
-    /**
-    if(!builder)
-        return;
-
-    // Reset selection if exists
     m_draw_manager.ClearSelection();
-
-    // TODO other states compatibility
-    m_screen_state = SCR_PICKING;
-
-    // Reassign builder
-    if(m_shape_builder!=nullptr)
-        delete m_shape_builder;
-    m_shape_builder = builder;
-    ScreenRefresh();
-    **/
+    RefreshScreen();
 }
-
 
 void Screen::AppendEntity(Entity *entity)
 {
@@ -245,6 +228,15 @@ void Screen::AppendEntity(Entity *entity)
         return;
     m_draw_manager.ClearSelection();
     m_draw_manager.AddEntity(entity);
+    RefreshScreen();
+}
+
+void Screen::AppendEntities(const std::vector<Entity*> &entities)
+{
+    m_draw_manager.ClearSelection();
+    for(std::vector<Entity*>::const_iterator it=entities.begin();
+            it!=entities.end(); ++it)
+        m_draw_manager.AddEntity(*it);
     RefreshScreen();
 }
 
@@ -257,21 +249,15 @@ void Screen::DeleteEntity(Entity *entity)
     RefreshScreen();
 }
 
-
-// TODO
-// Screen refresh checks
-void Screen::ScreenCancelCommand()
+void Screen::DeleteEntities(const std::vector<Entity*> &entities)
 {
-    /**
-    m_screen_state = SCR_NOTHING;
-    if(m_shape_builder)
-    {
-        delete m_shape_builder;
-        m_shape_builder = nullptr;
-    }
+    // TODO: packaged remove
     m_draw_manager.ClearSelection();
-    ScreenRefresh();
-    **/
+    for(std::vector<Entity*>::const_iterator it=entities.begin();
+            it!=entities.end(); ++it)
+        m_draw_manager.DeleteEntity(*it);
+
+    RefreshScreen();
 }
 
 void Screen::RedrawAll(IAdapterDC &dc)
@@ -297,14 +283,14 @@ void Screen::RedrawAll(IAdapterDC &dc)
         m_draw_manager.ShowSnapPoints(dc, m_mouse_coord.x, m_mouse_coord.y, m_snap_radius);
     }
 
-    if(m_shape_builder)
-        m_shape_builder->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
+//    if(m_shape_builder)
+//        m_shape_builder->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
 }
 
-DrawManager* Screen::GetDrawManager()
-{
-    return &m_draw_manager;
-}
+//DrawManager* Screen::GetDrawManager()
+//{
+//    return &m_draw_manager;
+//}
 
 //void Screen::ScreenSetSizeInPixels(const int &width, const int &height)
 //{

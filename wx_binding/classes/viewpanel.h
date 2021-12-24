@@ -16,7 +16,7 @@ class DrawManager;
 class Command;
 
 ///\brief Drawing panel implementation for wxWidgets GUI-library.
-class DLL_EXPORT ViewPanel: public wxPanel, private Screen
+class DLL_EXPORT ViewPanel final: public wxPanel, private Screen
 {
     public:
         ///\brief Constructor
@@ -35,23 +35,10 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         ///\brief Destructor
         virtual ~ViewPanel();
 
-//        void AssignCommand(Command *cmd);
-
-        ///\brief Cancels current command execution.
-        /// The method has to be called on escape-button clicked
-        /// (or other specific events)
-        void CancelCommand(void);
-
         ///\brief Deletes current entities selection.
         /// The method has to be called on delete-button clicked
         /// (or other specific events)
-        void DeleteSelection(void);
-
-        ///\brief Creates new entity on drawing
-        /// using appropriate builder instance
-        ///\param builder - builder instance
-        ///\see AbstractBuilder
-        void CreateEntityByPoints(AbstractBuilder *builder);
+//        void DeleteSelection(void);
 
         ///\brief The method receives information about pressed key.
         /// There is no need to process each key pressed,
@@ -64,13 +51,14 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         ///\param colour - colour value
         virtual bool SetBackgroundColour(const wxColour &colour);
 
+        virtual void ClearSelection(void);
         virtual void RefreshScreen(void);
         //
         // TODO
         // Remove draw manager getter:
         // Command executions have to work through Screen implementation
         //
-        DrawManager* GetDrawManager(void);
+//        DrawManager* GetDrawManager(void);
 
         Context* GetContext(void)
         {
@@ -94,12 +82,6 @@ class DLL_EXPORT ViewPanel: public wxPanel, private Screen
         /// Add several shapes for testing (test mode)
         void AddTestShapes(void);
         void ShowCursor(wxDC &dc);
-
-//        Command *m_current_command;
-//        std::thread *m_cmd_thread;;
-
-        // Screen interface implementation
-        //ScreenInterface *m_screen_impl;
 
     wxDECLARE_EVENT_TABLE();
 };

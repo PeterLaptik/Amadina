@@ -11,6 +11,10 @@ enum ICONS
     ICON_SQUARE,
     ICON_SQUARE_PT,
     ICON_DELETE,
+    ICON_COPY,
+    ICON_CUT,
+    ICON_PASTE,
+    ICON_MOVE,
     ICON_GRID,
     ICON_LAYERS,
     ICON_SNAP_ANGLES,
@@ -22,6 +26,7 @@ enum ICONS
     ICON_SNAP_TANGENT
 };
 
+// Provides 32x32 icon for tool buttons
 wxBitmap get_icon(ICONS icon);
 
 #endif // PROVIDER_H_INCLUDED

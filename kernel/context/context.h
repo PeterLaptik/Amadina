@@ -64,7 +64,7 @@ class DLL_EXPORT Context final
         Screen* GetScreen(void) const;
 
         /// Returns context screen's draw manager
-        DrawManager* GetManager(void) const;
+//        DrawManager* GetManager(void) const;
 
     private:
         CommandExecutor m_executor;

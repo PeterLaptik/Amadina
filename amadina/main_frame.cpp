@@ -248,12 +248,13 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
     switch(code)
     {
     case WXK_RETURN:
+    case WXK_NUMPAD_ENTER:
         m_panel2->ScreenKeyPressed(WXK_RETURN);
         m_panel2->RefreshScreen();
         break;
     case WXK_ESCAPE:
         // Cancel screen selection
-        m_panel2->GetDrawManager()->ClearSelection();
+        m_panel2->ClearSelection();
         m_panel2->GetContext()->TerminateCommand();
         // TODO
         // May be extra-call. Depends on wx-version and compiller

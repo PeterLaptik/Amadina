@@ -1,6 +1,10 @@
 #ifndef WX_BINDING_H_INCLUDED
 #define WX_BINDING_H_INCLUDED
 
+// Binds kernel to GUI-interface
+// Creates tool-bars, menus, etc.
+// Created for
+
 class wxFrame;
 class wxAuiManager;
 class wxAuiNotebook;

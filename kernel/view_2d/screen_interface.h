@@ -3,10 +3,11 @@
 
 #include "../graphics/colour.h"
 #include "../api/exports.h"
+#include <vector>
 
 class IAdapterDC;
 class DrawManager;
-class AbstractBuilder;
+class Entity;
 
 ///\brief Common widget interface for interactive drawing.
 /// A drafting panel can contain the screen interface implementation
@@ -106,20 +107,18 @@ class DLL_EXPORT ScreenInterface
         virtual void ScreenMouseWheelUp(const int &coord_x, const int &coord_y) = 0;
 
 
-        ///\brief Creates a new entity via builder.
-        ///\param builder - entity builder instance
-        virtual void CreateEntity(AbstractBuilder *builder) = 0;
-
-
-        ///\brief Resets screen interactive state (executing command etc.)
-        virtual void ScreenCancelCommand(void) = 0;
-
-
         ///\brief Returns pointer to a draw manager.
         /// Each instance of a screen has its own draw manager.
         ///\see DrawManager
         ///\return Pointer to a draw manager instance
-        virtual DrawManager* GetDrawManager(void) = 0;
+//        virtual DrawManager* GetDrawManager(void) = 0;
+
+
+        virtual void AppendEntity(Entity *entity) = 0;
+        virtual void AppendEntities(const std::vector<Entity*> &entities) = 0;
+        virtual void DeleteEntity(Entity *entity) = 0;
+        virtual void DeleteEntities(const std::vector<Entity*> &entities) = 0;
+        virtual void ClearSelection(void) = 0;
 
 
         ///\brief Sets current screen borders (in a real scale coordinates)

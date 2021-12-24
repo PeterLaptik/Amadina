@@ -9,9 +9,6 @@
 #include "entities/square.h"
 #include "command/command.h"
 
-
-//#define TEST_MODE
-
 // Default background colour value
 // (red=green=blue) - for panel background colour
 static const int DEFAULT_COLOUR_VALUE = 0;
@@ -43,15 +40,9 @@ ViewPanel::ViewPanel(wxWindow *parent,
     int height_px;
     this->GetSize(&width_px, &height_px);
     this->SetBackgroundStyle(wxBG_STYLE_PAINT);
-    // Screen implementation initializing
-    //m_screen_impl = new Screen();
     Screen::ScreenResize(width_px, height_px);
     wxPanel::SetBackgroundColour(wxColour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
     Screen::SetColour(Colour(DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE, DEFAULT_COLOUR_VALUE));
-    // Test shapes
-    #ifdef TEST_MODE
-        AddTestShapes();
-    #endif // TEST_MODE
 }
 
 ViewPanel::~ViewPanel()
@@ -84,16 +75,6 @@ void ViewPanel::OnMouseWheelUp(wxMouseEvent &event)
 
 void ViewPanel::OnMouseLeftButtonDown(wxMouseEvent &event)
 {
-//    switch (m_state)
-//    {
-//        case SCREEN_PICKING_POINT:
-//            if(m_current_command)
-//            {
-//                m_current_command->SetPoint(Point(event.GetX(), event.GetY()));
-//            }
-//            break;
-//
-//    }
     Screen::ScreenMouseLeftButtonClicked(event.GetX(), event.GetY(), wxGetKeyState(WXK_RAW_CONTROL));
 }
 
@@ -150,27 +131,6 @@ void ViewPanel::ShowCursor(wxDC &dc)
     }
 }
 
-void ViewPanel::CreateEntityByPoints(AbstractBuilder *builder)
-{
-    Screen::CreateEntity(builder);
-}
-
-void ViewPanel::CancelCommand()
-{
-    Screen::ScreenCancelCommand();
-}
-
-void ViewPanel::DeleteSelection()
-{
-    // TODO
-    Screen::GetDrawManager()->DeleteSelection();
-    this->Refresh();
-}
-
-DrawManager* ViewPanel::GetDrawManager(void)
-{
-    return Screen::GetDrawManager();
-}
 
 bool ViewPanel::SetBackgroundColour(const wxColour &colour)
 {
@@ -179,29 +139,9 @@ bool ViewPanel::SetBackgroundColour(const wxColour &colour)
 }
 
 
-//void ViewPanel::AssignCommand(Command *cmd)
-//{
-//    if(m_current_command)
-//    {
-//        m_current_command->Terminate();
-//        while(!m_current_command->IsFinished())
-//        {
-//            // Create timing
-//        }
-//        m_cmd_thread->join();
-//        delete m_cmd_thread;
-//        delete m_current_command;
-//    }
-//    m_current_command = cmd;
-//    m_cmd_thread = new std::thread(&Command::Execute, m_current_command);
-//}
-
-// Adds shapes for testing
-void ViewPanel::AddTestShapes()
+void ViewPanel::ClearSelection()
 {
-    Screen::GetDrawManager()->AddEntity(new Square(Point(0,0),20,10));
-    Screen::GetDrawManager()->AddEntity(new Point(30,30));
-    Screen::GetDrawManager()->AddEntity(new Point(40,40));
+    Screen::ClearSelection();
 }
 
 void ViewPanel::OnMouseEnterPanel(wxMouseEvent &event)
