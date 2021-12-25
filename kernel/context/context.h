@@ -46,25 +46,18 @@ class DLL_EXPORT Context final
         /// Callback for screen updating on command accept.
         /// Should be called after each screen state change
         void Update();
-
         void Undo(void);
         void Redo(void);
         void GetUndoRedoState(bool &undo, bool &redo);
-
-        /// Sets command state to finish.
-        /// Callback for command thread
-        ///\param is_finished - is command finished
-//        void SetCommandFinished(bool is_finished = true);
 
         CommandExecutor* GetExecutor(void);
 
         void SetParentFrame(CallableFrame *frame);
 
+        void PrintMessage(const std::string &msg);
+
         /// Returns context's screen
         Screen* GetScreen(void) const;
-
-        /// Returns context screen's draw manager
-//        DrawManager* GetManager(void) const;
 
     private:
         CommandExecutor m_executor;

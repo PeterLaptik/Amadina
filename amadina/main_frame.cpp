@@ -183,27 +183,11 @@ void MainFrame::SetUndoRedoState(bool can_undo, bool can_redo)
     tool_main->Refresh();
 }
 
-wxAuiToolBar* MainFrame::CreateToolbarSnap()
+void MainFrame::PrintMessage(const std::string &msg)
 {
-    //tool_snap = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
-//    (tool_snap->AddTool(ID_BTN_SNAP_GRID_SHOW, cad::preferences::PREF_GRID_SHOW, wxBitmap(wxImage(_T("res\\icons\\icon_grid.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL))->SetSticky(true);
-//    (tool_snap->AddTool(ID_BTN_SNAP_GRID, cad::preferences::PREF_SNAP_GRID, wxBitmap(wxImage(_T("res\\icons\\icon_snap_grid.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Snap grid"), wxEmptyString, NULL))->SetSticky(false);
-//    (tool_snap->AddTool(ID_BTN_SNAP_POINT, cad::preferences::PREF_SNAP_POINT, wxBitmap(wxImage(_T("res\\icons\\icon_snap_point.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Snap point"), wxEmptyString, NULL))->SetSticky(true);
-//    (tool_snap->AddTool(ID_BTN_SNAP_CENTER, cad::preferences::PREF_SNAP_CENTER, wxBitmap(wxImage(_T("res\\icons\\icon_snap_center.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Snap center"), wxEmptyString, NULL))->SetSticky(true);
-//    (tool_snap->AddTool(ID_BTN_SNAP_INTERSECTION, cad::preferences::PREF_SNAP_INTERSECTION, wxBitmap(wxImage(_T("res\\icons\\icon_snap_intersection.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Snap intersection"), wxEmptyString, NULL))->SetSticky(true);
-//    (tool_snap->AddTool(ID_BTN_SNAP_ORTHO, cad::preferences::PREF_SNAP_ORTHO, wxBitmap(wxImage(_T("res\\icons\\icon_snap_ortho.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Snap orthogonal"), wxEmptyString, NULL))->SetSticky(true);
-//    (tool_snap->AddTool(ID_BTN_SNAP_TANGENT, cad::preferences::PREF_SNAP_TANGENT, wxBitmap(wxImage(_T("res\\icons\\icon_snap_tangent.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Snap tangent"), wxEmptyString, NULL))->SetSticky(true);
-//    (tool_snap->AddTool(ID_BTN_SNAP_ANGLE, cad::preferences::PREF_SNAP_ANGLE, wxBitmap(wxImage(_T("res\\icons\\icon_snap_angle.ico"))),
-//                        wxNullBitmap, wxITEM_NORMAL, _("Snap angle"), wxEmptyString, NULL))->SetSticky(true);
-    return nullptr;
+    m_console->SendText(msg);
 }
+
 
 wxAuiToolBar* MainFrame::CreateToolbarLayer()
 {
@@ -247,26 +231,32 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
     int code = event.GetKeyCode();
     switch(code)
     {
-    case WXK_RETURN:
-    case WXK_NUMPAD_ENTER:
-        m_panel2->ScreenKeyPressed(WXK_RETURN);
-        m_panel2->RefreshScreen();
-        break;
-    case WXK_ESCAPE:
-        // Cancel screen selection
-        m_panel2->ClearSelection();
-        m_panel2->GetContext()->TerminateCommand();
-        // TODO
-        // May be extra-call. Depends on wx-version and compiller
-        m_panel2->RefreshScreen();
-        processed = true; // ignore ESC for console input
-        break;
-    case WXK_DELETE:
-        Context *context = m_panel2->GetContext();
-        Command *cmd = m_cmd_dispatcher.GetCommand("delete", context);
-        if(cmd)
-            context->ExecuteCommand(cmd);
-        break;
+        case WXK_RETURN:
+        case WXK_NUMPAD_ENTER:
+            m_panel2->ScreenKeyPressed(WXK_RETURN);
+            m_panel2->RefreshScreen();
+            break;
+        case WXK_ESCAPE:
+            // Cancel screen selection
+            m_panel2->ClearSelection();
+            m_panel2->GetContext()->TerminateCommand();
+            // TODO
+            // May be extra-call. Depends on wx-version and compiller
+            m_panel2->RefreshScreen();
+            processed = true; // ignore ESC for console input
+            break;
+        case WXK_UP:
+            m_console->ShowPrevious();
+            break;
+        case WXK_DOWN:
+            m_console->ShowNext();
+            break;
+        case WXK_DELETE:
+            Context *context = m_panel2->GetContext();
+            Command *cmd = m_cmd_dispatcher.GetCommand("delete", context);
+            if(cmd)
+                context->ExecuteCommand(cmd);
+            break;
     }
 
     // Send to console
@@ -276,7 +266,7 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
 
 void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
 {
-    int button_id = event.GetId();
+    int tool_id = event.GetId();
     wxObject *obj = event.GetEventObject();
     // Process sticky buttons (preferences, variables etc.)
     if(obj==tool_snap)
@@ -287,7 +277,7 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
 
     if(obj==tool_main)
     {
-        wxAuiToolBarItem *item = tool_main->FindTool(event.GetId());
+        wxAuiToolBarItem *item = tool_main->FindTool(tool_id);
         if(item)
             DefaultOperation(item->GetLabel());
         return;
@@ -295,9 +285,12 @@ void MainFrame::OnToolButtonClicked(wxCommandEvent &event)
 
     // Start executing regular command
     Context *context = m_panel2->GetContext();
-    Command *cmd = m_cmd_dispatcher.GetCommand(event.GetId(), context);
+    Command *cmd = m_cmd_dispatcher.GetCommand(tool_id, context);
     if(cmd)
+    {
+        m_console->SendText(m_cmd_dispatcher.GetCommandName(tool_id), true);
         context->ExecuteCommand(cmd);
+    }
 }
 
 void MainFrame::OnStickyButtonClicked(wxCommandEvent &event)

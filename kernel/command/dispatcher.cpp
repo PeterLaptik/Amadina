@@ -1,6 +1,9 @@
 #include "dispatcher.h"
 #include "command.h"
 
+// Command name value for command that does not exist
+static const std::string UNKNOWN_COMMAND = "unknown command";
+
 CommandDispatcher::CommandDispatcher()
 { }
 
@@ -15,6 +18,8 @@ CommandDispatcher::~CommandDispatcher()
 
 void CommandDispatcher::RegisterCommand(Command *cmd, const std::string &name)
 {
+    if(!cmd)
+        return;
     m_command_map.insert(std::pair<std::string,Command*>(name, cmd));
 }
 
@@ -40,4 +45,10 @@ Command* CommandDispatcher::GetCommand(long handler_id, Context *context)
         return nullptr;
 
     return GetCommand(it->second, context);
+}
+
+std::string CommandDispatcher::GetCommandName(long handler_id)
+{
+    std::map<long,std::string>::iterator it = m_command_handlers.find(handler_id);
+    return it!=m_command_handlers.end() ? it->second : UNKNOWN_COMMAND;
 }

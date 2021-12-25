@@ -30,6 +30,8 @@ class DLL_EXPORT Line: public Entity
 
         virtual void GetPrimitives(std::vector<Entity*> &vec);
 
+        virtual Entity* Clone(void);
+
         void SetStartPoint(const Point &pt);
         void SetEndPoint(const Point &pt);
         const Point& GetStartPoint(void) const;

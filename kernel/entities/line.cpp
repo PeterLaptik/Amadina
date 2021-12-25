@@ -71,6 +71,11 @@ double Line::DistanceFrom(const Point &pt) const
     return distance;
 }
 
+Entity* Line::Clone()
+{
+    return new Line(m_pt1, m_pt2);
+}
+
 void Line::SetStartPoint(const Point &pt)
 {
     m_pt1 = pt;

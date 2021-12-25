@@ -16,12 +16,16 @@ Command* CmdDelete::Clone(Context *context)
 
 void CmdDelete::Run()
 {
-    CMDResult result;
-
-    result = EnterEntities(&selection);
+    PrintMessage("Enter objects to delete:");
+    CMDResult result = EnterEntities(&selection);
     if(result!=RES_OK)
         return;
 
     for(auto i: selection)
         RemoveEntity(i);
+
+    std::string msg = "Removed "
+        + std::to_string(selection.size())
+        + " objects.";
+    PrintMessage(msg);
 }

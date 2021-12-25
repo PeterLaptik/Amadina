@@ -50,6 +50,11 @@ void Context::Update()
         m_frame->SetUndoRedoState(m_pool.HasAcceptedCommands(), m_pool.HasDismissedCommands());
 }
 
+void Context::PrintMessage(const std::string &msg)
+{
+    m_frame->PrintMessage(msg);
+}
+
 
 CommandExecutor* Context::GetExecutor()
 {
@@ -60,11 +65,6 @@ Screen* Context::GetScreen(void) const
 {
     return m_screen;
 }
-
-//DrawManager* Context::GetManager(void) const
-//{
-//    return m_screen->GetDrawManager();
-//}
 
 void Context::Undo()
 {

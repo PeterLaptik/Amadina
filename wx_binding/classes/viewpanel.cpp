@@ -112,6 +112,8 @@ static const int SIZE_SQUARE = 5;
 void ViewPanel::ShowCursor(wxDC &dc)
 {
     InteractiveState state = Screen::GetState();
+    dc.SetPen(wxPen(GetColour().IsDark() ? *wxWHITE : *wxBLACK));
+
     switch (state)
     {
         case SCR_PICKING:
@@ -142,6 +144,11 @@ bool ViewPanel::SetBackgroundColour(const wxColour &colour)
 void ViewPanel::ClearSelection()
 {
     Screen::ClearSelection();
+}
+
+const std::vector<Entity*>& ViewPanel::GetSelection(void)
+{
+    return Screen::GetSelection();
 }
 
 void ViewPanel::OnMouseEnterPanel(wxMouseEvent &event)

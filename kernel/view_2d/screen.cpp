@@ -1,5 +1,4 @@
 #include "Screen.h"
-#include "../builders/abstractbuilder.h"
 #include "../command/command.h"
 
 // Default borders positions
@@ -20,6 +19,10 @@ static const double MIN_MARGIN = 0.1;
 
 // Default value of snap radius in pixels
 static const int SCREEN_SNAP_RADIUS = 5;
+
+// Keyboard commands
+static const char KEY_ENTER = 13;
+
 
 Screen::Screen():
         m_screen_state(SCR_NOTHING),
@@ -198,7 +201,7 @@ void Screen::ScreenKeyPressed(char key)
     // Selection accepted
     switch(key)
     {
-        case 13:
+        case KEY_ENTER:
             if(m_screen_state==SCR_SELECTING && m_receiver)
             {
                 m_receiver->SetEntities(m_draw_manager.GetSelection());
@@ -220,6 +223,11 @@ void Screen::ClearSelection()
 {
     m_draw_manager.ClearSelection();
     RefreshScreen();
+}
+
+const std::vector<Entity*>& Screen::GetSelection()
+{
+    return m_draw_manager.GetSelection();
 }
 
 void Screen::AppendEntity(Entity *entity)
@@ -267,7 +275,10 @@ void Screen::RedrawAll(IAdapterDC &dc)
     dc.SetBackgroundColour(m_colour);
 
     if(m_receiver)
+    {
+        dc.CadSetColour(m_colour.IsDark() ? Colours::WHITE : Colours::BLACK);
         m_receiver->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
+    }
 
     m_context.Update();
     m_draw_manager.DrawAll(dc);

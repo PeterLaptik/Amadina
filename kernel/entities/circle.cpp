@@ -68,3 +68,8 @@ double Circle::DistanceFrom(const Point &pt) const
     double distance_from_center = sqrt(pow(x-x0,2) + pow(y-y0,2));
     return fabs(distance_from_center - m_radius);
 }
+
+Entity* Circle::Clone()
+{
+    return new Circle(m_center, m_radius);
+}

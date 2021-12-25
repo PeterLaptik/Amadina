@@ -46,7 +46,11 @@ class DLL_EXPORT CommandDispatcher
         ///\param context - executing context (see Context-class)
         virtual Command* GetCommand(long handler_id, Context *context);
 
-    private:
+        ///\brief Returns command name by a handler id.
+        ///\return command name
+        virtual std::string GetCommandName(long handler_id);
+
+    //private:
         // 'command name - command object' pairs
         std::map<std::string, Command*> m_command_map;
         // 'handler-id - command name' pairs

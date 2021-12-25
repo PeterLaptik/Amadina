@@ -2,6 +2,7 @@
 #define COMMAND_H_INCLUDED
 
 #include <vector>
+#include <string>
 #include "../api/exports.h"
 
 class Context;
@@ -120,7 +121,7 @@ class DLL_EXPORT Command: public EntityBuilder
         CMDResult EnterPoint(Point *point);
         CMDResult EnterEntity(Entity *entity);
         CMDResult EnterEntities(std::vector<Entity*> *entity_set);
-        //CMDResult PrintMessage(const std::string msg);
+        CMDResult PrintMessage(const std::string &msg);
 
         void AppendEntity(Entity *entity);
         void RemoveEntity(Entity *entity);

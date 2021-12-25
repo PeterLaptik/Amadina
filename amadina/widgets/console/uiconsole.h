@@ -4,9 +4,9 @@
 #include <wx/panel.h>
 #include <array>
 
-static const char *CLASS_NAME_UI_CONSOLE = "UI console";
-
 class wxTextCtrl;
+
+static const char *CLASS_NAME_UI_CONSOLE = "UI console";
 
 class UiConsole: public wxPanel
 {
@@ -20,25 +20,30 @@ class UiConsole: public wxPanel
 
         virtual ~UiConsole();
 
-        void SetPrompt(const wxString &prompt);
-        void ClearPrompt(void);
-        wxString GetPrompt(void) const;
+        void SendText(const wxString &txt, bool is_command = false);
+        void ShowPrevious(void);
+        void ShowNext(void);
 
     protected:
-        void OnInput(wxCommandEvent &event);
+        //void OnInput(wxCommandEvent &event);
         void OnEnter(wxCommandEvent &event);
 
     private:
         inline void RefreshHistory(void);
+        inline void AppendCommand(const wxString &cmd);
+        inline void AppendMessage(const wxString &msg);
+        // Finds position of a current input value
+        // in a command log.
+        // Helper for ShowPrevious / ShowNext methods
+        inline int GetCurrentInputLogPosition(void);
 
-        static const size_t COMMAND_LINE_HISTORY = 100;
         static const long INPUT_TEXT_ID;
-        wxString m_command_prompt;
+        static const size_t COMMAND_LINE_HISTORY = 30;
 
         wxTextCtrl *m_input_line;
         wxTextCtrl *m_upper_lines;
         std::array<wxString,COMMAND_LINE_HISTORY> m_history_log;
-        std::array<wxString,COMMAND_LINE_HISTORY> m_history_commands;
+        std::array<wxString,COMMAND_LINE_HISTORY> m_command_log;
 
         DECLARE_EVENT_TABLE()
 };

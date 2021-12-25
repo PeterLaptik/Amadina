@@ -6,9 +6,9 @@
 class wxEventConsoleInput;
 wxDECLARE_EVENT(wxCONSOLE_INPUT, wxEventConsoleInput);
 
-/**\brief Console input event.
-* Occurs on input line 'enter'-key pressed.
-*/
+///\brief Console input event.
+/// Occurs on input line 'enter'-key pressed.
+/// Contains input string value
 class wxEventConsoleInput: public wxCommandEvent
 {
     public:

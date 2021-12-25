@@ -33,12 +33,12 @@ void append_edit_commands(wxAuiToolBar *toolbar,
 
 
 
-//////////////////////////////////
-//////                      //////
-//////     Entry point      //////
-//////    GUI-dependent     //////
-//////                      //////
-//////////////////////////////////
+/////////////////////////////////////////////////////////
+//////                                             //////
+//////                  Entry point                //////
+//////                 GUI-dependent               //////
+//////                                             //////
+/////////////////////////////////////////////////////////
 void init_commands(wxFrame *parent,
                     wxAuiManager *mgr,
                     CommandDispatcher *dispatcher,
@@ -86,7 +86,15 @@ void append_edit_commands(wxAuiToolBar *toolbar,
 {
     long id = add_tool("delete", "Delete", get_icon(ICON_DELETE), toolbar);
     dispatcher->RegisterHandler(id, "delete");
+    id = commands->AppendMenuCommand("Delete", "delete", ui::CMD_DRAW);
+    dispatcher->RegisterHandler(id, "delete");
+
+
     id = add_tool("copy", "Copy", get_icon(ICON_COPY), toolbar);
+    dispatcher->RegisterHandler(id, "copy");
+    id = commands->AppendMenuCommand("Copy", "copy", ui::CMD_DRAW);
+    dispatcher->RegisterHandler(id, "copy");
+
     id = add_tool("cut", "Cut", get_icon(ICON_CUT), toolbar);
     id = add_tool("paste", "Paste", get_icon(ICON_PASTE), toolbar);
     id = add_tool("move", "Move", get_icon(ICON_MOVE), toolbar);

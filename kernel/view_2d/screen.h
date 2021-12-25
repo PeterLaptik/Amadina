@@ -137,6 +137,8 @@ class DLL_EXPORT Screen: public ScreenInterface
 
         virtual void ClearSelection(void);
 
+        virtual const std::vector<Entity*>& GetSelection(void);
+
         virtual void AppendEntity(Entity *entity);
 
         virtual void AppendEntities(const std::vector<Entity*> &entities);

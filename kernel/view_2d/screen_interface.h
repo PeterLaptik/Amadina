@@ -119,7 +119,7 @@ class DLL_EXPORT ScreenInterface
         virtual void DeleteEntity(Entity *entity) = 0;
         virtual void DeleteEntities(const std::vector<Entity*> &entities) = 0;
         virtual void ClearSelection(void) = 0;
-
+        virtual const std::vector<Entity*>& GetSelection(void) = 0;
 
         ///\brief Sets current screen borders (in a real scale coordinates)
         ///\param left - left border value

@@ -1,6 +1,17 @@
 #include "point.h"
 #include <math.h>
 
+Point::Point()
+    :x(0), y(0), z(0)
+{ }
+
+Point::Point(double x_coord, double y_coord, double z_coord):
+        x(x_coord), y(y_coord), z(z_coord)
+{ }
+
+Point::~Point()
+{ }
+
 bool Point::operator==(const Point &pt)
 {
     return (pt.x==x)&&(pt.x==y)&&(pt.x==z);
@@ -38,4 +49,9 @@ double Point::GetDistanceBetween(const Point &pt1, const Point &pt2)
 void Point::GetSnapPoints(std::vector<Point> &vec) const
 {
     vec.push_back(*this);
+}
+
+Entity* Point::Clone(void)
+{
+    return new Point(*this);
 }

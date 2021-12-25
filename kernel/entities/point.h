@@ -8,24 +8,11 @@
 class DLL_EXPORT Point: public Entity
 {
     public:
-        Point():
-            x(0), y(0), z(0)
-        { }
+        Point();
 
-        Point(double x_coord, double y_coord, double z_coord = 0):
-            x(x_coord), y(y_coord), z(z_coord)
-        { }
+        Point(double x_coord, double y_coord, double z_coord = 0);
 
-        virtual ~Point()
-        { }
-
-//        Point& operator=(Point p) volatile
-//        {
-//            x = p.x;
-//            y = p.y;
-//            z = p.z;
-//            return *this;
-//        }
+        virtual ~Point();
 
         bool operator==(const Point &pt);
 
@@ -38,6 +25,8 @@ class DLL_EXPORT Point: public Entity
         static double GetDistanceBetween(const Point &pt1, const Point &pt2);
 
         void GetSnapPoints(std::vector<Point> &vec) const;
+
+        Entity* Clone(void);
 
         void SetX(double x_coord) {x = x_coord;}
         void SetY(double y_coord) {y = y_coord;}

@@ -5,12 +5,6 @@
 #include "../entities/entity.h"
 #include <thread>
 
-/**
-* TODO: Recheck screen updating
-* Current implementation -- 'm_context->GetScreen()->RefreshScreen()' (see below).
-* The implementation calls 'Refresh'-method of a screen panel,
-* i.e. makes the call from a worker thread which can be harmful
-**/
 
 #ifdef __MINGW32__
     #define CMD_WAIT_FOR_INPUT std::this_thread::sleep_for(std::chrono::milliseconds(50))
@@ -47,11 +41,6 @@ Command::~Command()
     }
 }
 
-bool Command::IsMultiCommand(void) const
-{
-    return false;
-}
-
 void Command::Execute()
 {
     if(!m_context)  // Not allowed execution for prototypes
@@ -67,6 +56,13 @@ void Command::Execute()
     m_is_finished = true;
     executor->SetCommandFinished(true);
     m_context->GetScreen()->SetEntityBuilder(nullptr);
+}
+
+CMDResult Command::PrintMessage(const std::string &msg)
+{
+    if(!m_context)
+        return CMDResult::RES_ERROR;
+    m_context->PrintMessage(msg);
 }
 
 CMDResult Command::EnterPoint(Point *point)
@@ -104,6 +100,14 @@ CMDResult Command::EnterEntities(std::vector<Entity*> *entity_set)
     m_is_executing = true;
     m_is_canceled = false;
     m_context->GetScreen()->SetState(SCR_SELECTING);
+
+    // Proceed if selection exists
+    auto current_selection = m_context->GetScreen()->GetSelection();
+    if(current_selection.size()>0)
+    {
+        SetEntities(current_selection);
+        m_context->GetScreen()->ClearSelection();
+    }
 
     WaitForInput();
 
@@ -200,4 +204,9 @@ void Command::Dismiss()
 bool Command::IsAccepted() const
 {
     return m_is_accepted;
+}
+
+bool Command::IsMultiCommand(void) const
+{
+    return false;
 }

@@ -52,6 +52,7 @@ class DLL_EXPORT ViewPanel final: public wxPanel, private Screen
         virtual bool SetBackgroundColour(const wxColour &colour);
 
         virtual void ClearSelection(void);
+        virtual const std::vector<Entity*>& GetSelection(void);
         virtual void RefreshScreen(void);
         //
         // TODO

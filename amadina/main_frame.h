@@ -27,7 +27,8 @@ class MainFrame : public wxFrame, public CallableFrame
             long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
 		virtual ~MainFrame();
 
-		void SetUndoRedoState(bool can_undo, bool can_redo);
+		virtual void SetUndoRedoState(bool can_undo, bool can_redo);
+		virtual void PrintMessage(const std::string &msg) override;
 
 
 	protected:
@@ -43,7 +44,6 @@ class MainFrame : public wxFrame, public CallableFrame
 
 
 	private:
-	    wxAuiToolBar* CreateToolbarSnap(void);
 	    wxAuiToolBar* CreateToolbarLayer(void);
 	    wxAuiNotebook* CreateNotebookDrawing(void);
 	    wxAuiToolBar* CreateMainToolBar(void);

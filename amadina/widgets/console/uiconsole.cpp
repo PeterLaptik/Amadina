@@ -9,7 +9,7 @@ const long UiConsole::INPUT_TEXT_ID = wxNewId();
 wxDEFINE_EVENT(wxCONSOLE_INPUT, wxEventConsoleInput);
 
 BEGIN_EVENT_TABLE(UiConsole, wxPanel)
-    EVT_TEXT(UiConsole::INPUT_TEXT_ID, UiConsole::OnInput)
+    //EVT_TEXT(UiConsole::INPUT_TEXT_ID, UiConsole::OnInput)
     EVT_TEXT_ENTER(UiConsole::INPUT_TEXT_ID, UiConsole::OnEnter)
 END_EVENT_TABLE()
 
@@ -41,11 +41,10 @@ UiConsole::~UiConsole()
 
 }
 
-#include <wx/msgdlg.h>
-void UiConsole::OnInput(wxCommandEvent &event)
-{
-
-}
+//void UiConsole::OnInput(wxCommandEvent &event)
+//{
+//
+//}
 
 void UiConsole::OnEnter(wxCommandEvent &event)
 {
@@ -54,29 +53,46 @@ void UiConsole::OnEnter(wxCommandEvent &event)
     if(line=="")
         return;
 
-    // Shift history lines if overflowed
-    if(m_history_log.size()==COMMAND_LINE_HISTORY)
-    {
-        for(int i=0; i<COMMAND_LINE_HISTORY-1; i++)
-        {
-            m_history_log[i] = std::move(m_history_log[i+1]);
-            if(m_command_prompt=="")
-                m_history_commands[i] = std::move(m_history_log[i+1]);
-        }
-        m_history_log[COMMAND_LINE_HISTORY-1] = line;
-        if(m_command_prompt=="")
-            m_history_commands[COMMAND_LINE_HISTORY-1] = line;
-    }
-    else
-    {
-        *m_history_log.end() = line;
-    }
-
+    AppendCommand(line);
     RefreshHistory();
     m_input_line->Clear();
     // Transfer line input to upper listener
     wxEventConsoleInput input_event(line);
     wxPostEvent(this, input_event);
+}
+
+#include <wx/msgdlg.h>
+void UiConsole::ShowPrevious()
+{
+    int cursor = GetCurrentInputLogPosition();
+    --cursor;
+    if(cursor>=0 && cursor<COMMAND_LINE_HISTORY)
+        if(!m_command_log[cursor].IsEmpty()) // may be empty cell
+            m_input_line->SetValue(m_command_log[cursor]);
+}
+
+void UiConsole::ShowNext()
+{
+    int cursor = GetCurrentInputLogPosition();
+    ++cursor;
+    if(cursor>=0 && cursor<COMMAND_LINE_HISTORY)
+        if(!m_command_log[cursor].IsEmpty()) // may be empty cell
+            m_input_line->SetValue(m_command_log[cursor]);
+}
+
+int UiConsole::GetCurrentInputLogPosition()
+{
+    wxString entered = m_input_line->GetValue();
+    int cursor = 0;
+    for(; cursor<COMMAND_LINE_HISTORY; cursor++)
+    {
+        if(m_command_log[cursor].IsEmpty())
+            continue;
+
+        if(m_command_log[cursor]==entered)
+            break;
+    }
+    return cursor;
 }
 
 void UiConsole::RefreshHistory()
@@ -92,23 +108,49 @@ void UiConsole::RefreshHistory()
             m_upper_lines->AppendText('\n');
     }
 }
-
-void UiConsole::SetPrompt(const wxString &prompt)
+void UiConsole::AppendCommand(const wxString &cmd)
 {
-    m_command_prompt = prompt;
-    m_upper_lines->AppendText('\n');
-    m_upper_lines->AppendText(m_command_prompt);
+    for(int i=0; i<m_command_log.size(); i++)
+    {
+        if(m_command_log[i]==cmd)
+            goto exit_logging;
+    }
+    // Add to command log
+    if(m_command_log.size()>=COMMAND_LINE_HISTORY)
+    {
+        for(int i=0; i<COMMAND_LINE_HISTORY-1; i++)
+            m_command_log[i] = m_command_log[i+1];
+        m_command_log[COMMAND_LINE_HISTORY-1] = cmd;
+    }
+    else
+    {
+        m_command_log[m_command_log.size()-1] = cmd;
+    }
+
+    exit_logging:
+    AppendMessage(cmd);
 }
 
-void UiConsole::ClearPrompt(void)
+void UiConsole::AppendMessage(const wxString &msg)
 {
-    m_command_prompt = "";
-    m_input_line->Clear();
+    if(m_history_log.size()>=COMMAND_LINE_HISTORY)
+    {
+        for(int i=0; i<COMMAND_LINE_HISTORY-1; i++)
+            m_history_log[i] = m_history_log[i+1];
+        m_history_log[COMMAND_LINE_HISTORY-1] = msg;
+    }
+    else
+    {
+        m_history_log[m_history_log.size()-1] = msg;
+    }
+}
+
+void UiConsole::SendText(const wxString &txt, bool is_command)
+{
+    if(is_command)
+        AppendCommand(txt);
+    else
+        AppendMessage(txt);
     RefreshHistory();
-}
-
-wxString UiConsole::GetPrompt(void) const
-{
-    return m_command_prompt;
 }
 

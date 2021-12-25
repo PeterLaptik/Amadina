@@ -22,8 +22,10 @@ class DLL_EXPORT Entity
 
         // Highlight the entity
         // May be used to show picked entities
-        virtual void DrawHighlighted(IAdapterDC&)
-        { }
+        virtual void DrawHighlighted(IAdapterDC &dc)
+        {
+            Draw(dc);
+        }
 
         // Returns minimum distance between the entity and point
         virtual double DistanceFrom(const Point&) const
@@ -44,6 +46,8 @@ class DLL_EXPORT Entity
         // The result can be used for intersections computing, geometric transformations etc.
         virtual void GetPrimitives(std::vector<Entity*>&)
         { }
+
+        virtual Entity* Clone(void) = 0;
 
         void SetLayer(Layer *layer);
         Layer* GetLayer(void) const;

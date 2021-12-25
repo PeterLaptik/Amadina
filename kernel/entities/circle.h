@@ -27,6 +27,8 @@ class Circle: public Entity
 
         virtual void GetPrimitives(std::vector<Entity*> &vec);
 
+        virtual Entity* Clone(void);
+
     protected:
 
     private:
