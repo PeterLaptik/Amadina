@@ -6,33 +6,20 @@
 #include <wx/display.h>
 #include <wx/msgdlg.h>
 
-static const wxRect DEFAULT_SIZE_RECT = wxRect(0, 0, 1200, 800);
-//static const wxSize DEFAULT_BUTTON_SIZE = wxSize(32, 32);
 
-const int MainFrame::ID_TOOL_DRAFT = wxNewId();
-const int MainFrame::ID_TOOL_SNAP = wxNewId();
-const int MainFrame::ID_BTN_DRAW_POINT = wxNewId();
-const int MainFrame::ID_BTN_DRAW_LINE = wxNewId();
-const int MainFrame::ID_BTN_DRAW_LINE_ORTHO = wxNewId();
-const int MainFrame::ID_BTN_DRAW_CIRCLE = wxNewId();
-const int MainFrame::ID_BTN_DRAW_SQUARE_CENTER = wxNewId();
-const int MainFrame::ID_BTN_DRAW_SQUARE_POINTS = wxNewId();
-const int MainFrame::ID_BTN_SNAP_GRID_SHOW = wxNewId();
-const int MainFrame::ID_BTN_SNAP_GRID = wxNewId();
-const int MainFrame::ID_BTN_SNAP_POINT = wxNewId();
-const int MainFrame::ID_BTN_SNAP_CENTER = wxNewId();
-const int MainFrame::ID_BTN_SNAP_ORTHO = wxNewId();
-const int MainFrame::ID_BTN_SNAP_INTERSECTION = wxNewId();
-const int MainFrame::ID_BTN_SNAP_TANGENT = wxNewId();
-const int MainFrame::ID_BTN_SNAP_ANGLE = wxNewId();
-const int MainFrame::ID_NOTEBOOK = wxNewId();
+static const wxRect DEFAULT_WINDOW_SIZE = wxRect(0, 0, 1200, 800);
+
+// Default buttons ids
 const int MainFrame::ID_BTN_UNDO = wxNewId();
 const int MainFrame::ID_BTN_REDO = wxNewId();
+
+
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
     EVT_CHAR_HOOK(MainFrame::OnKeyPressed)
 wxEND_EVENT_TABLE()
+
 
 
 MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
@@ -42,27 +29,32 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
                      long style)
             : wxFrame(parent, id, title, pos, size, style)
 {
+    /*
 	wxDisplay display(wxDisplay::GetFromWindow(this));
-	//this->SetSize(display.GetClientArea());
-	this->SetSize(DEFAULT_SIZE_RECT);
+	this->SetSize(display.GetClientArea());
+	*/
+	this->SetSize(DEFAULT_WINDOW_SIZE);
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 	m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
-
+    // Main menu bar
 	CreateMenuBar();
     SetMenuBar(m_menu_bar);
-
-	m_mgr.AddPane(CreateNotebookDrawing(), wxAuiPaneInfo().Center().CaptionVisible(false).Dock().Resizable().FloatingSize(wxDefaultSize));
-    m_mgr.AddPane(CreateMainToolBar(), wxAuiPaneInfo().Name(_T("main_toolbar")).ToolbarPane().Caption(_("menu")).Layer(10).Top().Gripper());
-    //m_mgr.AddPane(CreateToolbarSnap(), wxAuiPaneInfo().Name(_T("toolbar_snap")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
-//    m_mgr.AddPane(CreateToolbarLayer(), wxAuiPaneInfo().Name(_T("toolbar_layer")).ToolbarPane().Caption(_("drawing")).Layer(10).Top().Gripper());
+    // Tool-bars
+	m_mgr.AddPane(CreateNotebookDrawing(),
+               wxAuiPaneInfo().Center().CaptionVisible(false)
+               .Dock().Resizable().FloatingSize(wxDefaultSize));
+    m_mgr.AddPane(CreateMainToolBar(),
+                  wxAuiPaneInfo().Name(_T("main_toolbar")).ToolbarPane()
+                  .Caption(_("menu")).Layer(10).Top().Gripper());
+    // Initialize commands and tool-bars from kernel
     init_commands(dynamic_cast<wxFrame*>(this), &m_mgr, &m_cmd_dispatcher, &m_menu);
-
-    m_panel2 = new ViewPanel(drawing_container);
+    // TODO
+    // One panel mock
+    m_panel2 = create_screen(drawing_container);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
-	m_active_panel = m_panel2;
 	m_panel2->GetContext()->SetParentFrame(this);
-
+	m_active_panel = m_panel2;
     // Append console input pane
 	m_console = new UiConsole(this);
 	m_console->SetSize(150, 150);
@@ -70,24 +62,10 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
             wxAuiPaneInfo().Name(_T("console"))
                .Caption(_("Console"))
                .Bottom());
-
-
-
 	m_mgr.Update();
 	this->Centre(wxBOTH);
-
-
-	Context::AssignCommandDispatcher(&m_cmd_dispatcher);
-
-//    cad::command::RegisterDefaultCommands(m_interpreter);
-    //m_interpreter.SetActivePanel(m_panel2);
-
-//    CommandMock();
-
     DefaultOperation("");
     Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
-//    Connect(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
-//      wxCommandEventHandler(MainFrame::OnMenuClicked));
 }
 
 
@@ -139,7 +117,7 @@ void MainFrame::OnConsoleInputEvent(wxEventConsoleInput &event)
 
 wxAuiToolBar* MainFrame::CreateMainToolBar()
 {
-    tool_main = new wxAuiToolBar(this, ID_TOOL_SNAP, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
+    tool_main = new wxAuiToolBar(this, wxNewId(), wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
     tool_main->AddTool(wxNewId(), wxT("save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE),
                         wxNullBitmap, wxITEM_NORMAL, _("Show grid"), wxEmptyString, NULL);
     tool_main->AddTool(ID_BTN_UNDO, wxT("undo"), wxArtProvider::GetBitmap(wxART_UNDO),
@@ -222,7 +200,7 @@ void MainFrame::CommandMock()
 
 wxAuiNotebook* MainFrame::CreateNotebookDrawing()
 {
-    return drawing_container = new wxAuiNotebook(this, ID_NOTEBOOK, wxDefaultPosition, wxDefaultSize, wxAUI_NB_DEFAULT_STYLE);
+    return drawing_container = new wxAuiNotebook(this, wxNewId(), wxDefaultPosition, wxDefaultSize, wxAUI_NB_DEFAULT_STYLE);
 }
 
 void MainFrame::OnKeyPressed(wxKeyEvent &event)
@@ -258,7 +236,6 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
                 context->ExecuteCommand(cmd);
             break;
     }
-
     // Send to console
     if(!processed)
         event.Skip();

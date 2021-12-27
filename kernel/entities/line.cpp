@@ -76,6 +76,18 @@ Entity* Line::Clone()
     return new Line(m_pt1, m_pt2);
 }
 
+void Line::MoveTo(double delta_x, double delta_y, double delta_z)
+{
+    int x_1 = m_pt1.GetX() + delta_x;
+    int y_1 = m_pt1.GetY() + delta_y;
+    int z_1 = m_pt1.GetZ() + delta_z;
+    int x_2 = m_pt2.GetX() + delta_x;
+    int y_2 = m_pt2.GetY() + delta_y;
+    int z_2 = m_pt2.GetZ() + delta_z;
+    m_pt1 = Point(x_1, y_1, z_1);
+    m_pt2 = Point(x_2, y_2, z_2);
+}
+
 void Line::SetStartPoint(const Point &pt)
 {
     m_pt1 = pt;

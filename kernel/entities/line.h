@@ -32,6 +32,8 @@ class DLL_EXPORT Line: public Entity
 
         virtual Entity* Clone(void);
 
+        virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0);
+
         void SetStartPoint(const Point &pt);
         void SetEndPoint(const Point &pt);
         const Point& GetStartPoint(void) const;

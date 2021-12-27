@@ -49,6 +49,9 @@ class DLL_EXPORT Entity
 
         virtual Entity* Clone(void) = 0;
 
+        virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0)
+        { }
+
         void SetLayer(Layer *layer);
         Layer* GetLayer(void) const;
 

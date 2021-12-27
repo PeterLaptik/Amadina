@@ -37,7 +37,8 @@ class MainFrame : public wxFrame, public CallableFrame
 	    void OnKeyPressed(wxKeyEvent &event);
 	    void OnConsoleInputEvent(wxEventConsoleInput &event);
 	    void OnMenuClicked(wxCommandEvent &event);
-	    void CreateMenuBar(void);
+	    // Creates main menu sections
+	    inline void CreateMenuBar(void);
 
 	    //CommandInterpreter m_interpreter;
 	    ViewPanel *m_active_panel;
@@ -49,25 +50,7 @@ class MainFrame : public wxFrame, public CallableFrame
 	    wxAuiToolBar* CreateMainToolBar(void);
 	    void DefaultOperation(const wxString &name);
 
-	    // Controls ids
-	    static const int ID_NOTEBOOK;
-	    static const int ID_TOOL_DRAFT;
-	    static const int ID_TOOL_SNAP;
-	    static const int ID_BTN_DRAW_POINT;
-	    static const int ID_BTN_DRAW_LINE;
-	    static const int ID_BTN_DRAW_LINE_ORTHO;
-	    static const int ID_BTN_DRAW_CIRCLE;
-	    static const int ID_BTN_DRAW_SQUARE_CENTER;
-	    static const int ID_BTN_DRAW_SQUARE_POINTS;
-        static const int ID_BTN_SNAP_GRID_SHOW;
-        static const int ID_BTN_SNAP_GRID;
-        static const int ID_BTN_SNAP_POINT;
-        static const int ID_BTN_SNAP_CENTER;
-        static const int ID_BTN_SNAP_INTERSECTION;
-        static const int ID_BTN_SNAP_ORTHO;
-        static const int ID_BTN_SNAP_TANGENT;
-        static const int ID_BTN_SNAP_ANGLE;
-
+	    // // Default buttons ids
         static const int ID_BTN_UNDO;
         static const int ID_BTN_REDO;
 

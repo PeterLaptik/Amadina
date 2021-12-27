@@ -6,6 +6,7 @@
 
 // Kernel dependencies
 #include "api/acommand.h"
+#include "context/context.h"
 #include "command/dispatcher.h"
 #include "command/uicommands.h"
 
@@ -45,6 +46,7 @@ void init_commands(wxFrame *parent,
                     ui::UiMenuCommands *commands)
 {
     register_kernel_commands(dispatcher);
+    Context::AssignCommandDispatcher(dispatcher);
     // Drawing
     wxAuiToolBar *drafting_bar = create_tool_bar(parent);
     append_drawing_commands(drafting_bar, dispatcher, commands);
