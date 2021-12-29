@@ -207,6 +207,14 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
 {
     bool processed = false;
     int code = event.GetKeyCode();
+
+    // Hot key
+    if(event.ControlDown())
+    {
+        HotKeyPressed(event);
+        return;
+    }
+
     switch(code)
     {
         case WXK_RETURN:
@@ -236,9 +244,26 @@ void MainFrame::OnKeyPressed(wxKeyEvent &event)
                 context->ExecuteCommand(cmd);
             break;
     }
+
     // Send to console
     if(!processed)
         event.Skip();
+}
+
+void MainFrame::HotKeyPressed(wxKeyEvent &event)
+{
+    Command *cmd = nullptr;
+    int code = event.GetKeyCode();
+    Context *context = m_panel2->GetContext();
+
+    if(code==static_cast<int>('C'))
+        cmd = m_cmd_dispatcher.GetCommand("copy", context);
+
+    if(code==static_cast<int>('V'))
+        cmd = m_cmd_dispatcher.GetCommand("paste", context);
+
+    if(cmd)
+        context->ExecuteCommand(cmd);
 }
 
 void MainFrame::OnToolButtonClicked(wxCommandEvent &event)

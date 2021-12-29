@@ -3,6 +3,7 @@
 
 #include "command_pool.h"
 #include "command_executor.h"
+#include "clipboard.h"
 #include "../command/interpreter.h"
 #include "../api/exports.h"
 #include <thread>
@@ -59,6 +60,9 @@ class DLL_EXPORT Context final
         /// Returns context's screen
         Screen* GetScreen(void) const;
 
+        ClipBoard* GetClipBoard(void);
+
+
     private:
         CommandExecutor m_executor;
 
@@ -74,6 +78,8 @@ class DLL_EXPORT Context final
         // Command interpreter:
         // parses data inputed from a console
         Interpreter m_interpreter;
+
+        ClipBoard m_clipboard;
 
         // Executing command
 //        Command *m_current_command;

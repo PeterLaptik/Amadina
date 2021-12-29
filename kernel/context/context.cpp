@@ -17,7 +17,8 @@ Context::Context(Screen *screen)
     : m_executor(this, &m_pool),
     m_screen(screen),
     m_pool(this),
-    m_frame(nullptr)
+    m_frame(nullptr),
+    m_clipboard(this)
 { }
 
 Context::~Context()
@@ -65,6 +66,12 @@ Screen* Context::GetScreen(void) const
 {
     return m_screen;
 }
+
+ClipBoard* Context::GetClipBoard()
+{
+    return &m_clipboard;
+}
+
 
 void Context::Undo()
 {

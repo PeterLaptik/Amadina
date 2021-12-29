@@ -35,6 +35,7 @@ class MainFrame : public wxFrame, public CallableFrame
 	    void OnToolButtonClicked(wxCommandEvent &event);
 	    void OnStickyButtonClicked(wxCommandEvent &event);
 	    void OnKeyPressed(wxKeyEvent &event);
+	    void HotKeyPressed(wxKeyEvent &event);
 	    void OnConsoleInputEvent(wxEventConsoleInput &event);
 	    void OnMenuClicked(wxCommandEvent &event);
 	    // Creates main menu sections

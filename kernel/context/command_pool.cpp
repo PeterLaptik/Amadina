@@ -26,9 +26,16 @@ void CommandPool::Append(Command *command)
     // Update drawing manager
     Screen *screen = m_context->GetScreen();
     const std::vector<Entity*> created = command->GetCreated();
+    const std::vector<Entity*> removed = command->GetRemoved();
+
+    if(created.size()==0 && removed.size()==0)
+    {
+        delete command;
+        return;
+    }
+
     for(auto i: created)
         screen->AppendEntity(i);
-    const std::vector<Entity*> removed = command->GetRemoved();
     for(auto i: removed)
         screen->DeleteEntity(i);
 

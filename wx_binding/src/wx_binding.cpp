@@ -99,6 +99,10 @@ void append_edit_commands(wxAuiToolBar *toolbar,
 
     id = add_tool("cut", "Cut", get_icon(ICON_CUT), toolbar);
     id = add_tool("paste", "Paste", get_icon(ICON_PASTE), toolbar);
+    dispatcher->RegisterHandler(id, "paste");
+    id = commands->AppendMenuCommand("Paste", "paste", ui::CMD_DRAW);
+    dispatcher->RegisterHandler(id, "paste");
+
     id = add_tool("move", "Move", get_icon(ICON_MOVE), toolbar);
 }
 

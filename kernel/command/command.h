@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <string>
+#include "../context/context.h"
 #include "../api/exports.h"
 
-class Context;
 class Screen;
 class Point;
 class Entity;

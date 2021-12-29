@@ -5,6 +5,7 @@
 #include "../builders/circle_cmd.h"
 #include "../builders/delete_cmd.h"
 #include "../builders/copy_cmd.h"
+#include "../builders/paste_cmd.h"
 
 void register_kernel_commands(CommandDispatcher *dispatcher)
 {
@@ -13,4 +14,5 @@ void register_kernel_commands(CommandDispatcher *dispatcher)
     dispatcher->RegisterCommand(new CmdCircle(), "circle");
     dispatcher->RegisterCommand(new CmdDelete(), "delete");
     dispatcher->RegisterCommand(new CmdCopy(), "copy");
+    dispatcher->RegisterCommand(new CmdPaste(), "paste");
 }
