@@ -48,6 +48,14 @@ void Interpreter::Interpretate(const std::string &line)
             Token token(value);
             m_tokens.push_back(token);
         }
+        else if(sub_tokens.size()==2)
+        {
+            double x = lexer.Evaluate(sub_tokens.at(0));
+            double y = lexer.Evaluate(sub_tokens.at(1));
+            Point point(x,y);
+            Token token(point);
+            m_tokens.push_back(token);
+        }
         else if(sub_tokens.size()==3)
         {
             double x = lexer.Evaluate(sub_tokens.at(0));
@@ -101,7 +109,7 @@ Token Interpreter::GetFirstToken() const
 
 bool Interpreter::HasNextToken() const
 {
-    return m_cursor+1<m_tokens.size();
+    return m_cursor<m_tokens.size();
 }
 
 Token Interpreter::GetNextToken() const

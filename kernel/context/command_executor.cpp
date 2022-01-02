@@ -2,7 +2,6 @@
 #include "context.h"
 #include "../command/command.h"
 
-
 CommandExecutor::CommandExecutor(Context *context, CommandPool *pool)
     : m_context(context),
     m_command_pool(pool),
@@ -19,6 +18,7 @@ CommandExecutor::~CommandExecutor()
     }
 }
 
+#include<iostream>
 // Starts command execution
 void CommandExecutor::Execute(Command *cmd)
 {
@@ -28,12 +28,16 @@ void CommandExecutor::Execute(Command *cmd)
         delete cmd;
         return;
     }
+
     // Terminate and remove current command if executing
     if(ptr_cmd)
     {
         ptr_cmd->Terminate();
+        while(!ptr_cmd->IsFinished())
+            ;
         /* TODO check time-out */
-        ptr_thread->join();
+        if(ptr_thread->joinable())
+            ptr_thread->join();
         ptr_thread.reset(nullptr);
         ptr_cmd.reset(nullptr);
     }
@@ -45,8 +49,10 @@ void CommandExecutor::Execute(Command *cmd)
         ptr_thread.reset(nullptr);
     }
 
-    if(cmd==nullptr)
+    if (cmd == nullptr)
+    {
         return;
+    }
 
     // Assign new command
     ptr_cmd.reset(cmd);
@@ -62,11 +68,10 @@ void CommandExecutor::Execute(Command *cmd)
 // Returns true if drawing manager was updated
 bool CommandExecutor::Update()
 {
-    if(!ptr_cmd)
+    if (!ptr_cmd || !m_command_finished)
+    {
         return false;
-
-    if(!m_command_finished)
-        return false;
+    }
 
     /* TODO check time-out */
     ptr_thread->join();
@@ -87,10 +92,18 @@ bool CommandExecutor::Update()
     ptr_cmd.reset(nullptr);
 
     // Next execution for multi-command
-    if(clone)
+    if (clone)
+    {
         Execute(clone);
-
+    }
     return true;
+}
+
+void CommandExecutor::SendPoint(const Point &point)
+{
+    if(!ptr_cmd)
+        return;
+    ptr_cmd->SetPoint(point);
 }
 
 void CommandExecutor::Terminate()

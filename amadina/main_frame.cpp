@@ -9,6 +9,12 @@
 
 static const wxRect DEFAULT_WINDOW_SIZE = wxRect(0, 0, 1200, 800);
 
+// Hotkeys
+const char HOTKEY_COPY = 'C';
+const char HOTKEY_PASTE = 'V';
+const char HOTKEY_UNDO = 'Z';
+const char HOTKEY_REDO = 'Y';
+
 // Default buttons ids
 const int MainFrame::ID_BTN_UNDO = wxNewId();
 const int MainFrame::ID_BTN_REDO = wxNewId();
@@ -18,6 +24,7 @@ const int MainFrame::ID_BTN_REDO = wxNewId();
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
     EVT_CHAR_HOOK(MainFrame::OnKeyPressed)
+    EVT_UPDATE_UI(wxID_ANY, MainFrame::OnUpdateHandler)
 wxEND_EVENT_TABLE()
 
 
@@ -65,6 +72,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 	m_mgr.Update();
 	this->Centre(wxBOTH);
     DefaultOperation("");
+    m_message = "";
     Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
 }
 
@@ -112,7 +120,16 @@ void MainFrame::OnMenuClicked(wxCommandEvent &event)
 // Processes console input
 void MainFrame::OnConsoleInputEvent(wxEventConsoleInput &event)
 {
-    wxMessageBox("Input:" + event.GetInput());
+    //wxMessageBox("Input:" + event.GetInput());
+    try
+    {
+        m_panel2->GetContext()->AssignInput(event.GetInput().ToStdString());
+    }
+    catch(const std::exception &e)
+    {
+        wxMessageBox(e.what());
+    }
+
 }
 
 wxAuiToolBar* MainFrame::CreateMainToolBar()
@@ -163,7 +180,16 @@ void MainFrame::SetUndoRedoState(bool can_undo, bool can_redo)
 
 void MainFrame::PrintMessage(const std::string &msg)
 {
-    m_console->SendText(msg);
+    m_message = msg;
+}
+
+void MainFrame::OnUpdateHandler(wxUpdateUIEvent& event)
+{
+    if (m_message != "")
+    {
+        m_console->SendText(m_message);
+        m_message = "";
+    }
 }
 
 
@@ -256,11 +282,17 @@ void MainFrame::HotKeyPressed(wxKeyEvent &event)
     int code = event.GetKeyCode();
     Context *context = m_panel2->GetContext();
 
-    if(code==static_cast<int>('C'))
+    if(code==static_cast<int>(HOTKEY_COPY))
         cmd = m_cmd_dispatcher.GetCommand("copy", context);
 
-    if(code==static_cast<int>('V'))
+    if(code==static_cast<int>(HOTKEY_PASTE))
         cmd = m_cmd_dispatcher.GetCommand("paste", context);
+
+    if(code==static_cast<int>(HOTKEY_UNDO))
+        context->Undo();
+
+    if(code==static_cast<int>(HOTKEY_REDO))
+        context->Redo();
 
     if(cmd)
         context->ExecuteCommand(cmd);

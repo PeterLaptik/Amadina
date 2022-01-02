@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <atomic>
 #include "../context/context.h"
 #include "../api/exports.h"
 
@@ -31,14 +32,14 @@ class DLL_EXPORT EntityBuilder
 ///\brief Base command class.
 /// Each command for drawing/editing (excepting of specific interactions)
 /// has to be a sub-class of this class.
-/// The class provides a common interface for using and executing commands
-/// and contains main interactions routines which are used in sub-classes.
+/// This class provides a common interface for executing commands
+/// and contains main interactions routines which can be used in sub-classes.
 ///
-/// Main command logic executes in an overridden method run
-/// using separate thread.
+/// Main command logic executes in an overridden method 'Run'
+/// in a separate thread.
 /// Following protected methods are used for interactions with screen context:
-/// SetPoint (waits for picked point on a screen),
-/// SetEntities (waits for entered entities on a screen)
+/// EnterPoint (waits for picked point on a screen),
+/// EnterEntities (waits for entered entities on a screen)
 /// All above methods are executed in a thread of a method 'Run'.
 ///
 /// Commands should use methods AppendEntity/RemoveEntity
@@ -107,6 +108,8 @@ class DLL_EXPORT Command: public EntityBuilder
         ///\return is command canceled
         bool IsCanceled(void) const;
 
+        bool IsWaitingForPoint(void) const;
+
         void SetPoint(const Point &point);
         void SetEntities(const std::vector<Entity*> &selection);
 
@@ -129,6 +132,8 @@ class DLL_EXPORT Command: public EntityBuilder
     private:
         // Main waiting cycle
         inline void WaitForInput(void);
+        // Console input
+        inline bool GetPointFromConsole(Point *point);
 
         // Created entities
         std::vector<Entity*> m_created;
@@ -143,7 +148,7 @@ class DLL_EXPORT Command: public EntityBuilder
         // attempts to stop the thread of 'Execute'-method
         // In this case it is better to finish 'Execute'-method
         // as quickly as possible
-        volatile bool m_is_finished;
+        std::atomic<bool> m_is_finished;
 
         // Shows if a command is waiting for input:
         // it means that the command is waiting for
@@ -155,13 +160,13 @@ class DLL_EXPORT Command: public EntityBuilder
         // (see description of 'm_is_finished')
         // false 'm_is_executing' with false 'm_is_canceled'
         // returns OK-result
-        volatile bool m_is_executing;
+        std::atomic<bool> m_is_executing;
 
         // Shows if the input canceled
         // Generally canceled input means
         // that the command has to be canceled too.
         // Cancel on input returns non-OK result code.
-        volatile bool m_is_canceled;
+        std::atomic<bool> m_is_canceled;
 
         // Input values pointers.
         // Keep pointers to entities to be set
@@ -169,8 +174,10 @@ class DLL_EXPORT Command: public EntityBuilder
         Point *m_point;
         Entity *m_entity;
         std::vector<Entity*> *m_entity_set;
+
         // Environment data
         Context *m_context;
+
         // Command state
         bool m_is_accepted;
 };

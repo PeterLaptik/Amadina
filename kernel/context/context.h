@@ -7,6 +7,7 @@
 #include "../command/interpreter.h"
 #include "../api/exports.h"
 #include <thread>
+#include <mutex>
 
 class Screen;
 class DrawManager;
@@ -26,14 +27,18 @@ class DLL_EXPORT Context final
         ~Context(void);
 
         /// Assigns command dispatcher.
-        /// The static method neet to be called once
+        /// The static method need to be called once
         /// to assign initialized command dispatcher
+        /// for all contexts
         static void AssignCommandDispatcher(CommandDispatcher *dispatcher);
 
         /// Assigns command / message from console.
         /// The message is parsed by interpreter and evaluated
         ///\command - message string
-        void AssignCommand(const std::string &command);
+        void AssignInput(const std::string &command);
+
+        bool HasInput(void);
+        Token GetInput(void);
 
         /// Starts command execution.
         /// If other command is executing
@@ -55,7 +60,18 @@ class DLL_EXPORT Context final
 
         void SetParentFrame(CallableFrame *frame);
 
+        ///\brief Sends text message to a console of a main GUI-frame.
+        /// Default implementation calls 'PrintMessage'-method
+        /// of a 'CallableFrame'-object.
+        /// This method can be called from another thread (command-thread).
+        /// Thread safety of the call must be provided
+        /// by a 'CallableFrame'-object.
+        ///\param msg - message
+        ///\see CallableFrame
         void PrintMessage(const std::string &msg);
+
+        // Updates screen
+        void UpdateScreen(void);
 
         /// Returns context's screen
         Screen* GetScreen(void) const;
@@ -79,6 +95,8 @@ class DLL_EXPORT Context final
         // parses data inputed from a console
         Interpreter m_interpreter;
 
+        // Clipboard
+        // Keeps selected elements as a list of clones
         ClipBoard m_clipboard;
 
         // Executing command

@@ -38,7 +38,7 @@ class UiConsole: public wxPanel
         inline int GetCurrentInputLogPosition(void);
 
         static const long INPUT_TEXT_ID;
-        static const size_t COMMAND_LINE_HISTORY = 30;
+        static const size_t COMMAND_LINE_HISTORY = 5;
 
         wxTextCtrl *m_input_line;
         wxTextCtrl *m_upper_lines;

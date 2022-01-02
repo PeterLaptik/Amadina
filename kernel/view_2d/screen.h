@@ -160,7 +160,7 @@ class DLL_EXPORT Screen: public ScreenInterface
         void SetEntityBuilder(EntityBuilder *receiver)
         {
             m_receiver = receiver;
-            RefreshScreen();
+            //RefreshScreen();
         }
 
     protected:

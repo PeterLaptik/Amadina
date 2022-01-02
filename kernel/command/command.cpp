@@ -62,13 +62,20 @@ CMDResult Command::PrintMessage(const std::string &msg)
 {
     if(!m_context)
         return CMDResult::RES_ERROR;
+    m_is_executing = true;
     m_context->PrintMessage(msg);
+    m_is_executing = false;
+    return CMDResult::RES_OK;
 }
 
 CMDResult Command::EnterPoint(Point *point)
 {
     if(m_is_finished)
         return CMDResult::RES_CANCEL;
+
+    // Try to get from console line
+//    if(GetPointFromConsole(point))
+//        return CMDResult::RES_OK;
 
     m_point = point;
     m_is_executing = true;
@@ -117,9 +124,34 @@ CMDResult Command::EnterEntities(std::vector<Entity*> *entity_set)
     return (!m_is_canceled && !m_is_finished) ? CMDResult::RES_OK : CMDResult::RES_CANCEL;
 }
 
+bool Command::GetPointFromConsole(Point *point)
+{
+    if(!m_context->HasInput())
+        return false;
+
+    try {
+        Token token = m_context->GetInput();
+        if(token.IsPoint())
+        {
+            *point = token.GetPoint();
+            return true;
+        }
+        else
+        {
+            std::string msg = "Wrong point: ";
+            if(token.IsString())
+                msg += token.GetString();
+            m_context->PrintMessage(msg);
+        }
+    } catch(const std::exception &e) {
+        // Ignore wrong input
+    }
+    return false;
+}
+
 void Command::WaitForInput()
 {
-    while(m_is_executing && !m_is_canceled && !m_is_finished)
+    while (m_is_executing && !m_is_canceled && !m_is_finished)
         CMD_WAIT_FOR_INPUT;
 }
 
@@ -183,12 +215,17 @@ void Command::Terminate()
 
 bool Command::IsFinished() const
 {
-    return m_is_finished;
+    return m_is_finished && !m_is_executing;
 }
 
 bool Command::IsCanceled() const
 {
     return m_is_canceled;
+}
+
+bool Command::IsWaitingForPoint() const
+{
+    return m_point!=nullptr;
 }
 
 void Command::Accept()

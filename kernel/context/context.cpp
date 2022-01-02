@@ -24,9 +24,40 @@ Context::Context(Screen *screen)
 Context::~Context()
 { }
 
-void Context::AssignCommand(const std::string &command)
+void Context::AssignInput(const std::string &command)
 {
+    try
+    {
+        m_interpreter.Interpretate(command);
+        Token token = m_interpreter.GetFirstToken();
+        if(token.IsString())
+        {
+            std::string cmd_name = token.GetString();
+            Command *cmd = m_dispatcher->GetCommand(cmd_name, this);
+            if(cmd)
+                ExecuteCommand(cmd);
+        }
+        else if(token.IsPoint())
+        {
+            Point pt = token.GetPoint();
+            m_executor.SendPoint(pt);
+        }
+    }
+    catch(const std::exception &e)
+    {
+        m_frame->PrintMessage(e.what());
+    }
 
+}
+
+bool Context::HasInput()
+{
+    return m_interpreter.HasNextToken();
+}
+
+Token Context::GetInput()
+{
+    return m_interpreter.GetNextToken();
 }
 
 void Context::SetParentFrame(CallableFrame *frame)

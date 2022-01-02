@@ -6,6 +6,7 @@
 class Command;
 class Context;
 class CommandPool;
+class Point;
 
 ///\brief Class for executing command objects in separate threads.
 /// Receives and handles command object and keeps command executing thread.
@@ -56,6 +57,8 @@ class CommandExecutor
         /// Callback for command thread
         ///\param is_finished - is command finished
         void SetCommandFinished(bool is_finished = true);
+
+        void SendPoint(const Point &point);
 
     private:
         // Executor's context

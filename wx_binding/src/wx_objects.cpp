@@ -4,8 +4,5 @@
 
 ViewPanel* create_screen(wxAuiNotebook *parent)
 {
-    if(parent==nullptr)
-        return false;
-
     return new ViewPanel(parent);
 }

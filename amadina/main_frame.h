@@ -38,6 +38,7 @@ class MainFrame : public wxFrame, public CallableFrame
 	    void HotKeyPressed(wxKeyEvent &event);
 	    void OnConsoleInputEvent(wxEventConsoleInput &event);
 	    void OnMenuClicked(wxCommandEvent &event);
+		void OnUpdateHandler(wxUpdateUIEvent &event);
 	    // Creates main menu sections
 	    inline void CreateMenuBar(void);
 
@@ -71,6 +72,8 @@ class MainFrame : public wxFrame, public CallableFrame
 
         AmadinaMenu m_menu;
         CommandDispatcher m_cmd_dispatcher;
+
+		wxString m_message;
 
         DECLARE_EVENT_TABLE()
 };
