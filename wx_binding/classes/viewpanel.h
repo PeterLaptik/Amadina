@@ -2,6 +2,7 @@
 #define VIEWPANEL_H_INCLUDED
 
 #include <wx/panel.h>
+#include "events.h"
 #include "view_2d/screen.h"
 #include "context/context.h"
 

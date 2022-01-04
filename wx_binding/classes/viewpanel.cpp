@@ -1,4 +1,5 @@
 #include "viewpanel.h"
+#include "events.h"
 #include "dcadapter_wx.h"
 #include <wx/dcclient.h>
 #include <thread>
@@ -13,6 +14,7 @@
 // (red=green=blue) - for panel background colour
 static const int DEFAULT_COLOUR_VALUE = 0;
 
+wxDEFINE_EVENT(wxCAD_PANEL_MOVE, MouseMoveEvent);
 
 wxBEGIN_EVENT_TABLE(ViewPanel, wxPanel)
     EVT_PAINT(ViewPanel::OnPaint)
@@ -60,7 +62,7 @@ void ViewPanel::OnMouseMove(wxMouseEvent &event)
     Screen::ScreenMouseMove(event.GetX(), event.GetY(),
                             wxGetKeyState(WXK_RAW_CONTROL),
                             wxGetMouseState().LeftIsDown());
-
+    wxPostEvent(this, MouseMoveEvent(wxCAD_PANEL_MOVE));
 }
 
 void ViewPanel::OnMouseWheelDown(wxMouseEvent &event)

@@ -163,6 +163,12 @@ class DLL_EXPORT Screen: public ScreenInterface
             //RefreshScreen();
         }
 
+        void GetMouseGlobalCoordinates(double &x, double &y)
+        {
+            x = m_mouse_coord.x;
+            y = m_mouse_coord.y;
+        }
+
     protected:
 
     private:

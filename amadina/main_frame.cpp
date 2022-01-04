@@ -6,7 +6,6 @@
 #include <wx/display.h>
 #include <wx/msgdlg.h>
 
-
 static const wxRect DEFAULT_WINDOW_SIZE = wxRect(0, 0, 1200, 800);
 
 // Hotkeys
@@ -19,12 +18,23 @@ const char HOTKEY_REDO = 'Y';
 const int MainFrame::ID_BTN_UNDO = wxNewId();
 const int MainFrame::ID_BTN_REDO = wxNewId();
 
+wxDEFINE_EVENT(wxCAD_PANEL_MOVE, MouseMoveEvent);
 
+/*
+typedef void (wxEvtHandler::*MouseMoveEventFunction)(MouseMoveEvent &);
+
+#define MouseMoveEventHandler(func) wxEVENT_HANDLER_CAST(MouseMoveEventFunction, func)
+
+#define EVT_CAD_MOUSE_MOVE(id, func) \
+    wx__DECLARE_EVT1(wxCAD_PANEL_MOVE, id, MouseMoveEventHandler(func))
+
+*/
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
     EVT_CHAR_HOOK(MainFrame::OnKeyPressed)
     EVT_UPDATE_UI(wxID_ANY, MainFrame::OnUpdateHandler)
+    //EVT_CAD_MOUSE_MOVE(wxID_ANY, MainFrame::OnCadPanelMouseMove)
 wxEND_EVENT_TABLE()
 
 
@@ -73,7 +83,10 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
 	this->Centre(wxBOTH);
     DefaultOperation("");
     m_message = "";
+    // Status-bar
+    m_status_bar = CreateStatusBar(4);
     Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
+    Bind(wxCAD_PANEL_MOVE, &MainFrame::OnCadPanelMouseMove, this);
 }
 
 
@@ -115,6 +128,11 @@ void MainFrame::OnMenuClicked(wxCommandEvent &event)
     wxString command = "Command:";
     command<<event.GetId();
     wxMessageBox(command);
+}
+
+void MainFrame::OnCadPanelMouseMove(MouseMoveEvent &event)
+{
+
 }
 
 // Processes console input

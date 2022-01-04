@@ -12,6 +12,7 @@
 #include "../wx_binding/classes/viewpanel.h"
 #include "context/callable.h"
 
+class MouseMoveEvent;
 
 static const wxSize MAIN_FRAME_DEFAULT_SIZE = wxSize(640, 480);
 
@@ -39,6 +40,7 @@ class MainFrame : public wxFrame, public CallableFrame
 	    void OnConsoleInputEvent(wxEventConsoleInput &event);
 	    void OnMenuClicked(wxCommandEvent &event);
 		void OnUpdateHandler(wxUpdateUIEvent &event);
+		void OnCadPanelMouseMove(MouseMoveEvent &event);
 	    // Creates main menu sections
 	    inline void CreateMenuBar(void);
 
@@ -64,6 +66,8 @@ class MainFrame : public wxFrame, public CallableFrame
         wxAuiToolBar *tool_snap;
         wxAuiToolBar *tool_layer;
         wxAuiNotebook *drawing_container;
+
+        wxStatusBar *m_status_bar;
 
         wxMenuBar *m_menu_bar;
         UiConsole *m_console;
