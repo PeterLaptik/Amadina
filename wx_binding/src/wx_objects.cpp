@@ -2,7 +2,7 @@
 #include "../classes/viewpanel.h"
 #include <wx/aui/aui.h>
 
-ViewPanel* create_screen(wxAuiNotebook *parent)
+ViewPanel* create_screen(wxAuiNotebook *parent, CallableFrame *callable)
 {
-    return new ViewPanel(parent);
+    return new ViewPanel(parent, callable);
 }

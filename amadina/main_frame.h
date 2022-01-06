@@ -28,8 +28,9 @@ class MainFrame : public wxFrame, public CallableFrame
             long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
 		virtual ~MainFrame();
 
-		virtual void SetUndoRedoState(bool can_undo, bool can_redo);
+		virtual void SetUndoRedoState(bool can_undo, bool can_redo) override;
 		virtual void PrintMessage(const std::string &msg) override;
+		virtual void PrintCoordinates(double x, double y, double z = 0) override;
 
 
 	protected:
@@ -40,7 +41,6 @@ class MainFrame : public wxFrame, public CallableFrame
 	    void OnConsoleInputEvent(wxEventConsoleInput &event);
 	    void OnMenuClicked(wxCommandEvent &event);
 		void OnUpdateHandler(wxUpdateUIEvent &event);
-		void OnCadPanelMouseMove(MouseMoveEvent &event);
 	    // Creates main menu sections
 	    inline void CreateMenuBar(void);
 

@@ -42,6 +42,11 @@ void Context::AssignInput(const std::string &command)
             Point pt = token.GetPoint();
             m_executor.SendPoint(pt);
         }
+        else if(token.IsNumber())
+        {
+
+        }
+
     }
     catch(const std::exception &e)
     {

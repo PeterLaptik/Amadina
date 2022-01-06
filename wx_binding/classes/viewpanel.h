@@ -15,6 +15,7 @@
 class ScreenInterface;
 class DrawManager;
 class Command;
+class CallableFrame;
 
 ///\brief Drawing panel implementation for wxWidgets GUI-library.
 class DLL_EXPORT ViewPanel final: public wxPanel, private Screen
@@ -26,7 +27,7 @@ class DLL_EXPORT ViewPanel final: public wxPanel, private Screen
         ///\param size - panel size
         ///\param style - panel style (see wxWidgets documentation)
         ///\param name - panel name
-        ViewPanel(wxWindow *parent,
+        ViewPanel(wxWindow *parent, CallableFrame *callable = nullptr,
                     wxWindowID winid = wxID_ANY,
                     const wxPoint &pos = wxDefaultPosition,
                     const wxSize &size = wxDefaultSize,
@@ -84,6 +85,8 @@ class DLL_EXPORT ViewPanel final: public wxPanel, private Screen
         /// Add several shapes for testing (test mode)
         void AddTestShapes(void);
         void ShowCursor(wxDC &dc);
+
+        CallableFrame *m_callable_parent;
 
     wxDECLARE_EVENT_TABLE();
 };

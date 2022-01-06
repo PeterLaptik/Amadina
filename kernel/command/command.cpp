@@ -74,8 +74,8 @@ CMDResult Command::EnterPoint(Point *point)
         return CMDResult::RES_CANCEL;
 
     // Try to get from console line
-//    if(GetPointFromConsole(point))
-//        return CMDResult::RES_OK;
+    if(GetPointFromConsole(point))
+        return CMDResult::RES_OK;
 
     m_point = point;
     m_is_executing = true;

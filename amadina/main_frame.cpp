@@ -34,7 +34,6 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_CLICKED, MainFrame::OnToolButtonClicked)
     EVT_CHAR_HOOK(MainFrame::OnKeyPressed)
     EVT_UPDATE_UI(wxID_ANY, MainFrame::OnUpdateHandler)
-    //EVT_CAD_MOUSE_MOVE(wxID_ANY, MainFrame::OnCadPanelMouseMove)
 wxEND_EVENT_TABLE()
 
 
@@ -68,7 +67,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     init_commands(dynamic_cast<wxFrame*>(this), &m_mgr, &m_cmd_dispatcher, &m_menu);
     // TODO
     // One panel mock
-    m_panel2 = create_screen(drawing_container);
+    m_panel2 = create_screen(drawing_container, this);
 	drawing_container->AddPage(m_panel2, wxT("drawing"), false, wxNullBitmap);
 	m_panel2->GetContext()->SetParentFrame(this);
 	m_active_panel = m_panel2;
@@ -86,7 +85,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id,
     // Status-bar
     m_status_bar = CreateStatusBar(4);
     Bind(wxCONSOLE_INPUT, &MainFrame::OnConsoleInputEvent, this);
-    Bind(wxCAD_PANEL_MOVE, &MainFrame::OnCadPanelMouseMove, this);
+    //Bind(wxCAD_PANEL_MOVE, &MainFrame::OnCadPanelMouseMove, this);
 }
 
 
@@ -128,11 +127,6 @@ void MainFrame::OnMenuClicked(wxCommandEvent &event)
     wxString command = "Command:";
     command<<event.GetId();
     wxMessageBox(command);
-}
-
-void MainFrame::OnCadPanelMouseMove(MouseMoveEvent &event)
-{
-
 }
 
 // Processes console input
@@ -199,6 +193,13 @@ void MainFrame::SetUndoRedoState(bool can_undo, bool can_redo)
 void MainFrame::PrintMessage(const std::string &msg)
 {
     m_message = msg;
+}
+
+void MainFrame::PrintCoordinates(double x, double y, double z)
+{
+    wxString coords;
+    coords<<"x="<<x<<"  y="<<y;
+    m_status_bar->SetStatusText(coords, 0);
 }
 
 void MainFrame::OnUpdateHandler(wxUpdateUIEvent& event)

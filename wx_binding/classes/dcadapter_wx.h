@@ -51,6 +51,10 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
     private:
         inline void TransformCoordinatesToView(double &x1, double &y1);
         inline void TransformCoordinatesToView(double &x1, double &y1, double &x2, double &y2);
+        inline bool IsLineInsideScreen(const double& x1, const double& y1,
+                     const double& x2, const double& y2);
+
+        int BORDER_MARGIN;
 
         struct Border
         {

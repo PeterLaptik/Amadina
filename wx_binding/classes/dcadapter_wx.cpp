@@ -1,4 +1,5 @@
 #include "dcadapter_wx.h"
+#include "geometry/intersections.h"
 
 // Default borders positions
 static const double DEFAULT_LEFT_BORDER = 0;
@@ -23,6 +24,7 @@ wxAdapterDC::wxAdapterDC(wxWindow *win, wxSize size)
     m_borders.right = DEFAULT_RIGHT_BORDER;
     m_borders.top = DEFAULT_TOP_BORDER;
     m_borders.bottom = DEFAULT_BOTTOM_BORDER;
+    BORDER_MARGIN = cad::geometry::get_border_margin();
     this->SetBrush(wxBrush(*wxTRANSPARENT_BRUSH));
     this->SetPen(wxPen(wxColour(m_colour.R, m_colour.G, m_colour.B)));
     x_scale = (m_borders.right -  m_borders.left)/m_width;
@@ -43,29 +45,47 @@ void wxAdapterDC::CadDrawPoint(const Point &pt)
 {
     double x = pt.GetX();
     double y = pt.GetY();
-    TransformCoordinatesToView(x, y);
+    // Is out of screen
+    if(x>m_borders.right || x<m_borders.left
+       || y>m_borders.top || y<m_borders.bottom)
+        return;
 
+    TransformCoordinatesToView(x, y);
     //wxPen pen(5);
     //this->SetPen(pen);
-
     this->DrawPoint(static_cast<int>(x), static_cast<int>(y));
 }
 
 void wxAdapterDC::CadDrawLine(const Point &pt1, const Point &pt2)
 {
-    double x1 = pt1.GetX();
-    double y1 = pt1.GetY();
-    TransformCoordinatesToView(x1, y1);
-    double x2 = pt2.GetX();
-    double y2 = pt2.GetY();
-    TransformCoordinatesToView(x2, y2);
-    this->DrawLine(static_cast<int>(x1), static_cast<int>(y1), static_cast<int>(x2), static_cast<int>(y2));
+    CadDrawLine(pt1.GetX(), pt1.GetY(), pt2.GetX(), pt2.GetY());
 }
 
 void wxAdapterDC::CadDrawLine(double x1, double y1, double x2, double y2)
 {
+    // Out of screen check
+    if (x1 > m_borders.right - BORDER_MARGIN && x2 > m_borders.right - BORDER_MARGIN)
+        return;
+
+    if (y1 > m_borders.top - BORDER_MARGIN && y2 > m_borders.top - BORDER_MARGIN)
+        return;
+
+    if (x1 < m_borders.left + BORDER_MARGIN && x2 < m_borders.left + BORDER_MARGIN)
+        return;
+
+    if (y1 < m_borders.bottom - BORDER_MARGIN && y2 < m_borders.bottom - BORDER_MARGIN)
+        return;
+
+    Point top_left(m_borders.left, m_borders.top);
+    Point bottom_right(m_borders.right, m_borders.bottom);
+    bool intesects_with_border = cad::geometry::border_intersection(x1, y1, x2, y2, top_left, bottom_right);
+    bool is_line_in_screen = IsLineInsideScreen(x1, y1, x2, y2);
+    if (!intesects_with_border && !is_line_in_screen)
+        return;
+
     TransformCoordinatesToView(x1, y1, x2, y2);
-    this->DrawLine(static_cast<int>(x1), static_cast<int>(y1), static_cast<int>(x2), static_cast<int>(y2));
+    DrawLine(static_cast<int>(x1), static_cast<int>(y1),
+             static_cast<int>(x2), static_cast<int>(y2));
 }
 
 void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
@@ -113,6 +133,18 @@ void wxAdapterDC::TransformCoordinatesToView(double &x1, double &y1, double &x2,
 {
     TransformCoordinatesToView(x1, y1);
     TransformCoordinatesToView(x2, y2);
+}
+
+bool wxAdapterDC::IsLineInsideScreen(const double& x1, const double& y1, const double& x2, const double& y2)
+{
+    double x_left = std::min(x1, x2);
+    double x_right = std::max(x1, x2);
+    double y_top = std::max(y1, y2);
+    double y_bottom = std::min(y1, y2);
+    return (x_right<m_borders.right - BORDER_MARGIN 
+            && x_left>m_borders.left + BORDER_MARGIN
+            && y_top<m_borders.top - BORDER_MARGIN 
+            && y_bottom>m_borders.bottom + BORDER_MARGIN);
 }
 
 void wxAdapterDC::SetBorders(double left, double right, double top, double bottom)

@@ -9,6 +9,7 @@
 #include "entities/circle.h"
 #include "entities/square.h"
 #include "command/command.h"
+#include "context/callable.h"
 
 // Default background colour value
 // (red=green=blue) - for panel background colour
@@ -31,12 +32,14 @@ wxEND_EVENT_TABLE()
 
 
 ViewPanel::ViewPanel(wxWindow *parent,
+                     CallableFrame *callable,
                      wxWindowID winid,
                     const wxPoint &pos,
                     const wxSize &size,
                     long style,
                     const wxString &name):
-        wxPanel(parent, winid, pos, size, style, name)
+        wxPanel(parent, winid, pos, size, style, name),
+        m_callable_parent(callable)
 {
     int width_px;
     int height_px;
@@ -55,6 +58,8 @@ ViewPanel::~ViewPanel()
 // TODO
 int coord_x, coord_y;
 
+
+#include <wx/msgdlg.h>
 void ViewPanel::OnMouseMove(wxMouseEvent &event)
 {
     coord_x = event.GetX();
@@ -62,7 +67,11 @@ void ViewPanel::OnMouseMove(wxMouseEvent &event)
     Screen::ScreenMouseMove(event.GetX(), event.GetY(),
                             wxGetKeyState(WXK_RAW_CONTROL),
                             wxGetMouseState().LeftIsDown());
-    wxPostEvent(this, MouseMoveEvent(wxCAD_PANEL_MOVE));
+    // Forward event
+    double global_x, global_y;
+    Screen::GetMouseGlobalCoordinates(global_x, global_y);
+    if(m_callable_parent)
+        m_callable_parent->PrintCoordinates(global_x, global_y);
 }
 
 void ViewPanel::OnMouseWheelDown(wxMouseEvent &event)

@@ -8,6 +8,7 @@
 class wxFrame;
 class wxAuiManager;
 class wxAuiNotebook;
+class CallableFrame;
 class ViewPanel;
 class CommandDispatcher;
 
@@ -33,6 +34,6 @@ void DLL_EXPORT init_commands(wxFrame *parent,
 
 
 // Returns new instance of screen (panel)
-DLL_EXPORT ViewPanel* create_screen(wxAuiNotebook *parent);
+DLL_EXPORT ViewPanel* create_screen(wxAuiNotebook *parent, CallableFrame *callable);
 
 #endif // WX_BINDING_H_INCLUDED
