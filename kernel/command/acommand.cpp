@@ -3,6 +3,7 @@
 #include "../builders/point_cmd.h"
 #include "../builders/line_cmd.h"
 #include "../builders/circle_cmd.h"
+#include "../builders/arc_cmd.h"
 #include "../builders/delete_cmd.h"
 #include "../builders/copy_cmd.h"
 #include "../builders/paste_cmd.h"
@@ -15,4 +16,5 @@ void register_kernel_commands(CommandDispatcher *dispatcher)
     dispatcher->RegisterCommand(new CmdDelete(), "delete");
     dispatcher->RegisterCommand(new CmdCopy(), "copy");
     dispatcher->RegisterCommand(new CmdPaste(), "paste");
+    dispatcher->RegisterCommand(new CmdArc(), "arc");
 }

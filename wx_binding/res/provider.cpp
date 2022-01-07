@@ -29,6 +29,8 @@ wxBitmap get_icon(ICONS icon)
             return create_image(icon_cut_ico, icon_cut_ico_size);
         case ICON_PASTE:
             return create_image(icon_paste_ico, icon_paste_ico_size);
+        case ICON_ARC_CENTER:
+            return create_image(icon_arc_center_ico, icon_arc_center_ico_size);
     }
 
     return no_bitmap;

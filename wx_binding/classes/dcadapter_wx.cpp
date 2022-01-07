@@ -95,7 +95,21 @@ void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
     double rad = x + radius;
     double dummy_coord = 0;
     TransformCoordinatesToView(x, y, rad, dummy_coord);
-    this->DrawCircle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(rad - x));
+    DrawCircle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(rad - x));
+}
+
+void wxAdapterDC::CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end)
+{
+    double xc = pt_center.GetX();
+    double yc = pt_center.GetY();
+    double x1 = pt_start.GetX();
+    double y1 = pt_start.GetY();
+    double x2 = pt_end.GetX();
+    double y2 = pt_end.GetY();
+    TransformCoordinatesToView(xc, yc);
+    TransformCoordinatesToView(x1, y1);
+    TransformCoordinatesToView(x2, y2);
+    DrawArc(x1, y1, x2, y2, xc, yc);
 }
 
 // Shows dot-line as a constraint line
@@ -141,9 +155,9 @@ bool wxAdapterDC::IsLineInsideScreen(const double& x1, const double& y1, const d
     double x_right = std::max(x1, x2);
     double y_top = std::max(y1, y2);
     double y_bottom = std::min(y1, y2);
-    return (x_right<m_borders.right - BORDER_MARGIN 
+    return (x_right<m_borders.right - BORDER_MARGIN
             && x_left>m_borders.left + BORDER_MARGIN
-            && y_top<m_borders.top - BORDER_MARGIN 
+            && y_top<m_borders.top - BORDER_MARGIN
             && y_bottom>m_borders.bottom + BORDER_MARGIN);
 }
 

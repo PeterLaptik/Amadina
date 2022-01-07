@@ -21,6 +21,8 @@ class IAdapterDC
 
         virtual void CadDrawCircle(const Point &pt, const double &radius) = 0;
 
+        virtual void CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end) = 0;
+
         virtual void CadSetColour(const Colour &colour) = 0;
 
 

@@ -27,6 +27,8 @@ class DLL_EXPORT Entity
             Draw(dc);
         }
 
+        // TODO
+        // Remove default implementation
         // Returns minimum distance between the entity and point
         virtual double DistanceFrom(const Point&) const
         {
@@ -49,6 +51,8 @@ class DLL_EXPORT Entity
 
         virtual Entity* Clone(void) = 0;
 
+        // TODO
+        // Remove default implementation
         virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0)
         { }
 

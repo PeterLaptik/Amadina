@@ -79,6 +79,12 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
     dispatcher->RegisterHandler(id, "circle");
     id = commands->AppendMenuCommand("Circle", "circle", ui::CMD_DRAW);
     dispatcher->RegisterHandler(id, "circle");
+
+    // Draw circle
+    id = add_tool("arc", "Arc", get_icon(ICON_ARC_CENTER), toolbar);
+    dispatcher->RegisterHandler(id, "arc");
+    id = commands->AppendMenuCommand("Arc", "arc", ui::CMD_DRAW);
+    dispatcher->RegisterHandler(id, "arc");
 }
 
 

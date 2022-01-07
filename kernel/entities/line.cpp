@@ -8,7 +8,9 @@ Line::Line()
 
 Line::Line(const Point &pt1, const Point &pt2)
         :m_pt1(pt1), m_pt2(pt2)
-{ }
+{
+    CalculateLength();
+}
 
 Line::Line(const double &x1, const double &y1, const double &x2, const double &y2)
 {
@@ -16,6 +18,7 @@ Line::Line(const double &x1, const double &y1, const double &x2, const double &y
     m_pt1.SetY(y1);
     m_pt2.SetX(x2);
     m_pt2.SetY(y2);
+    CalculateLength();
 }
 
 Line::~Line()
@@ -91,11 +94,13 @@ void Line::MoveTo(double delta_x, double delta_y, double delta_z)
 void Line::SetStartPoint(const Point &pt)
 {
     m_pt1 = pt;
+    CalculateLength();
 }
 
 void Line::SetEndPoint(const Point &pt)
 {
     m_pt2 = pt;
+    CalculateLength();
 }
 
 const Point& Line::GetStartPoint(void) const
@@ -106,6 +111,11 @@ const Point& Line::GetStartPoint(void) const
 const Point& Line::GetEndPoint(void) const
 {
     return m_pt2;
+}
+
+double Line::GetLength() const
+{
+    return m_length;
 }
 
 void Line::GetSnapPoints(std::vector<Point> &vec) const

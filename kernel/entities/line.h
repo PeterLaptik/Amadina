@@ -38,11 +38,12 @@ class DLL_EXPORT Line: public Entity
         void SetEndPoint(const Point &pt);
         const Point& GetStartPoint(void) const;
         const Point& GetEndPoint(void) const;
+        double GetLength(void) const;
 
     protected:
 
     private:
-        void CalculateLength(void);
+        inline void CalculateLength(void);
 
         Point m_pt1;
         Point m_pt2;
