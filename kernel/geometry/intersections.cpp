@@ -5,7 +5,7 @@
 #include <math.h>
 #include <float.h>
 
-static const int DEFAULT_BORDER_MARGIN = 50;
+static const int DEFAULT_BORDER_MARGIN = 0;
 
 int cad::geometry::get_border_margin()
 {

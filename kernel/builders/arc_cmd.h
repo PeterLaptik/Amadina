@@ -14,6 +14,10 @@ class CmdArc final: public Command
         virtual Command* Clone(Context *context) final;
 
     private:
+        // Moves end point to on-arc position
+        // (end point is not on actual radius)
+        inline void Normalize(void);
+
         bool m_pt_center_picked;
         bool m_pt_1_picked;
         Point pt_center;

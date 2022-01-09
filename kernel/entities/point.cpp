@@ -6,7 +6,9 @@ Point::Point()
 { }
 
 Point::Point(double x_coord, double y_coord, double z_coord):
-        x(x_coord), y(y_coord), z(z_coord)
+        x(round(x_coord*1000)/1000),
+        y(round(y_coord*1000)/1000),
+        z(round(z_coord*1000)/1000)
 { }
 
 Point::~Point()
@@ -35,13 +37,13 @@ double Point::DistanceFrom(const Point &pt) const
 
 double Point::GetDistanceBetween(const Point &pt1, const Point &pt2)
 {
-    double x1 = pt1.GetX();
-    double y1 = pt1.GetY();
-    double z1 = pt1.GetZ();
+    double x1 = pt1.x;
+    double y1 = pt1.y;
+    double z1 = pt1.z;
 
-    double x2 = pt2.GetX();
-    double y2 = pt2.GetY();
-    double z2 = pt2.GetZ();
+    double x2 = pt2.x;
+    double y2 = pt2.y;
+    double z2 = pt2.z;
 
     return sqrt(pow(fabs(x1 - x2), 2) + pow(fabs(y1 - y2), 2) + pow(fabs(z1 - z2), 2));
 }

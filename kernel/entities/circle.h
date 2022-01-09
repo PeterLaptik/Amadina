@@ -27,6 +27,8 @@ class Circle: public Entity
 
         virtual void GetPrimitives(std::vector<Entity*> &vec);
 
+        virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0);
+
         virtual Entity* Clone(void);
 
     protected:

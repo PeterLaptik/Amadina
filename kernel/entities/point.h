@@ -28,9 +28,9 @@ class DLL_EXPORT Point: public Entity
 
         Entity* Clone(void);
 
-        void SetX(double x_coord) {x = x_coord;}
-        void SetY(double y_coord) {y = y_coord;}
-        void SetZ(double z_coord) {z = z_coord;}
+        void SetX(double x_coord) {x = round(x_coord*1000)/1000;}
+        void SetY(double y_coord) {y = round(y_coord*1000)/1000;}
+        void SetZ(double z_coord) {z = round(z_coord*1000)/1000;}
 
         double GetX(void) const {return x;}
         double GetY(void) const {return y;}

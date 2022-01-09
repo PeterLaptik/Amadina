@@ -69,6 +69,16 @@ double Circle::DistanceFrom(const Point &pt) const
     return fabs(distance_from_center - m_radius);
 }
 
+void Circle::MoveTo(double delta_x, double delta_y, double delta_z)
+{
+    int x = m_center.GetX() + delta_x;
+    int y = m_center.GetY() + delta_y;
+    int z = m_center.GetZ() + delta_z;
+    m_center.SetX(x);
+    m_center.SetY(y);
+    m_center.SetZ(z);
+}
+
 Entity* Circle::Clone()
 {
     return new Circle(m_center, m_radius);

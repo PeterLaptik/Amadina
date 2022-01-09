@@ -35,7 +35,6 @@ namespace cad
                                  const Point &top_left, const Point &bottom_right);
 
         bool line_line_intersection(const Line &line_1, const Line &line_2, Point& p);
-
     }
 }
 
