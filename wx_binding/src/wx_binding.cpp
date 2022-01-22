@@ -23,6 +23,15 @@ void add_toolbar_to_aui_manager(wxAuiToolBar *toolbar,
 long add_tool(wxString name, wxString tooltip,
               wxBitmap bitmap, wxAuiToolBar *toolbar);
 
+// Appends command to toolbar and menu if necessary
+void append_command(wxAuiToolBar* toolbar,
+    CommandDispatcher* dispatcher,
+    ui::UiMenuCommands* commands,
+    const std::string& name,
+    const std::string& desc,
+    ICONS icon,
+    ui::CommandType type = ui::CMD_NO_MENU);
+
 // Appending and registration commands
 void append_drawing_commands(wxAuiToolBar *toolbar,
                              CommandDispatcher *dispatcher,
@@ -62,34 +71,11 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
                              CommandDispatcher *dispatcher,
                              ui::UiMenuCommands *commands)
 {
-    // Draw point
-    long id = add_tool("point", "Point", get_icon(ICON_POINT), toolbar);
-    dispatcher->RegisterHandler(id, "point");
-    id = commands->AppendMenuCommand("Point", "point", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "point");
-
-    // Draw line
-    id = add_tool("line", "Line", get_icon(ICON_LINE), toolbar);
-    dispatcher->RegisterHandler(id, "line");
-    id = commands->AppendMenuCommand("Line", "line", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "line");
-
-    // Draw circle
-    id = add_tool("circle", "Circle", get_icon(ICON_CIRCLE), toolbar);
-    dispatcher->RegisterHandler(id, "circle");
-    id = commands->AppendMenuCommand("Circle", "circle", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "circle");
-
-    // Draw arc
-    id = add_tool("arc", "Arc", get_icon(ICON_ARC_CENTER), toolbar);
-    dispatcher->RegisterHandler(id, "arc");
-    id = commands->AppendMenuCommand("Arc", "arc", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "arc");
-
-    id = add_tool("arcp", "Arc", get_icon(ICON_ARC_POINTS), toolbar);
-    dispatcher->RegisterHandler(id, "arcp");
-    id = commands->AppendMenuCommand("Arc", "arcp", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "arcp");
+    append_command(toolbar, dispatcher, commands, "point", "Point", ICON_POINT, ui::CMD_DRAW);
+    append_command(toolbar, dispatcher, commands, "line", "Line", ICON_LINE, ui::CMD_DRAW);
+    append_command(toolbar, dispatcher, commands, "circle", "Circle", ICON_CIRCLE, ui::CMD_DRAW);
+    append_command(toolbar, dispatcher, commands, "arc", "Arc", ICON_ARC_CENTER, ui::CMD_DRAW);
+    append_command(toolbar, dispatcher, commands, "arcp", "Arc", ICON_ARC_POINTS, ui::CMD_DRAW);
 }
 
 
@@ -97,26 +83,29 @@ void append_edit_commands(wxAuiToolBar *toolbar,
                              CommandDispatcher *dispatcher,
                              ui::UiMenuCommands *commands)
 {
-    long id = add_tool("delete", "Delete", get_icon(ICON_DELETE), toolbar);
-    dispatcher->RegisterHandler(id, "delete");
-    id = commands->AppendMenuCommand("Delete", "delete", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "delete");
-
-
-    id = add_tool("copy", "Copy", get_icon(ICON_COPY), toolbar);
-    dispatcher->RegisterHandler(id, "copy");
-    id = commands->AppendMenuCommand("Copy", "copy", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "copy");
-
-    id = add_tool("cut", "Cut", get_icon(ICON_CUT), toolbar);
-    id = add_tool("paste", "Paste", get_icon(ICON_PASTE), toolbar);
-    dispatcher->RegisterHandler(id, "paste");
-    id = commands->AppendMenuCommand("Paste", "paste", ui::CMD_DRAW);
-    dispatcher->RegisterHandler(id, "paste");
-
-    id = add_tool("move", "Move", get_icon(ICON_MOVE), toolbar);
+    append_command(toolbar, dispatcher, commands, "delete", "Delete", ICON_DELETE, ui::CMD_EDIT);
+    append_command(toolbar, dispatcher, commands, "copy", "Copy", ICON_COPY, ui::CMD_EDIT);
+    append_command(toolbar, dispatcher, commands, "cut", "Cut", ICON_CUT, ui::CMD_EDIT);
+    append_command(toolbar, dispatcher, commands, "paste", "Paste", ICON_PASTE, ui::CMD_EDIT);
+    append_command(toolbar, dispatcher, commands, "move", "Move", ICON_MOVE, ui::CMD_EDIT);
 }
 
+void append_command(wxAuiToolBar* toolbar,
+                    CommandDispatcher* dispatcher,
+                    ui::UiMenuCommands* commands,
+                    const std::string &name,
+                    const std::string &desc,
+                    ICONS icon,
+                    ui::CommandType type)
+{
+    long id = add_tool(name, desc, get_icon(icon), toolbar);
+    dispatcher->RegisterHandler(id, name);
+    if (type != ui::CMD_NO_MENU)
+    {
+        id = commands->AppendMenuCommand(desc, name, type);
+        dispatcher->RegisterHandler(id, name);
+    }
+}
 
 // Adds tool to existing toolbar
 long add_tool(wxString name, wxString tooltip,
