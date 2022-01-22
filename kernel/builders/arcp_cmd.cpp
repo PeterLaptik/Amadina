@@ -74,8 +74,8 @@ void CmdArcP::Redraw(IAdapterDC &dc, double x, double y)
     }
 }
 
-Arc CmdArcP::BuildByThreePoints(const Point &p_A,
-                        const Point &p_B, const Point &p_C)
+Arc CmdArcP::BuildByThreePoints(const Point& p_A,
+    const Point& p_B, const Point& p_C)
 {
     Line line_a(p_B, p_C);
     Line line_b(p_A, p_C);
@@ -84,14 +84,14 @@ Arc CmdArcP::BuildByThreePoints(const Point &p_A,
     double b = line_b.GetLength();
     double c = line_c.GetLength();
 
-    double k1 = a*a*(b*b+c*c-a*a);
-    double k2 = b*b*(a*a+c*c-b*b);
-    double k3 = c*c*(b*b+a*a-c*c);
+    double k1 = a * a * (b * b + c * c - a * a);
+    double k2 = b * b * (a * a + c * c - b * b);
+    double k3 = c * c * (b * b + a * a - c * c);
 
-    double Ox = (k1*p_A.GetX() + k2*p_B.GetX() + k3*p_C.GetX())/(k1 + k2 + k3);
-    double Oy = (k1*p_A.GetY() + k2*p_B.GetY() + k3*p_C.GetY())/(k1 + k2 + k3);
+    double Ox = (k1 * p_A.GetX() + k2 * p_B.GetX() + k3 * p_C.GetX()) / (k1 + k2 + k3);
+    double Oy = (k1 * p_A.GetY() + k2 * p_B.GetY() + k3 * p_C.GetY()) / (k1 + k2 + k3);
 
-    Point p_center(Ox,Oy);
+    Point p_center(Ox, Oy);
     double angle_a = geometry::calculate_angle(p_center.GetX(), p_center.GetY(), p_A.GetX(), p_A.GetY());
     double angle_b = geometry::calculate_angle(p_center.GetX(), p_center.GetY(), p_B.GetX(), p_B.GetY());
     double angle_c = geometry::calculate_angle(p_center.GetX(), p_center.GetY(), p_C.GetX(), p_C.GetY());
@@ -99,23 +99,53 @@ Arc CmdArcP::BuildByThreePoints(const Point &p_A,
     Point p_start = p_A;
     Point p_end = p_C;
 
-    if (angle_a > angle_b)
-        angle_b += 360;
-    if (angle_a > angle_c)
-        angle_c += 360;
+    // Quadrant
+    int quadrant_start = GetQuadrant(Ox, Oy, p_A.GetX(), p_A.GetY());
+    int quadrant_middle = GetQuadrant(Ox, Oy, p_B.GetX(), p_B.GetY());
+    int quadrant_end = GetQuadrant(Ox, Oy, p_C.GetX(), p_C.GetY());
 
-    double angle_rem = angle_c - static_cast<int>(angle_c / 360) * 360;
-    bool is_reversed = angle_a > angle_rem;
-    if (angle_b >= 360 && angle_c <= 360)
-        is_reversed = true;
+    // Direction conditions
+    
+    double opp_angle = angle_a - 180;
+    if (opp_angle < 0)
+        opp_angle = 360 + opp_angle;
 
-    if (angle_b <= 360 && angle_c >= 360)
-        is_reversed = false;
+    bool is_reversed = false;
+    if (opp_angle > angle_a)
+    {
+        if(angle_b>opp_angle || angle_b < angle_a)
+            is_reversed = true;
+    }
+    else
+    {
+        if(angle_b<angle_a && angle_b>opp_angle)
+            is_reversed = true;
+    }
 
-    if (is_reversed)
+    if(is_reversed)
         std::swap(p_start, p_end);
 
     return Arc(p_center, p_start, p_end);
+}
+
+// Returns quadrant value
+//
+//   2      |      1
+//          |
+// --------------------
+//   3      |      4
+//          |
+//
+int CmdArcP::GetQuadrant(double x0, double y0, double x, double y)
+{
+    int cuadrant = 1; // x>x0, y>y0
+    if (x<=x0 && y>=y0)
+        cuadrant = 2;
+    else if (x <= x0 && y <= y0)
+        cuadrant = 3;
+    else if (x >= x0 && y <= y0)
+        cuadrant = 4;
+    return cuadrant;
 }
 
 Command* CmdArcP::Clone(Context *context)

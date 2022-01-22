@@ -17,7 +17,7 @@ class CmdArcP: public Command
     private:
         inline Arc BuildByThreePoints(const Point &p1,
                         const Point &p2, const Point &p3);
-
+        inline int GetQuadrant(double x0, double y0, double x, double y);
         bool has_pt_1;
         bool has_pt_2;
         Point pt_1;

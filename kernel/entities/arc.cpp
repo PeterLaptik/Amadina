@@ -46,7 +46,19 @@ double Arc::DistanceFrom(const Point &pt) const
     double angle = geometry::calculate_angle(m_center.GetX(), m_center.GetY(), 
                 pt.GetX(), pt.GetY());
 
-    if(!(angle>m_start_angle && angle<m_end_angle && m_start_angle<m_end_angle))
+    bool in_magin = false;
+    if (m_start_angle > m_end_angle)
+    {
+        if (angle >= m_start_angle || angle <= m_end_angle)
+            in_magin = true;
+    }
+    else
+    {
+        if (angle >= m_start_angle && angle <= m_end_angle)
+            in_magin = true;
+    }
+
+    if(!in_magin)
     {
         double distance_1 = geometry::calculate_distance(pt.GetX(), pt.GetY(),
                                 m_start.GetX(), m_start.GetY());

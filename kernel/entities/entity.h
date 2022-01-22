@@ -28,11 +28,18 @@ class DLL_EXPORT Entity
         }
 
         // TODO
+        // Add quick computing flag
         // Remove default implementation
         // Returns minimum distance between the entity and point
         virtual double DistanceFrom(const Point&) const
         {
             return std::numeric_limits<double>::max();
+        }
+
+        // TODO change extarnal calls of manager to this method
+        virtual bool IsCloseTo(const Point&) const
+        {
+            return false;
         }
 
         // Returns points for snap to constraints, edge points etc.

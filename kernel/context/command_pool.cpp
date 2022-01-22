@@ -9,7 +9,9 @@ CommandPool::CommandPool(Context *context)
 
 
 CommandPool::~CommandPool()
-{ }
+{
+    Clear();
+}
 
 
 void CommandPool::Append(Command *command)
