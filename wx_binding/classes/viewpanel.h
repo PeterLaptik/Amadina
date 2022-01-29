@@ -6,10 +6,14 @@
 #include "view_2d/screen.h"
 #include "context/context.h"
 
-#ifdef BUILD_DLL
-    #define DLL_EXPORT __declspec(dllexport)
+#ifdef _MSC_VER
+    #ifdef BUILD_DLL
+        #define DLL_EXPORT __declspec(dllexport)
+    #else
+        #define DLL_EXPORT __declspec(dllimport)
+    #endif
 #else
-    #define DLL_EXPORT __declspec(dllimport)
+    #define DLL_EXPORT
 #endif
 
 class ScreenInterface;

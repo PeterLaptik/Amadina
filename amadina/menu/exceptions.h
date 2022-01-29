@@ -4,7 +4,9 @@
 #include <exception>
 #include <string>
 
-#ifdef __GNUC__
+#ifdef __clang__
+    #define NO_EXCEPT_VALUE _NOEXCEPT
+#elif __GNUC__
     #define NO_EXCEPT_VALUE _GLIBCXX_USE_NOEXCEPT
 #else
     #define NO_EXCEPT_VALUE

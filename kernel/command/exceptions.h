@@ -1,11 +1,14 @@
 #ifndef EXCEPTIONS_H_INCLUDED
 #define EXCEPTIONS_H_INCLUDED
 
-#ifdef __GNUC__
+#ifdef __clang__
+    #define NO_EXCEPT_VALUE _NOEXCEPT
+#elif __GNUC__
     #define NO_EXCEPT_VALUE _GLIBCXX_USE_NOEXCEPT
 #else
     #define NO_EXCEPT_VALUE
 #endif // __GNUC__
+
 
 class LexerError: public std::exception
 {

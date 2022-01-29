@@ -17,10 +17,14 @@ namespace ui
     class UiMenuCommands;
 }
 
-#ifdef BUILD_DLL
-    #define DLL_EXPORT __declspec(dllexport)
+#ifdef _MSC_VER
+    #ifdef BUILD_DLL
+        #define DLL_EXPORT __declspec(dllexport)
+    #else
+        #define DLL_EXPORT __declspec(dllimport)
+    #endif
 #else
-    #define DLL_EXPORT __declspec(dllimport)
+    #define DLL_EXPORT
 #endif
 
 // Entry point

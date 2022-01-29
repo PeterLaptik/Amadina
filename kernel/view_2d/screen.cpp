@@ -1,4 +1,4 @@
-#include "Screen.h"
+#include "screen.h"
 #include "../command/command.h"
 
 // Default borders positions
