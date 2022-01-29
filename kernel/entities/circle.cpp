@@ -1,5 +1,6 @@
 #include "circle.h"
 #include "line.h"
+#include "../geometry/geometry.h"
 #include <math.h>
 
 Circle::Circle()
@@ -59,13 +60,20 @@ void Circle::GetPrimitives(std::vector<Entity*> &vec)
     vec.push_back(this);
 }
 
+bool Circle::IsNearPoint(const Point &pt, double region_radius)
+{
+    double rad = geometry::calculate_distance(pt.GetX(), pt.GetY(), pt.GetZ(),
+                                        m_center.GetX(), m_center.GetY(), m_center.GetZ());
+    return fabs(rad - m_radius) < region_radius;
+}
+
 double Circle::DistanceFrom(const Point &pt) const
 {
     double x0 = m_center.GetX();
     double y0 = m_center.GetY();
     double x = pt.GetX();
     double y = pt.GetY();
-    double distance_from_center = sqrt(pow(x-x0,2) + pow(y-y0,2));
+    double distance_from_center = sqrt((x-x0)*(x-x0) + (y-y0)*(y-y0));
     return fabs(distance_from_center - m_radius);
 }
 

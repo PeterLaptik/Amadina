@@ -22,6 +22,8 @@ class DLL_EXPORT Line: public Entity
 
         virtual void DrawHighlighted(IAdapterDC &dc);
 
+        virtual bool IsNearPoint(const Point &pt, double region_radius);
+
         virtual double DistanceFrom(const Point &pt) const;
 
         virtual void GetSnapPoints(std::vector<Point> &vec) const;

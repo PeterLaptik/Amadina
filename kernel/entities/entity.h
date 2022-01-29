@@ -36,6 +36,8 @@ class DLL_EXPORT Entity
             return std::numeric_limits<double>::max();
         }
 
+        virtual bool IsNearPoint(const Point &pt, double region_radius) = 0;
+
         // TODO change extarnal calls of manager to this method
         virtual bool IsCloseTo(const Point&) const
         {

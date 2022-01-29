@@ -12,6 +12,8 @@ Arc::Arc(const Point &center,
                                     start.GetX(), start.GetY());
     m_end_angle = geometry::calculate_angle(center.GetX(), center.GetY(),
                                     end.GetX(), end.GetY());
+    m_radius = geometry::calculate_distance(center.GetX(), center.GetY(),
+                                    end.GetX(), end.GetY());
 }
 
 Arc::~Arc()
@@ -31,6 +33,16 @@ void Arc::DrawHighlighted(IAdapterDC &dc)
     Draw(dc);
 }
 
+bool Arc::IsNearPoint(const Point &pt, double region_radius)
+{
+    double rad = geometry::calculate_distance(pt.GetX(), pt.GetY(), pt.GetZ(),
+                                        m_center.GetX(), m_center.GetY(), m_center.GetZ());
+    if(fabs(rad - m_radius) > region_radius)
+        return false;
+
+    return DistanceFrom(pt)<region_radius;
+}
+
 double Arc::DistanceFrom(const Point &pt) const
 {
     double x0 = m_center.GetX();
@@ -43,7 +55,7 @@ double Arc::DistanceFrom(const Point &pt) const
     double distance_from_center = sqrt(pow(x-x0,2) + pow(y-y0,2));
     double distance = fabs(distance_from_center - m_radius);
 
-    double angle = geometry::calculate_angle(m_center.GetX(), m_center.GetY(), 
+    double angle = geometry::calculate_angle(m_center.GetX(), m_center.GetY(),
                 pt.GetX(), pt.GetY());
 
     bool in_magin = false;

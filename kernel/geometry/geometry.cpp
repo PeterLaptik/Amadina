@@ -5,7 +5,7 @@ static const double PI = 3.14;
 
 ///\brief Calculates angle of point (x,y) in coordinates system centered in point (x0,y0)
 /// Following scheme shows angles values on a flat surface:
-/// 
+///
 ///                     90 deg.
 ///                       |
 ///                       |
@@ -13,7 +13,7 @@ static const double PI = 3.14;
 ///                       |
 ///                       |
 ///                     270 deg.
-/// 
+///
 ///\param x0 - coordinate system ceneter's x
 ///\param y0 - coordinate system ceneter's y
 ///\param x - point's x
@@ -45,4 +45,13 @@ double geometry::calculate_angle(double x0, double y0, double x, double y)
 double geometry::calculate_distance(double x1, double y1, double x2, double y2)
 {
     return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+}
+
+///\brief Calculates distance between two points with coordinates [x1,y1,z1] and [x2,y2,z2]
+///\param x1, y1, z1 - first point coordinates
+///\param x2, y2, z2 - second point coordinate
+double geometry::calculate_distance(double x1, double y1, double z1,
+                           double x2, double y2, double z2)
+{
+    return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
 }

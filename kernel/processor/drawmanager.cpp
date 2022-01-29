@@ -1,4 +1,5 @@
 #include "drawmanager.h"
+#include "../geometry/geometry.h"
 #include "../geometry/intersections.h"
 #include <algorithm>
 
@@ -94,7 +95,12 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     {
         for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_points.begin(); it!=m_snap_points.end(); ++it)
         {
-            double distance = Point::GetDistanceBetween(mouse_point, it->second);
+            if(!it->second.IsNearPoint(mouse_point, snap_radius))
+                continue;
+
+            double distance = geometry::calculate_distance(x, y,
+                            it->second.GetX(), it->second.GetY());
+
             if(min_distance>distance)
             {
                 min_distance = distance;
@@ -108,7 +114,12 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     {
         for(std::vector<std::pair<Entity*,Point>>::iterator it=m_snap_center.begin(); it!=m_snap_center.end(); ++it)
         {
-            double distance = Point::GetDistanceBetween(mouse_point, it->second);
+            if(!it->second.IsNearPoint(mouse_point, snap_radius))
+                continue;
+
+            double distance = geometry::calculate_distance(x, y,
+                            it->second.GetX(), it->second.GetY());
+
             if(min_distance>distance)
             {
                 min_distance = distance;
@@ -122,7 +133,12 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     {
         for(std::vector<std::pair<std::pair<Entity*,Entity*>,Point>>::iterator it=m_snap_intersections.begin(); it!=m_snap_intersections.end(); ++it)
         {
-            double distance = Point::GetDistanceBetween(mouse_point, it->second);
+            if(!it->second.IsNearPoint(mouse_point, snap_radius))
+                continue;
+
+            double distance = geometry::calculate_distance(x, y,
+                            it->second.GetX(), it->second.GetY());
+
             if(min_distance>distance)
             {
                 min_distance = distance;
@@ -137,7 +153,12 @@ void DrawManager::ShowSnapPoints(IAdapterDC &dc, double x, double y, double snap
     {
         for(std::vector<Point>::iterator it=m_snap_grid.begin(); it!=m_snap_grid.end(); ++it)
         {
-            double distance = Point::GetDistanceBetween(mouse_point, *it);
+            if(!it->IsNearPoint(mouse_point, snap_radius))
+                continue;
+
+            double distance = geometry::calculate_distance(x, y,
+                            it->GetX(), it->GetY());
+
             if(min_distance>distance)
             {
                 min_distance = distance;
@@ -199,6 +220,9 @@ void DrawManager::ShowSnapEntities(IAdapterDC &dc, double x, double y, double sn
     double distance = std::numeric_limits<double>::max();
     for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
     {
+        if(!(*it)->IsNearPoint(pt, snap_radius))
+            continue;
+
         distance = (*it)->DistanceFrom(pt);
         if(distance<min_distance)
         {

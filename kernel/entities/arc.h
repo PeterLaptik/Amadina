@@ -14,9 +14,10 @@ class Arc: public Entity
         virtual ~Arc();
         virtual void Draw(IAdapterDC &dc);
         void DrawHighlighted(IAdapterDC &dc);
-        double DistanceFrom(const Point &pt) const;
-        void GetSnapPoints(std::vector<Point> &vec) const;
-        void GetCenterPoints(std::vector<Point> &vec) const;
+        virtual bool IsNearPoint(const Point &pt, double region_radius);
+        virtual double DistanceFrom(const Point &pt) const;
+        virtual void GetSnapPoints(std::vector<Point> &vec) const;
+        virtual void GetCenterPoints(std::vector<Point> &vec) const;
         virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0) override;
         const Point& GetCenterPoint(void) const;
         const Point& GetStartPoint(void) const;
@@ -27,6 +28,7 @@ class Arc: public Entity
         Point m_center;
         Point m_start;
         Point m_end;
+        double m_radius;
         double m_start_angle;
         double m_end_angle;
 

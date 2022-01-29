@@ -19,6 +19,8 @@ class Circle: public Entity
 
         double GetRadius(void) const;
 
+        virtual bool IsNearPoint(const Point &pt, double region_radius);
+
         virtual double DistanceFrom(const Point &pt) const;
 
         virtual void GetSnapPoints(std::vector<Point> &vec) const;

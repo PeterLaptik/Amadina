@@ -46,6 +46,28 @@ void Line::DrawHighlighted(IAdapterDC &dc)
     dc.CadDrawLine(pt1, pt2);
 }
 
+bool Line::IsNearPoint(const Point &pt, double region_radius)
+{
+    double x_max = std::max(m_pt1.GetX(), m_pt2.GetX());
+    double x_min = std::min(m_pt1.GetX(), m_pt2.GetX());
+    double y_max = std::max(m_pt1.GetY(), m_pt2.GetY());
+    double y_min = std::min(m_pt1.GetY(), m_pt2.GetY());
+    double z_max = std::max(m_pt1.GetZ(), m_pt2.GetZ());
+    double z_min = std::min(m_pt1.GetZ(), m_pt2.GetZ());
+    double x = pt.GetX();
+    double y = pt.GetY();
+    double z = pt.GetZ();
+    if((x>x_max+region_radius)
+       || (y>y_max+region_radius)
+       || (z>z_max+region_radius)
+       || (x<x_min-region_radius)
+       || (y<y_min-region_radius)
+       || (z<z_min-region_radius))
+        return false;
+
+    return DistanceFrom(pt)<region_radius;
+}
+
 double Line::DistanceFrom(const Point &pt) const
 {
     double px = pt.GetX();
@@ -67,8 +89,8 @@ double Line::DistanceFrom(const Point &pt) const
     }
     else
     {
-        double d1 = sqrt(pow(x1-px,2) + pow(y1-py,2));
-        double d2 = sqrt(pow(x0-px,2) + pow(y0-py,2));
+        double d1 = sqrt((x1-px)*(x1-px) + (y1-py)*(y1-py));
+        double d2 = sqrt((x0-px)*(x0-px) + (y0-py)*(y0-py));
         distance = std::min(d1,d2);
     }
     return distance;

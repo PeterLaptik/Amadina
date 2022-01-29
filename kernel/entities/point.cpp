@@ -1,4 +1,5 @@
 #include "point.h"
+#include "../geometry/geometry.h"
 #include <math.h>
 
 Point::Point()
@@ -32,20 +33,12 @@ void Point::DrawHighlighted(IAdapterDC &dc)
 
 double Point::DistanceFrom(const Point &pt) const
 {
-    return Point::GetDistanceBetween(*this, pt);
+    return geometry::calculate_distance(pt.x, pt.y, pt.z, x, y, z);
 }
 
-double Point::GetDistanceBetween(const Point &pt1, const Point &pt2)
+bool Point::IsNearPoint(const Point &pt, double region_radius)
 {
-    double x1 = pt1.x;
-    double y1 = pt1.y;
-    double z1 = pt1.z;
-
-    double x2 = pt2.x;
-    double y2 = pt2.y;
-    double z2 = pt2.z;
-
-    return sqrt(pow(fabs(x1 - x2), 2) + pow(fabs(y1 - y2), 2) + pow(fabs(z1 - z2), 2));
+    return region_radius>geometry::calculate_distance(pt.x, pt.y, pt.z, x, y, z);
 }
 
 void Point::GetSnapPoints(std::vector<Point> &vec) const

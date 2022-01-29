@@ -22,7 +22,7 @@ class DLL_EXPORT Point: public Entity
 
         virtual double DistanceFrom(const Point &pt) const;
 
-        static double GetDistanceBetween(const Point &pt1, const Point &pt2);
+        bool IsNearPoint(const Point &pt, double region_radius);
 
         void GetSnapPoints(std::vector<Point> &vec) const;
 
