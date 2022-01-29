@@ -121,7 +121,7 @@ const Point& Arc::GetEndPoint() const
     return m_end;
 }
 
-Entity* Arc::Clone(void)
+Entity* Arc::Clone() const
 {
     return new Arc(m_center, m_start, m_end);
 }

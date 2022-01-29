@@ -96,7 +96,7 @@ double Line::DistanceFrom(const Point &pt) const
     return distance;
 }
 
-Entity* Line::Clone()
+Entity* Line::Clone() const
 {
     return new Line(m_pt1, m_pt2);
 }
@@ -160,9 +160,4 @@ void Line::GetCenterPoints(std::vector<Point> &vec) const
         std::swap(y1, y2);
 
     vec.push_back(Point(x1+(x2-x1)/2, y1+(y2-y1)/2));
-}
-
-void Line::GetPrimitives(std::vector<Entity*> &vec)
-{
-    vec.push_back(this);
 }

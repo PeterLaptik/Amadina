@@ -55,11 +55,6 @@ void Circle::GetCenterPoints(std::vector<Point> &vec) const
     vec.push_back(m_center);
 }
 
-void Circle::GetPrimitives(std::vector<Entity*> &vec)
-{
-    vec.push_back(this);
-}
-
 bool Circle::IsNearPoint(const Point &pt, double region_radius)
 {
     double rad = geometry::calculate_distance(pt.GetX(), pt.GetY(), pt.GetZ(),
@@ -87,7 +82,7 @@ void Circle::MoveTo(double delta_x, double delta_y, double delta_z)
     m_center.SetZ(z);
 }
 
-Entity* Circle::Clone()
+Entity* Circle::Clone() const
 {
     return new Circle(m_center, m_radius);
 }

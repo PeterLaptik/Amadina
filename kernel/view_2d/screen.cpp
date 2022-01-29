@@ -34,6 +34,7 @@ Screen::Screen():
     m_borders.right = DEFAULT_RIGHT_BORDER;
     m_borders.top = DEFAULT_TOP_BORDER;
     m_borders.bottom = DEFAULT_BOTTOM_BORDER;
+    m_square.is_active = false;
 }
 
 
@@ -116,15 +117,32 @@ void Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
 
     switch(m_screen_state)
     {
-    case SCR_PICKING:
-        PointPicked(x, y);
-        RefreshScreen();
-        return;
-    case SCR_SELECTING:
-    case SCR_NOTHING:
-        m_draw_manager.SelectInPoint(x, y, m_snap_radius/2);
-        RefreshScreen();
-        break;
+        // Callback to send a point value
+        case SCR_PICKING:
+            PointPicked(x, y);
+            RefreshScreen();
+            return;
+        case SCR_SELECTING:
+        case SCR_NOTHING:
+            if(!m_draw_manager.SelectInPoint(x, y, m_snap_radius/2))
+            {
+                // Execute by-square selection if no single entity is picked
+                if(!m_square.is_active)
+                {
+                    m_square.is_active = true;
+                    m_square.x1 = x;
+                    m_square.y1 = y;
+                }
+                else
+                {
+                    m_square.is_active = false;
+                }
+            }
+            else
+            {
+                RefreshScreen();
+            }
+            break;
     }
     return;
 }
@@ -294,8 +312,19 @@ void Screen::RedrawAll(IAdapterDC &dc)
         m_draw_manager.ShowSnapPoints(dc, m_mouse_coord.x, m_mouse_coord.y, m_snap_radius);
     }
 
-//    if(m_shape_builder)
-//        m_shape_builder->Redraw(dc, m_mouse_coord.x, m_mouse_coord.y);
+    // Show selecting square if exists
+    if(m_square.is_active)
+    {
+        double x_start = m_square.x1;
+        double y_start = m_square.y1;
+        double x_end = m_mouse_coord.x;
+        double y_end = m_mouse_coord.y;
+        //TransformCoordinatesToGlobal(x_start, y_start);
+        //TransformCoordinatesToGlobal(x_end, y_end);
+        dc.CadDrawConstraintSquare(x_start, y_start, x_end, y_end);
+//        dc.CadDrawConstraintSquare(m_square.x1, m_square.y1,
+//                                   m_mouse_coord.x, m_mouse_coord.y);
+    }
 }
 
 //DrawManager* Screen::GetDrawManager()
@@ -334,6 +363,7 @@ void Screen::GetBorders(double *left,
 void Screen::SetState(InteractiveState state)
 {
     m_screen_state = state;
+    m_square.is_active = false;
 }
 
 InteractiveState Screen::GetState()

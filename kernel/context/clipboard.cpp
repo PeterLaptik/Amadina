@@ -40,3 +40,8 @@ void ClipBoard::Clear()
     m_objects.clear();
     m_base_point = Point(0,0,0);
 }
+
+bool ClipBoard::IsEmpty(void) const
+{
+    return m_objects.empty();
+}

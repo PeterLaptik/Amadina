@@ -236,7 +236,7 @@ void DrawManager::ShowSnapEntities(IAdapterDC &dc, double x, double y, double sn
     }
 }
 
-void DrawManager::SelectInPoint(double x, double y, double snap_radius)
+bool DrawManager::SelectInPoint(double x, double y, double snap_radius)
 {
     Point pt(x,y);
     m_selecting_entity = nullptr;
@@ -252,12 +252,21 @@ void DrawManager::SelectInPoint(double x, double y, double snap_radius)
         }
     }
     if(min_distance<snap_radius)
+    {
         m_selected_entities.push_back(m_selecting_entity);
+        return true;
+    }
+    return false;
 }
 
 void DrawManager::ClearSelection()
 {
     m_selected_entities.clear();
+}
+
+bool DrawManager::HasSelection()
+{
+    return !m_selected_entities.empty();
 }
 
 void DrawManager::DeleteSelection()

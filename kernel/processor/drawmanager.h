@@ -19,13 +19,15 @@ class DLL_EXPORT DrawManager
 
         void DrawAll(IAdapterDC &dc);
 
-        void SelectInPoint(double x, double y, double snap_radius);
+        bool SelectInPoint(double x, double y, double snap_radius);
 
         void DeleteEntity(Entity *entity);
 
         void DeleteSelection(void);
 
         void ClearSelection(void);
+
+        bool HasSelection(void);
 
         const std::vector<Entity*>& GetSelection(void) const
         {

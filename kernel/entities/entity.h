@@ -53,17 +53,19 @@ class DLL_EXPORT Entity
         { }
 
         // Returns pointers to sub-shapes (primitives).
+        // The method has to be overridden for composite objects.
         // Primitive sub-shapes are: line, circle, point.
         // The result can be used for intersections computing, geometric transformations etc.
-        virtual void GetPrimitives(std::vector<Entity*>&)
-        { }
+        virtual void GetPrimitives(std::vector<Entity*>& vec)
+        {
+            vec.push_back(this);
+        }
 
-        virtual Entity* Clone(void) = 0;
+        virtual Entity* Clone(void) const = 0;
 
         // TODO
         // Remove default implementation
-        virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0)
-        { }
+        virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0) = 0;
 
         void SetLayer(Layer *layer);
         Layer* GetLayer(void) const;

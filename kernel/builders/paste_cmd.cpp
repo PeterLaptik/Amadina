@@ -13,6 +13,13 @@ CmdPaste::~CmdPaste()
 void CmdPaste::Run(void)
 {
     CMDResult result;
+    if(GetContext()->GetClipBoard()->IsEmpty())
+    {
+        PrintMessage("Clipboard is empty.");
+        result = RES_ERROR;
+        return;
+    }
+
     PrintMessage("Pick point to paste.");
     m_base_point = GetContext()->GetClipBoard()->GetBasePoint();
     // Clone objects to paste

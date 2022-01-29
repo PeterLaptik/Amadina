@@ -46,7 +46,14 @@ void Point::GetSnapPoints(std::vector<Point> &vec) const
     vec.push_back(*this);
 }
 
-Entity* Point::Clone(void)
+void Point::MoveTo(double delta_x, double delta_y, double delta_z)
+{
+    x += delta_x;
+    y += delta_y;
+    z += delta_z;
+}
+
+Entity* Point::Clone(void) const
 {
     return new Point(*this);
 }

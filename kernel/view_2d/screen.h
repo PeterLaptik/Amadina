@@ -199,6 +199,13 @@ class DLL_EXPORT Screen: public ScreenInterface
             double y;
         } m_mouse_coord;
 
+        /// Keeps coordinates of selection square to draw the one, if necessary
+        struct SelectionSquare
+        {
+            double x1, y1;
+            double x2, y2;
+            bool is_active; // true - after the first click on an idle screen
+        } m_square;
 
         Context m_context;
 

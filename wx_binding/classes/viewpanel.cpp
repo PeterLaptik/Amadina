@@ -3,6 +3,7 @@
 #include "dcadapter_wx.h"
 #include <wx/dcclient.h>
 #include <thread>
+
 // Kernel dependencies:
 #include "view_2d/screen.h"
 #include "entities/line.h"
@@ -14,6 +15,9 @@
 // Default background colour value
 // (red=green=blue) - for panel background colour
 static const int DEFAULT_COLOUR_VALUE = 0;
+
+// Mouse pointer figures main size
+static const int SIZE_SQUARE = 5;
 
 wxDEFINE_EVENT(wxCAD_PANEL_MOVE, MouseMoveEvent);
 
@@ -51,9 +55,7 @@ ViewPanel::ViewPanel(wxWindow *parent,
 }
 
 ViewPanel::~ViewPanel()
-{
-    //delete m_screen_impl;
-}
+{ }
 
 // TODO
 int coord_x, coord_y;
@@ -118,7 +120,7 @@ void ViewPanel::OnPaint(wxPaintEvent &event)
     ShowCursor(dc);
 }
 
-static const int SIZE_SQUARE = 5;
+
 
 void ViewPanel::ShowCursor(wxDC &dc)
 {

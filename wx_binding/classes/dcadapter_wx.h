@@ -27,6 +27,8 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual void CadDrawConstraintLine(double x1, double y1, double x2, double y2);
 
+        virtual void CadDrawConstraintSquare(double x1, double y1, double x2, double y2);
+
         virtual void CadSetColour(const Colour &colour);
 
         virtual void CadSetLayer(Layer *layer);

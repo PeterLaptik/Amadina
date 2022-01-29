@@ -20,6 +20,7 @@ class ClipBoard
         void SetBasePoint(const Point &p);
         const std::vector<Entity*>& GetObjects(void) const;
         Point GetBasePoint(void) const;
+        bool IsEmpty(void) const;
 
     private:
         inline void Clear(void);

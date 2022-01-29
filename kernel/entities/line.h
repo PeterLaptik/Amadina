@@ -9,7 +9,6 @@
 // Forward declaration for intersections calculations
 class Circle;
 
-
 class DLL_EXPORT Line: public Entity
 {
     public:
@@ -18,23 +17,14 @@ class DLL_EXPORT Line: public Entity
         Line(const double &x1, const double &y1, const double &x2, const double &y2);
         virtual ~Line();
 
-        virtual void Draw(IAdapterDC &dc);
-
-        virtual void DrawHighlighted(IAdapterDC &dc);
-
-        virtual bool IsNearPoint(const Point &pt, double region_radius);
-
-        virtual double DistanceFrom(const Point &pt) const;
-
-        virtual void GetSnapPoints(std::vector<Point> &vec) const;
-
-        virtual void GetCenterPoints(std::vector<Point> &vec) const;
-
-        virtual void GetPrimitives(std::vector<Entity*> &vec);
-
-        virtual Entity* Clone(void);
-
-        virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0);
+        virtual void Draw(IAdapterDC &dc) override;
+        virtual void DrawHighlighted(IAdapterDC &dc) override;
+        virtual bool IsNearPoint(const Point &pt, double region_radius) override;
+        virtual double DistanceFrom(const Point &pt) const override;
+        virtual void GetSnapPoints(std::vector<Point> &vec) const override;
+        virtual void GetCenterPoints(std::vector<Point> &vec) const override;
+        virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0) override;
+        virtual Entity* Clone(void) const override;
 
         void SetStartPoint(const Point &pt);
         void SetEndPoint(const Point &pt);
@@ -46,7 +36,6 @@ class DLL_EXPORT Line: public Entity
 
     private:
         inline void CalculateLength(void);
-
         Point m_pt1;
         Point m_pt2;
         double m_length;

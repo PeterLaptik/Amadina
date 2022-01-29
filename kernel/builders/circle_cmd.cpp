@@ -19,11 +19,13 @@ void CmdCircle::Run()
 {
     CMDResult result;
 
+    PrintMessage("Pick center point");
     result = EnterPoint(&pt1);
     if(result!=RES_OK)
         return;
 
     m_pt_picked = true;
+    PrintMessage("Pick radius point");
     result = EnterPoint(&pt2);
     if(result!=RES_OK)
         return;

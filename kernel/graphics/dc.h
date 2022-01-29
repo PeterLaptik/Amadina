@@ -31,6 +31,15 @@ class IAdapterDC
             CadDrawLine(x1, y1, x2, y2);
         }
 
+        virtual void CadDrawConstraintSquare(double x1, double y1, double x2, double y2)
+        {
+            CadDrawConstraintLine(x1, y1, x2, y2);
+            CadDrawConstraintLine(x1, y1, x1, y2);
+            CadDrawConstraintLine(x2, y2, x1, y2);
+            CadDrawConstraintLine(x2, y2, x2, y1);
+            CadDrawConstraintLine(x1, y1, x2, y1);
+        }
+
         virtual void CadSetLayer(Layer *layer) = 0;
 
         virtual void SetBorders(double left, double right, double top, double bottom) = 0;
