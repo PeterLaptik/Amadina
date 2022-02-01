@@ -43,6 +43,18 @@ bool Arc::IsNearPoint(const Point &pt, double region_radius)
     return DistanceFrom(pt)<region_radius;
 }
 
+bool Arc::IsInSquare(const Point &top_left, const Point &bottom_right)
+{
+    Point x1(m_center.GetX() + m_radius, m_center.GetY() + m_radius);
+    Point x2(m_center.GetX() - m_radius, m_center.GetY() + m_radius);
+    Point x3(m_center.GetX() - m_radius, m_center.GetY() - m_radius);
+    Point x4(m_center.GetX() + m_radius, m_center.GetY() - m_radius);
+    return x1.IsInSquare(top_left,bottom_right)
+            && x2.IsInSquare(top_left,bottom_right)
+            && x3.IsInSquare(top_left,bottom_right)
+            && x4.IsInSquare(top_left,bottom_right);
+}
+
 double Arc::DistanceFrom(const Point &pt) const
 {
     double x0 = m_center.GetX();

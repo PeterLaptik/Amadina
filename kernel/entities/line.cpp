@@ -68,6 +68,12 @@ bool Line::IsNearPoint(const Point &pt, double region_radius)
     return DistanceFrom(pt)<region_radius;
 }
 
+bool Line::IsInSquare(const Point &top_left, const Point &bottom_right)
+{
+    return m_pt1.IsInSquare(top_left,bottom_right)
+            && m_pt2.IsInSquare(top_left,bottom_right);
+}
+
 double Line::DistanceFrom(const Point &pt) const
 {
     double px = pt.GetX();

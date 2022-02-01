@@ -20,6 +20,7 @@ class DLL_EXPORT Line: public Entity
         virtual void Draw(IAdapterDC &dc) override;
         virtual void DrawHighlighted(IAdapterDC &dc) override;
         virtual bool IsNearPoint(const Point &pt, double region_radius) override;
+        virtual bool IsInSquare(const Point &top_left, const Point &bottom_right) override;
         virtual double DistanceFrom(const Point &pt) const override;
         virtual void GetSnapPoints(std::vector<Point> &vec) const override;
         virtual void GetCenterPoints(std::vector<Point> &vec) const override;

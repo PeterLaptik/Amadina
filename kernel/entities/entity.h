@@ -38,6 +38,9 @@ class DLL_EXPORT Entity
 
         virtual bool IsNearPoint(const Point &pt, double region_radius) = 0;
 
+        // Is entity in square
+        virtual bool IsInSquare(const Point &top_left, const Point &bottom_right) = 0;
+
         // TODO change extarnal calls of manager to this method
         virtual bool IsCloseTo(const Point&) const
         {

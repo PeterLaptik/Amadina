@@ -18,6 +18,7 @@ Colour DEFAULT_COLOUR_WHITE(255,255,255);
 wxAdapterDC::wxAdapterDC(wxWindow *win, wxSize size)
                 :wxBufferedPaintDC(win)
 {
+    m_background_colour = DEFAULT_COLOUR_BLACK;
     m_height = size.GetHeight();
     m_width = size.GetWidth();
     m_borders.left = DEFAULT_LEFT_BORDER;
@@ -134,11 +135,19 @@ void wxAdapterDC::CadDrawConstraintLine(double x1, double y1, double x2, double 
     }
 }
 
+static const int HIGHLIGHT_DELTA = 30;
+
 void wxAdapterDC::CadDrawConstraintSquare(double x1, double y1, double x2, double y2)
 {
-    wxColor brush_color(100,100,100,255);
-    wxBrush brush(*wxTRANSPARENT_BRUSH);
-    brush.SetColour(brush_color);
+    int sign = m_background_colour.IsDark() ? +1 : -1;
+    Colour::colour_t red = m_background_colour.R + sign*HIGHLIGHT_DELTA;
+    Colour::colour_t green = m_background_colour.G + sign*HIGHLIGHT_DELTA;
+    Colour::colour_t blue = m_background_colour.B + sign*HIGHLIGHT_DELTA;
+    wxColour brush_colour(red, green, blue);
+
+    wxBrush brush(wxBRUSHSTYLE_SOLID);
+    brush.SetColour(brush_colour);
+    SetBrush(brush);
     TransformCoordinatesToView(x1, y1);
     TransformCoordinatesToView(x2, y2);
     double coord_x = std::min(x1, x2);
@@ -146,6 +155,8 @@ void wxAdapterDC::CadDrawConstraintSquare(double x1, double y1, double x2, doubl
     double width = fabs(x1-x2);
     double height = fabs(y1-y2);
     DrawRectangle(coord_x, coord_y, width, height);
+    brush.SetStyle(wxBRUSHSTYLE_TRANSPARENT);
+    SetBrush(brush);
 }
 
 // Transforms coordinates from real values to device coordinates

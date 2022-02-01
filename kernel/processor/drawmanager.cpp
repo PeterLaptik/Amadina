@@ -259,6 +259,15 @@ bool DrawManager::SelectInPoint(double x, double y, double snap_radius)
     return false;
 }
 
+void DrawManager::SelectInSquare(const Point &pt1, const Point &pt2)
+{
+    for(std::vector<Entity*>::iterator it=m_elements.begin(); it!=m_elements.end(); ++it)
+    {
+        if((*it)->IsInSquare(pt1,pt2))
+            m_selected_entities.push_back(*it);
+    }
+}
+
 void DrawManager::ClearSelection()
 {
     m_selected_entities.clear();

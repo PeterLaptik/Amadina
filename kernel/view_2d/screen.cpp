@@ -22,6 +22,7 @@ static const int SCREEN_SNAP_RADIUS = 5;
 
 // Keyboard commands
 static const char KEY_ENTER = 13;
+static const char KEY_ESC = 27;
 
 
 Screen::Screen():
@@ -135,7 +136,13 @@ void Screen::ScreenMouseLeftButtonClicked(const int &coord_x,
                 }
                 else
                 {
+                    double x_min = std::min(m_square.x1, x);
+                    double x_max = std::max(m_square.x1, x);
+                    double y_min = std::min(m_square.y1, y);
+                    double y_max = std::max(m_square.y1, y);
+                    m_draw_manager.SelectInSquare(Point(x_min,y_max),Point(x_max,y_min));
                     m_square.is_active = false;
+                    RefreshScreen();
                 }
             }
             else
@@ -239,8 +246,12 @@ void Screen::PointPicked(double x, double y)
 
 void Screen::ClearSelection()
 {
+    if(m_square.is_active==true)
+    {
+        m_square.is_active = false;
+    }
     m_draw_manager.ClearSelection();
-    RefreshScreen();
+    //RefreshScreen();
 }
 
 const std::vector<Entity*>& Screen::GetSelection()
@@ -292,6 +303,16 @@ void Screen::RedrawAll(IAdapterDC &dc)
     dc.SetBorders(m_borders.left, m_borders.right, m_borders.top, m_borders.bottom);
     dc.SetBackgroundColour(m_colour);
 
+    // Show selecting square if exists
+    if(m_square.is_active)
+    {
+        double x_start = m_square.x1;
+        double y_start = m_square.y1;
+        double x_end = m_mouse_coord.x;
+        double y_end = m_mouse_coord.y;
+        dc.CadDrawConstraintSquare(x_start, y_start, x_end, y_end);
+    }
+
     if(m_receiver)
     {
         dc.CadSetColour(m_colour.IsDark() ? Colours::WHITE : Colours::BLACK);
@@ -310,20 +331,6 @@ void Screen::RedrawAll(IAdapterDC &dc)
        && m_screen_state!=SCR_SELECTING)
     {
         m_draw_manager.ShowSnapPoints(dc, m_mouse_coord.x, m_mouse_coord.y, m_snap_radius);
-    }
-
-    // Show selecting square if exists
-    if(m_square.is_active)
-    {
-        double x_start = m_square.x1;
-        double y_start = m_square.y1;
-        double x_end = m_mouse_coord.x;
-        double y_end = m_mouse_coord.y;
-        //TransformCoordinatesToGlobal(x_start, y_start);
-        //TransformCoordinatesToGlobal(x_end, y_end);
-        dc.CadDrawConstraintSquare(x_start, y_start, x_end, y_end);
-//        dc.CadDrawConstraintSquare(m_square.x1, m_square.y1,
-//                                   m_mouse_coord.x, m_mouse_coord.y);
     }
 }
 

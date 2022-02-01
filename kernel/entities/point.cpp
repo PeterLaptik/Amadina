@@ -41,6 +41,12 @@ bool Point::IsNearPoint(const Point &pt, double region_radius)
     return region_radius>geometry::calculate_distance(pt.x, pt.y, pt.z, x, y, z);
 }
 
+bool Point::IsInSquare(const Point &top_left, const Point &bottom_right)
+{
+    return ((x>=top_left.x && x<=bottom_right.x)
+       &&(y<=top_left.y && y>=bottom_right.y));
+}
+
 void Point::GetSnapPoints(std::vector<Point> &vec) const
 {
     vec.push_back(*this);

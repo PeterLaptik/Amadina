@@ -3,16 +3,16 @@
 
 #include <math.h>
 
-// Type for R/G/B values
-typedef unsigned char colour_t;
-
-// R/G/B value for default constructor
-static const colour_t DEFAULT_VALUE = 90;
-
 ///\brief Colour for entities and screen background
 class Colour
 {
     public:
+        // Type for R/G/B values
+        typedef unsigned char colour_t;
+
+        // R/G/B value for default constructor
+        static const colour_t DEFAULT_VALUE = 90;
+
         /// Default constructor
         Colour()
             : R(DEFAULT_VALUE), G(DEFAULT_VALUE), B(DEFAULT_VALUE)
