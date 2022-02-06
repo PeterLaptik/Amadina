@@ -1,5 +1,6 @@
 #include "dcadapter_wx.h"
 #include "geometry/intersections.h"
+#include "geometry/geometry.h"
 
 // Default borders positions
 static const double DEFAULT_LEFT_BORDER = 0;
@@ -9,6 +10,8 @@ static const double DEFAULT_BOTTOM_BORDER = 0;
 
 // Out of screen coordinate value
 static const int COORD_OUT_OF_SCREEN = 1;
+
+static const int HIGHLIGHT_THICKNESS = 3;
 
 // Default colours
 Colour DEFAULT_COLOUR_BLACK(0,0,0);
@@ -30,6 +33,7 @@ wxAdapterDC::wxAdapterDC(wxWindow *win, wxSize size)
     this->SetPen(wxPen(wxColour(m_colour.R, m_colour.G, m_colour.B)));
     x_scale = (m_borders.right -  m_borders.left)/m_width;
     y_scale = (m_borders.top -  m_borders.bottom)/m_height;
+    m_is_highlited = false;
 }
 
 
@@ -62,6 +66,7 @@ void wxAdapterDC::CadDrawLine(const Point &pt1, const Point &pt2)
     CadDrawLine(pt1.GetX(), pt1.GetY(), pt2.GetX(), pt2.GetY());
 }
 
+
 void wxAdapterDC::CadDrawLine(double x1, double y1, double x2, double y2)
 {
     // Out of screen check
@@ -87,6 +92,35 @@ void wxAdapterDC::CadDrawLine(double x1, double y1, double x2, double y2)
     TransformCoordinatesToView(x1, y1, x2, y2);
     DrawLine(static_cast<int>(x1), static_cast<int>(y1),
              static_cast<int>(x2), static_cast<int>(y2));
+
+    // Highlighted
+    if(m_is_highlited)
+    {
+        wxPen current_pen = GetPen();
+        wxColour current_colour = current_pen.GetColour();
+        wxPen highlight_pen = current_pen;
+        wxColour hcolour = GetHighlightColour().Red();
+
+        double length = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+        for(int i=-HIGHLIGHT_THICKNESS; i<HIGHLIGHT_THICKNESS; i++)
+        {
+            if(i==0)
+                continue;
+
+            unsigned char c_val = IncrementColourValue(hcolour.Red(), i*10);
+            wxColour col(c_val,c_val,c_val);
+            highlight_pen.SetColour(col);
+            SetPen(highlight_pen);
+
+            double ax1 = x1 + i*(y2 - y1)/length;
+            double ay1 = y1 + i*(x1 - x2)/length;
+            double ax2 = x2 + i*(y2 - y1)/length;
+            double ay2 = y2 + i*(x1 - x2)/length;
+            DrawLine(static_cast<int>(ax1), static_cast<int>(ay1),
+             static_cast<int>(ax2), static_cast<int>(ay2));
+        }
+        SetPen(current_pen);
+    }
 }
 
 void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
@@ -97,6 +131,28 @@ void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
     double dummy_coord = 0;
     TransformCoordinatesToView(x, y, rad, dummy_coord);
     DrawCircle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(rad - x));
+
+    // Highlighted
+    if(m_is_highlited)
+    {
+        wxPen current_pen = GetPen();
+        wxColour current_colour = current_pen.GetColour();
+        wxPen highlight_pen = current_pen;
+        wxColour hcolour = GetHighlightColour().Red();
+
+        for(int i=-HIGHLIGHT_THICKNESS; i<HIGHLIGHT_THICKNESS; i++)
+        {
+            if(i==0)
+                continue;
+
+            unsigned char c_val = IncrementColourValue(hcolour.Red(), i*10);
+            wxColour col(c_val,c_val,c_val);
+            highlight_pen.SetColour(col);
+            SetPen(highlight_pen);
+            DrawCircle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(rad - x + i));
+        }
+        SetPen(current_pen);
+    }
 }
 
 void wxAdapterDC::CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end)
@@ -160,7 +216,7 @@ void wxAdapterDC::CadDrawConstraintSquare(double x1, double y1, double x2, doubl
 }
 
 // Transforms coordinates from real values to device coordinates
-void wxAdapterDC::TransformCoordinatesToView(double &x, double &y)
+void wxAdapterDC::TransformCoordinatesToView(double &x, double &y) const
 {
     x = m_width*(x - m_borders.left)/(m_borders.right - m_borders.left);
     y = m_height*(y - m_borders.bottom)/(m_borders.top - m_borders.bottom);
@@ -168,13 +224,14 @@ void wxAdapterDC::TransformCoordinatesToView(double &x, double &y)
 }
 
 // Transforms coordinates from real values to device coordinates
-void wxAdapterDC::TransformCoordinatesToView(double &x1, double &y1, double &x2, double &y2)
+void wxAdapterDC::TransformCoordinatesToView(double &x1, double &y1, double &x2, double &y2) const
 {
     TransformCoordinatesToView(x1, y1);
     TransformCoordinatesToView(x2, y2);
 }
 
-bool wxAdapterDC::IsLineInsideScreen(const double& x1, const double& y1, const double& x2, const double& y2)
+bool wxAdapterDC::IsLineInsideScreen(const double& x1, const double& y1,
+                                     const double& x2, const double& y2) const
 {
     double x_left = std::min(x1, x2);
     double x_right = std::max(x1, x2);
@@ -205,7 +262,9 @@ void wxAdapterDC::CadSetColour(const Colour &colour)
 {
     m_colour = colour;
     m_colour.CheckAndInverse(m_colours.background);
-    this->SetPen(wxPen(wxColour(m_colour.R, m_colour.G, m_colour.B)));
+    wxPen updated_pen = GetPen();
+    updated_pen.SetColour(wxColour(m_colour.R, m_colour.G, m_colour.B));
+    SetPen(updated_pen);
 }
 
 const Colour& wxAdapterDC::GetBackgroundColour(void) const
@@ -218,3 +277,25 @@ void wxAdapterDC::SetBackgroundColour(const Colour &colour)
     m_colours.background = colour;
 }
 
+void wxAdapterDC::CadSetHighlited(bool is_highlited)
+{
+    m_is_highlited = is_highlited;
+    //wxPen updated_pen = GetPen();
+    //updated_pen.SetStyle(wxPENSTYLE_STIPPLE);
+    //updated_pen.SetJoin(wxJOIN_ROUND);
+    //SetPen(updated_pen);
+}
+
+wxColour wxAdapterDC::GetHighlightColour() const
+{
+    unsigned char colour = m_background_colour.R>120 ? 100 : 220;
+    return wxColour(colour,colour,colour);
+}
+
+unsigned int wxAdapterDC::IncrementColourValue(unsigned int val, int step) const
+{
+    val += fabs(step);
+    if(val>255)
+        val = 255;
+    return val;
+}

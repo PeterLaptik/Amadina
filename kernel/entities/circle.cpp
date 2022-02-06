@@ -26,8 +26,10 @@ void Circle::Draw(IAdapterDC &dc)
 
 void Circle::DrawHighlighted(IAdapterDC &dc)
 {
-    dc.CadSetColour(Colour(255,0,0));
+    dc.CadSetHighlited(true);
+    //dc.CadSetColour(Colour(255,0,0));
     dc.CadDrawCircle(m_center, m_radius);
+    dc.CadSetHighlited(false);
 }
 
 const Point& Circle::GetCenterPoint(void) const

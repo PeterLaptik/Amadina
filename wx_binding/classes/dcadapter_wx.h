@@ -50,15 +50,19 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
         virtual const Colour& GetBackgroundColour(void) const;
         virtual void SetBackgroundColour(const Colour &colour);
 
+        virtual void CadSetHighlited(bool is_highlited = true) override;
+
     protected:
+        inline void TransformCoordinatesToView(double &x1, double &y1) const;
+        inline void TransformCoordinatesToView(double &x1, double &y1, double &x2, double &y2) const;
+        inline bool IsLineInsideScreen(const double& x1, const double& y1,
+                     const double& x2, const double& y2) const;
+        inline wxColour GetHighlightColour(void) const;
+        inline unsigned int IncrementColourValue(unsigned int val, int step) const;
 
     private:
-        inline void TransformCoordinatesToView(double &x1, double &y1);
-        inline void TransformCoordinatesToView(double &x1, double &y1, double &x2, double &y2);
-        inline bool IsLineInsideScreen(const double& x1, const double& y1,
-                     const double& x2, const double& y2);
-
         int BORDER_MARGIN;
+        bool m_is_highlited;
 
         struct Border
         {

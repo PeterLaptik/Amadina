@@ -21,6 +21,8 @@ class IAdapterDC
 
         virtual void CadDrawCircle(const Point &pt, const double &radius) = 0;
 
+        // TODO
+        // Move out of this interface
         virtual void CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end) = 0;
 
         virtual void CadSetColour(const Colour &colour) = 0;
@@ -41,6 +43,8 @@ class IAdapterDC
         }
 
         virtual void CadSetLayer(Layer *layer) = 0;
+
+        virtual void CadSetHighlited(bool is_highlited = true) = 0;
 
         virtual void SetBorders(double left, double right, double top, double bottom) = 0;
 
