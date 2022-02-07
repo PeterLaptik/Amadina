@@ -103,6 +103,11 @@ Screen* Context::GetScreen(void) const
     return m_screen;
 }
 
+void Context::ClearSelection()
+{
+    m_screen->ClearSelection();
+}
+
 ClipBoard* Context::GetClipBoard()
 {
     return &m_clipboard;

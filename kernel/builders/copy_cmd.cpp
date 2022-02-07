@@ -26,6 +26,7 @@ void CmdCopy::Run()
     if(result!=RES_OK)
         return;
 
+    GetContext()->ClearSelection();
     GetContext()->GetClipBoard()->AddObjects(m_selection);
     GetContext()->GetClipBoard()->SetBasePoint(m_base_point);
 }

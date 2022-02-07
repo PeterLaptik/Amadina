@@ -113,7 +113,7 @@ CMDResult Command::EnterEntities(std::vector<Entity*> *entity_set)
     if(current_selection.size()>0)
     {
         SetEntities(current_selection);
-        m_context->GetScreen()->ClearSelection();
+        //m_context->GetScreen()->ClearSelection();
     }
 
     WaitForInput();

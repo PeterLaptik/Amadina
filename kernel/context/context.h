@@ -76,6 +76,8 @@ class DLL_EXPORT Context final
         /// Returns context's screen
         Screen* GetScreen(void) const;
 
+        void ClearSelection(void);
+
         ClipBoard* GetClipBoard(void);
 
 

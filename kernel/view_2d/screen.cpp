@@ -230,7 +230,7 @@ void Screen::ScreenKeyPressed(char key)
             if(m_screen_state==SCR_SELECTING && m_receiver)
             {
                 m_receiver->SetEntities(m_draw_manager.GetSelection());
-                m_draw_manager.ClearSelection();
+                //m_draw_manager.ClearSelection();
                 m_context.Update();
             }
             break;
