@@ -27,11 +27,6 @@ void Arc::Draw(IAdapterDC &dc)
     dc.CadDrawArc(m_center, m_start, m_end);
 }
 
-void Arc::DrawHighlighted(IAdapterDC &dc)
-{
-    dc.CadSetColour(Colour(255,0,0));
-    Draw(dc);
-}
 
 bool Arc::IsNearPoint(const Point &pt, double region_radius)
 {
@@ -45,14 +40,60 @@ bool Arc::IsNearPoint(const Point &pt, double region_radius)
 
 bool Arc::IsInSquare(const Point &top_left, const Point &bottom_right)
 {
-    Point x1(m_center.GetX() + m_radius, m_center.GetY() + m_radius);
-    Point x2(m_center.GetX() - m_radius, m_center.GetY() + m_radius);
-    Point x3(m_center.GetX() - m_radius, m_center.GetY() - m_radius);
-    Point x4(m_center.GetX() + m_radius, m_center.GetY() - m_radius);
-    return x1.IsInSquare(top_left,bottom_right)
-            && x2.IsInSquare(top_left,bottom_right)
-            && x3.IsInSquare(top_left,bottom_right)
-            && x4.IsInSquare(top_left,bottom_right);
+
+    double a = m_start_angle;
+    double b = m_end_angle;
+    bool intersects = a>b ? true : false;
+
+    if(!intersects && (fabs(m_start_angle-m_end_angle)<90))
+        return m_start.IsInSquare(top_left,bottom_right)
+                && m_end.IsInSquare(top_left,bottom_right);
+
+    Point x1(m_center.GetX() + m_radius, m_center.GetY()); // 0 deg
+    Point x2(m_center.GetX(), m_center.GetY() + m_radius); // 90 deg
+    Point x3(m_center.GetX() - m_radius, m_center.GetY()); // 180 deg
+    Point x4(m_center.GetX(), m_center.GetY() - m_radius); // 270 deg
+
+    Point edge_points[4] = {x1,x2,x3,x4};
+    Point points[] = {m_end, m_end, m_end, m_end, m_start, m_end};
+
+    if(!intersects)
+    {
+        bool assigned_point = false;
+        for(int i=0; i<4; i++)
+        {
+            double angle = i*90;
+            if(m_start_angle<=angle && m_end_angle>=angle)
+            {
+                assigned_point = true;
+                points[i] = edge_points[i];
+            }
+        }
+        if(!assigned_point)
+            return false;
+    }
+    else
+    {
+        bool assigned_point = false;
+        for(int i=0; i<4; i++)
+        {
+            double angle = i*90;
+            if((m_start_angle>=angle && m_end_angle>=angle)
+               || (m_start_angle<=angle && m_end_angle<=angle))
+            {
+                assigned_point = true;
+                points[i] = edge_points[i];
+            }
+        }
+        if(!assigned_point)
+            return false;
+    }
+
+    for(size_t i=0; i<sizeof(points)/sizeof(Point); i++)
+        if(!points[i].IsInSquare(top_left,bottom_right))
+            return false;
+
+    return true;
 }
 
 double Arc::DistanceFrom(const Point &pt) const

@@ -25,12 +25,6 @@ void Point::Draw(IAdapterDC &dc)
     dc.CadDrawPoint(*this);
 }
 
-void Point::DrawHighlighted(IAdapterDC &dc)
-{
-    dc.CadSetColour(Colour(255,0,0));
-    dc.CadDrawPoint(*this);
-}
-
 double Point::DistanceFrom(const Point &pt) const
 {
     return geometry::calculate_distance(pt.x, pt.y, pt.z, x, y, z);

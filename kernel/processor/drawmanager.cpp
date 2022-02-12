@@ -69,8 +69,10 @@ void DrawManager::DrawAll(IAdapterDC &dc)
         (*it)->Draw(dc);
     }
 
+    dc.CadSetHighlited(true);
     for(std::vector<Entity*>::iterator it=m_selected_entities.begin(); it!=m_selected_entities.end(); ++it)
-        (*it)->DrawHighlighted(dc);
+        (*it)->Draw(dc);
+    dc.CadSetHighlited(false);
 }
 
 // Finds the best fit snap point.
@@ -232,7 +234,9 @@ void DrawManager::ShowSnapEntities(IAdapterDC &dc, double x, double y, double sn
     }
     if(min_distance<snap_radius)
     {
-        m_selecting_entity->DrawHighlighted(dc);
+        dc.CadSetHighlited(true);
+        m_selecting_entity->Draw(dc);
+        dc.CadSetHighlited(false);
     }
 }
 

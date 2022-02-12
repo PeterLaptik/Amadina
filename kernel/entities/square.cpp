@@ -32,10 +32,10 @@ void Square::Draw(IAdapterDC &dc)
 void Square::DrawHighlighted(IAdapterDC &dc)
 {
     dc.CadSetColour(Colour(255,0,0));
-    line_top.DrawHighlighted(dc);
-    line_bottom.DrawHighlighted(dc);
-    line_left.DrawHighlighted(dc);
-    line_right.DrawHighlighted(dc);
+    //line_top.DrawHighlighted(dc);
+    //line_bottom.DrawHighlighted(dc);
+    //line_left.DrawHighlighted(dc);
+    //line_right.DrawHighlighted(dc);
 }
 
 double Square::DistanceFrom(const Point &pt) const
