@@ -1,35 +1,86 @@
 #include "intersections.h"
+#include "geometry.h"
 #include "../entities/point.h"
 #include "../entities/line.h"
 #include "../entities/circle.h"
+#include "../entities/arc.h"
 #include <math.h>
 #include <float.h>
+#include <typeinfo>
+#include <string.h>
 
 static const int DEFAULT_BORDER_MARGIN = 0;
+
+static const char *ENTITY_TYPE_LINE = typeid(Line).name();
+static const char *ENTITY_TYPE_CIRCLE = typeid(Circle).name();
+static const char *ENTITY_TYPE_ARC = typeid(Arc).name();
+
 
 int cad::geometry::get_border_margin()
 {
     return DEFAULT_BORDER_MARGIN;
 }
 
+
+// Checks whether the intersection point belongs to arc (by angle checking)
+auto does_point_match_to_arc = [](double angle, double angle_start, double angle_end)
+{
+    if(angle_start>angle_end)
+    {
+        if((angle>angle_start && angle>angle_end)
+                ||(angle<angle_start && angle<angle_end))
+            return true;
+    }
+    else
+    {
+        if(angle<angle_end && angle>angle_start)
+            return true;
+    }
+    return false;
+};
+
+
 void cad::geometry::calculate_intersections(Entity *entity_1, Entity *entity_2, std::vector<Point> &points)
 {
-    Line *line_1 = dynamic_cast<Line*>(entity_1);
-    Line *line_2 = dynamic_cast<Line*>(entity_2);
-    Circle *circle_1 = dynamic_cast<Circle*>(entity_1);
-    Circle *circle_2 = dynamic_cast<Circle*>(entity_2);
+    const char *type_1 = typeid(*entity_1).name();
+    const char *type_2 = typeid(*entity_2).name();
 
-    // Line-line intersection
-    if(line_1 && line_2)
-        intersections(line_1, line_2, points);
-    // Circle-line intersection
-    if(line_1 && circle_2)
-        intersections(line_1, circle_2, points);
-    if(circle_1 && line_2)
-        intersections(line_2, circle_1, points);
-    // Circle-circle intersection
-    if(circle_1 && circle_2)
-        intersections(circle_1, circle_2, points);
+    if(strcmp(ENTITY_TYPE_LINE, type_1)==0 && strcmp(ENTITY_TYPE_LINE, type_2)==0)
+        intersections(dynamic_cast<Line*>(entity_1),
+                      dynamic_cast<Line*>(entity_2),
+                      points);
+    else if(strcmp(ENTITY_TYPE_LINE, type_1)==0 && strcmp(ENTITY_TYPE_CIRCLE, type_2)==0)
+        intersections(dynamic_cast<Line*>(entity_1),
+                      dynamic_cast<Circle*>(entity_2),
+                      points);
+    else if(strcmp(ENTITY_TYPE_CIRCLE, type_1)==0 && strcmp(ENTITY_TYPE_LINE, type_2)==0)
+        intersections(dynamic_cast<Line*>(entity_2),
+                      dynamic_cast<Circle*>(entity_1),
+                      points);
+    else if(strcmp(ENTITY_TYPE_CIRCLE, type_1)==0 && strcmp(ENTITY_TYPE_CIRCLE, type_2)==0)
+        intersections(dynamic_cast<Circle*>(entity_1),
+                      dynamic_cast<Circle*>(entity_2),
+                      points);
+    else if(strcmp(ENTITY_TYPE_ARC, type_1)==0 && strcmp(ENTITY_TYPE_ARC, type_2)==0)
+        intersections(dynamic_cast<Arc*>(entity_1),
+                      dynamic_cast<Arc*>(entity_2),
+                      points);
+    else if(strcmp(ENTITY_TYPE_ARC, type_1)==0 && strcmp(ENTITY_TYPE_CIRCLE, type_2)==0)
+        intersections(dynamic_cast<Arc*>(entity_1),
+                      dynamic_cast<Circle*>(entity_2),
+                      points);
+    else if(strcmp(ENTITY_TYPE_CIRCLE, type_1)==0 && strcmp(ENTITY_TYPE_ARC, type_2)==0)
+        intersections(dynamic_cast<Arc*>(entity_2),
+                      dynamic_cast<Circle*>(entity_1),
+                      points);
+    else if(strcmp(ENTITY_TYPE_LINE, type_1)==0 && strcmp(ENTITY_TYPE_ARC, type_2)==0)
+        intersections(dynamic_cast<Line*>(entity_1),
+                      dynamic_cast<Arc*>(entity_2),
+                      points);
+    else if(strcmp(ENTITY_TYPE_ARC, type_1)==0 && strcmp(ENTITY_TYPE_LINE, type_2)==0)
+        intersections(dynamic_cast<Line*>(entity_2),
+                      dynamic_cast<Arc*>(entity_1),
+                      points);
 }
 
 // Line-line intersection
@@ -156,6 +207,94 @@ void cad::geometry::intersections(Line *line, Circle *circle, std::vector<Point>
         points.push_back(Point(x, y));
 }
 
+// Line-circle intersection
+void cad::geometry::intersections(Line *line, Arc *arc, std::vector<Point> &points)
+{
+    const Point &pt_1 = line->GetStartPoint();
+    const Point &pt_2 = line->GetEndPoint();
+
+    double x1 = pt_1.GetX();
+    double y1 = pt_1.GetY();
+    double x2 = pt_2.GetX();
+    double y2 = pt_2.GetY();
+    if(x1>x2)
+    {
+        std::swap(x1,x2);
+        std::swap(y1,y2);
+    }
+
+    double x0 = arc->GetCenterPoint().GetX();
+    double y0 = arc->GetCenterPoint().GetY();
+    double r = arc->GetRadius();
+
+    const Point &xc = arc->GetCenterPoint();
+    double angle = 0;
+    double angle_start = arc->GetStartAngle();
+    double angle_end = arc->GetEndAngle();
+
+    double A = y2 - y1;
+    double B = x1 - x2;
+    double C = x2*y1 - x1*y2;
+
+    // Vertical line case
+    if(fabs(B)<DBL_EPSILON)
+    {
+        // Out of circle
+        if(fabs(x0-x1)>r)
+            return;
+
+        double na = 1;
+        double nb = -2*y0;
+        double nc = pow(y0,2) - pow(r,2) + pow(x0,2) + pow(x1,2) - 2*x1*x0;
+        double nsq_val = pow(nb,2) - 4*na*nc;
+        if(nsq_val<0)   // no roots
+            return;
+
+        if(y1>y2)
+            std::swap(y1,y2);
+
+        double y = (-nb + sqrt(nsq_val))/(2*na);
+        angle = ::geometry::calculate_angle(xc.GetX(), xc.GetY(), x1, y);
+        if((y<=y2)&&(y>=y1)&&(does_point_match_to_arc(angle, angle_start, angle_end)))
+            points.push_back(Point(x1, y));
+
+        // One root case
+        if(fabs(nsq_val)<DBL_EPSILON)
+            return;
+
+        y = (-nb - sqrt(nsq_val))/(2*na);
+        angle = ::geometry::calculate_angle(xc.GetX(), xc.GetY(), x1, y);
+        if((y<=y2)&&(y>=y1)&&(does_point_match_to_arc(angle, angle_start, angle_end)))
+            points.push_back(Point(x1, y));
+        return;
+    }
+
+    // General case
+    double a = pow(A,2) + pow(B,2);
+    double b = 2*A*C + 2*A*B*y0 - 2*pow(B,2)*x0;
+    double c = pow(C,2) + 2*B*C*y0 - pow(B,2)*(pow(r,2) - pow(x0,2) - pow(y0,2));
+
+    double sq_val = pow(b,2) - 4*a*c;
+    if(sq_val<0)
+        return;
+
+    double x = (-b + sqrt(sq_val))/(2*a);
+    double y = -(A*x + C)/B;
+    angle = ::geometry::calculate_angle(xc.GetX(), xc.GetY(), x, y);
+    if((x1<=x)&&(x2>=x)&&(does_point_match_to_arc(angle, angle_start, angle_end)))
+        points.push_back(Point(x, y));
+
+    // Whether the entities has only one intersection point
+    if(fabs(x)<DBL_EPSILON)
+        return;
+
+    x = (-b - sqrt(sq_val))/(2*a);
+    y = -(A*x + C)/B;
+    angle = ::geometry::calculate_angle(xc.GetX(), xc.GetY(), x, y);
+    if((x1<=x)&&(x2>=x)&&(does_point_match_to_arc(angle, angle_start, angle_end)))
+        points.push_back(Point(x, y));
+}
+
 void cad::geometry::intersections(Circle *circle_1, Circle *circle_2, std::vector<Point> &points)
 {
     Point pt1 = circle_1->GetCenterPoint();
@@ -187,6 +326,103 @@ void cad::geometry::intersections(Circle *circle_1, Circle *circle_2, std::vecto
     points.push_back(Point(x,y));
 }
 
+void cad::geometry::intersections(Arc *arc, Circle *circle_2, std::vector<Point> &points)
+{
+    Point pt1 = arc->GetCenterPoint();
+    Point pt2 = circle_2->GetCenterPoint();
+
+    double x0 = pt1.GetX();
+    double y0 = pt1.GetY();
+    double x1 = pt2.GetX();
+    double y1 = pt2.GetY();
+    double r0 = arc->GetRadius();
+    double r1 = circle_2->GetRadius();
+
+    double d = pow((pow(x1-x0,2) + pow(y1-y0,2)), 0.5);
+    if((d>(r0+r1))||(d<fabs(r1-r0))||(fabs(d)<=DBL_EPSILON))
+        return; // no intersections or the circles matches to each other
+
+    double a = (pow(r0,2) - pow(r1,2) + pow(d,2))/(2*d);
+    double h = sqrt(pow(r0,2) - pow(a,2));
+
+    double x2 = x0 + a*(x1 - x0)/d;
+    double y2 = y0 + a*(y1 - y0)/d;
+
+    double x = x2 + h*(y1 - y0)/d;
+    double y = y2 - h*(x1 - x0)/d;
+
+    const Point &xc = arc->GetCenterPoint();
+
+    double angle = ::geometry::calculate_angle(xc.GetX(), xc.GetY(), x, y);
+    double angle_start = arc->GetStartAngle();
+    double angle_end = arc->GetEndAngle();
+
+    if(does_point_match_to_arc(angle, angle_start, angle_end))
+        points.push_back(Point(x,y));
+
+    x = x2 - h*(y1 - y0)/d;
+    y = y2 + h*(x1 - x0)/d;
+    angle = ::geometry::calculate_angle(xc.GetX(), xc.GetY(), x, y);
+    angle_start = arc->GetStartAngle();
+    angle_end = arc->GetEndAngle();
+
+    if(does_point_match_to_arc(angle, angle_start, angle_end))
+        points.push_back(Point(x,y));
+}
+
+void cad::geometry::intersections(Arc *arc_1, Arc *arc_2, std::vector<Point> &points)
+{
+    Point pt1 = arc_1->GetCenterPoint();
+    Point pt2 = arc_2->GetCenterPoint();
+
+    double x0 = pt1.GetX();
+    double y0 = pt1.GetY();
+    double x1 = pt2.GetX();
+    double y1 = pt2.GetY();
+    double r0 = arc_1->GetRadius();
+    double r1 = arc_2->GetRadius();
+
+    double d = pow((pow(x1-x0,2) + pow(y1-y0,2)), 0.5);
+    if((d>(r0+r1))||(d<fabs(r1-r0))||(fabs(d)<=DBL_EPSILON))
+        return; // no intersections or the circles matches to each other
+
+    double a = (pow(r0,2) - pow(r1,2) + pow(d,2))/(2*d);
+    double h = sqrt(pow(r0,2) - pow(a,2));
+
+    double x2 = x0 + a*(x1 - x0)/d;
+    double y2 = y0 + a*(y1 - y0)/d;
+
+    double x = x2 + h*(y1 - y0)/d;
+    double y = y2 - h*(x1 - x0)/d;
+
+    const Point &xc_1 = arc_1->GetCenterPoint();
+    const Point &xc_2 = arc_2->GetCenterPoint();
+
+    double angle_1 = ::geometry::calculate_angle(xc_1.GetX(), xc_1.GetY(), x, y);
+    double angle_start_1 = arc_1->GetStartAngle();
+    double angle_end_1 = arc_1->GetEndAngle();
+
+    double angle_2 = ::geometry::calculate_angle(xc_2.GetX(), xc_2.GetY(), x, y);
+    double angle_start_2 = arc_2->GetStartAngle();
+    double angle_end_2 = arc_2->GetEndAngle();
+
+    if(does_point_match_to_arc(angle_1, angle_start_1, angle_end_1)
+       && does_point_match_to_arc(angle_2, angle_start_2, angle_end_2))
+    {
+        points.push_back(Point(x,y));
+    }
+
+    x = x2 - h*(y1 - y0)/d;
+    y = y2 + h*(x1 - x0)/d;
+
+    angle_1 = ::geometry::calculate_angle(xc_1.GetX(), xc_1.GetY(), x, y);
+    angle_2 = ::geometry::calculate_angle(xc_2.GetX(), xc_2.GetY(), x, y);
+    if(does_point_match_to_arc(angle_1, angle_start_1, angle_end_1)
+       && does_point_match_to_arc(angle_2, angle_start_2, angle_end_2))
+    {
+        points.push_back(Point(x,y));
+    }
+}
 
 bool cad::geometry::border_intersection(double &x1, double &y1, double &x2, double &y2,
                                         const Point &top_left, const Point &bottom_right)

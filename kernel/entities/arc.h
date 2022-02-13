@@ -25,6 +25,9 @@ class Arc: public Entity
         const Point& GetCenterPoint(void) const;
         const Point& GetStartPoint(void) const;
         const Point& GetEndPoint(void) const;
+        double GetStartAngle(void) const;
+        double GetEndAngle(void) const;
+        double GetRadius(void) const;
 
     private:
         Point m_center;

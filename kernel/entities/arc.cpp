@@ -174,6 +174,21 @@ const Point& Arc::GetEndPoint() const
     return m_end;
 }
 
+double Arc::GetRadius(void) const
+{
+    return m_radius;
+}
+
+double Arc::GetStartAngle(void) const
+{
+    return m_start_angle;
+}
+
+double Arc::GetEndAngle(void) const
+{
+    return m_end_angle;
+}
+
 Entity* Arc::Clone() const
 {
     return new Arc(m_center, m_start, m_end);

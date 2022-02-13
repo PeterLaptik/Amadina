@@ -186,7 +186,6 @@ void wxAdapterDC::CadDrawArc(const Point &pt_center, const Point &pt_start, cons
             if(i==0)
                 continue;
 
-
             unsigned char c_val = IncrementColourValue(hcolour.Red(), i*10);
             wxColour col(c_val,c_val,c_val);
             highlight_pen.SetColour(col);
