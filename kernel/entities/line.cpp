@@ -36,18 +36,6 @@ void Line::Draw(IAdapterDC &dc)
     dc.CadDrawLine(m_pt1, m_pt2);
 }
 
-void Line::DrawHighlighted(IAdapterDC &dc)
-{
-    Point pt1 = m_pt1;
-    Point pt2 = m_pt2;
-    //pt2.SetX(pt2.GetX()-1);
-    //pt2.SetY(pt2.GetY()-1);
-    dc.CadSetHighlited(true);
-    dc.CadSetColour(Colour(255,0,0));
-    dc.CadDrawLine(pt1, pt2);
-    dc.CadSetHighlited(false);
-}
-
 bool Line::IsNearPoint(const Point &pt, double region_radius)
 {
     double x_max = std::max(m_pt1.GetX(), m_pt2.GetX());

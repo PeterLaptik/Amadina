@@ -8,6 +8,7 @@ class Entity;
 class Point;
 class Line;
 class Circle;
+class Arc;
 
 namespace cad
 {
@@ -27,8 +28,17 @@ namespace cad
         // Circle-line intersection
         void DLL_EXPORT intersections(Line *line, Circle *circle, std::vector<Point> &points);
 
+        // Line-arc intersection
+        void DLL_EXPORT intersections(Line *line, Arc *circle, std::vector<Point> &points);
+
         // Circle-circle intersection
         void DLL_EXPORT intersections(Circle *circle_1, Circle *circle_2, std::vector<Point> &points);
+
+        // Arc-circle intersection
+        void DLL_EXPORT intersections(Arc *arc, Circle *circle_2, std::vector<Point> &points);
+
+        // Arc-arc intersection
+        void DLL_EXPORT intersections(Arc *arc_1, Arc *arc_2, std::vector<Point> &points);
 
         // Screen borders intersections calculations
         bool DLL_EXPORT border_intersection(double &x1, double &y1, double &x2, double &y2,

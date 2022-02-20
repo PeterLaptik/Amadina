@@ -11,7 +11,7 @@ static const double DEFAULT_BOTTOM_BORDER = 0;
 // Out of screen coordinate value
 static const int COORD_OUT_OF_SCREEN = 1;
 
-static const int HIGHLIGHT_THICKNESS = 3;
+static const int HIGHLIGHT_THICKNESS = 2;
 
 // Default colours
 Colour DEFAULT_COLOUR_BLACK(0,0,0);
@@ -173,6 +173,37 @@ void wxAdapterDC::CadDrawArc(const Point &pt_center, const Point &pt_start, cons
     TransformCoordinatesToView(x1, y1);
     TransformCoordinatesToView(x2, y2);
     DrawArc(x1, y1, x2, y2, xc, yc);
+
+    // Highlighted
+    if(m_is_highlited)
+    {
+        wxPen current_pen = GetPen();
+        wxColour current_colour = current_pen.GetColour();
+        wxPen highlight_pen = current_pen;
+        wxColour hcolour = GetHighlightColour().Red();
+
+        double angle_1 = geometry::calculate_angle(xc, yc, x1, y1);
+        double angle_2 = geometry::calculate_angle(xc, yc, x2, y2);
+        angle_1 = angle_1*3.14/180;
+        angle_2 = angle_2*3.14/180;
+
+        for(int i=-HIGHLIGHT_THICKNESS; i<HIGHLIGHT_THICKNESS; i++)
+        {
+            if(i==0)
+                continue;
+
+            unsigned char c_val = IncrementColourValue(hcolour.Red(), i*10);
+            wxColour col(c_val,c_val,c_val);
+            highlight_pen.SetColour(col);
+            SetPen(highlight_pen);
+            x1 += i*cos(angle_1);
+            y1 += i*sin(angle_1);
+            x2 += i*cos(angle_2);
+            y2 += i*sin(angle_2);
+            DrawArc(x1, y1, x2, y2, xc, yc);
+        }
+        SetPen(current_pen);
+    }
 }
 
 // Shows dot-line as a constraint line

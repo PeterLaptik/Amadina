@@ -24,14 +24,6 @@ void Circle::Draw(IAdapterDC &dc)
     dc.CadDrawCircle(m_center, m_radius);
 }
 
-void Circle::DrawHighlighted(IAdapterDC &dc)
-{
-    dc.CadSetHighlited(true);
-    //dc.CadSetColour(Colour(255,0,0));
-    dc.CadDrawCircle(m_center, m_radius);
-    dc.CadSetHighlited(false);
-}
-
 const Point& Circle::GetCenterPoint(void) const
 {
     return m_center;

@@ -20,13 +20,6 @@ class DLL_EXPORT Entity
         // Main drawing routine
         virtual void Draw(IAdapterDC &dc) = 0;
 
-        // Highlight the entity
-        // May be used to show picked entities
-        virtual void DrawHighlighted(IAdapterDC &dc)
-        {
-            Draw(dc);
-        }
-
         // TODO
         // Add quick computing flag
         // Remove default implementation
