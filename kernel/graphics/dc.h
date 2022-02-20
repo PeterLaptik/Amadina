@@ -25,6 +25,8 @@ class IAdapterDC
         // Move out of this interface
         virtual void CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end) = 0;
 
+        virtual void CadDrawEllipse(double x, double y, double width, double height) = 0;
+
         virtual void CadSetColour(const Colour &colour) = 0;
 
 

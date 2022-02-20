@@ -155,6 +155,12 @@ void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
     }
 }
 
+void CadDrawEllipse(double x, double y, double width, double height)
+{
+    TransformCoordinatesToView(x, y);
+
+}
+
 void wxAdapterDC::CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end)
 {
     double xc = pt_center.GetX();

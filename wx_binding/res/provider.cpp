@@ -35,6 +35,8 @@ wxBitmap get_icon(ICONS icon)
             return create_image(icon_arc_pt_ico, icon_arc_pt_ico_size);
         case ICON_CIRCLE_POINTS:
             return create_image(icon_circle_3p_ico, icon_circle_3p_ico_size);
+        case ICON_ELLIPCE:
+            return create_image(icon_ellipse_ico, icon_ellipse_ico_size);
     }
 
     return no_bitmap;

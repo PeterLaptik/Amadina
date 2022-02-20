@@ -25,6 +25,8 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual void CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end);
 
+        virtual void CadDrawEllipse(double x, double y, double width, double height);
+
         virtual void CadDrawConstraintLine(double x1, double y1, double x2, double y2);
 
         virtual void CadDrawConstraintSquare(double x1, double y1, double x2, double y2);

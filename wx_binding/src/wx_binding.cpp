@@ -77,6 +77,7 @@ void append_drawing_commands(wxAuiToolBar *toolbar,
     append_command(toolbar, dispatcher, commands, "circlep", "Circle", ICON_CIRCLE_POINTS, ui::CMD_DRAW);
     append_command(toolbar, dispatcher, commands, "arc", "Arc", ICON_ARC_CENTER, ui::CMD_DRAW);
     append_command(toolbar, dispatcher, commands, "arcp", "Arc", ICON_ARC_POINTS, ui::CMD_DRAW);
+    append_command(toolbar, dispatcher, commands, "ellipse", "Ellipse", ICON_ELLIPCE, ui::CMD_DRAW);
 }
 
 
