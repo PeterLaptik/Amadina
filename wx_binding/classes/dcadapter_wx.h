@@ -25,7 +25,7 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual void CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end);
 
-        virtual void CadDrawEllipse(double x, double y, double width, double height);
+        virtual void CadDrawEllipse(double x1, double y1, double x2, double y2, double a, double b);
 
         virtual void CadDrawConstraintLine(double x1, double y1, double x2, double y2);
 
@@ -74,6 +74,7 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
             double bottom;
         } m_borders;
 
+        // Scale: real value per device pixel
         double x_scale;
         double y_scale;
 

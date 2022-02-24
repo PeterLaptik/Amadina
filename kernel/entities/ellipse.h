@@ -8,11 +8,10 @@ class Ellipse: public Entity
 {
     public:
         Ellipse();
-        Ellipse(const Point &pt1, const Point &pt2, const double &a);
+        Ellipse(const Point &pt1, const Point &pt2, const double &ra, const double &rb);
         virtual ~Ellipse();
 
         virtual void Draw(IAdapterDC &dc) override;
-        virtual void DrawHighlighted(IAdapterDC &dc) override;
         virtual bool IsNearPoint(const Point &pt, double region_radius) override;
         bool IsInSquare(const Point &top_left, const Point &bottom_right) override;
         virtual double DistanceFrom(const Point &pt) const override;
@@ -28,6 +27,7 @@ class Ellipse: public Entity
         Point f1;
         Point f2;
         double a;
+        double b;
 };
 
 #endif // ELLIPSE_H_INCLUDED

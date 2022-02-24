@@ -9,7 +9,7 @@
 #include <typeinfo>
 #include <string.h>
 
-static const int DEFAULT_BORDER_MARGIN = 0;
+static const int DEFAULT_BORDER_MARGIN = 50;
 
 static const char *ENTITY_TYPE_LINE = typeid(Line).name();
 static const char *ENTITY_TYPE_CIRCLE = typeid(Circle).name();
