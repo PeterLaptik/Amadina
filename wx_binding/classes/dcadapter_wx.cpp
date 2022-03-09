@@ -1,6 +1,7 @@
 #include "dcadapter_wx.h"
 #include "geometry/intersections.h"
 #include "geometry/geometry.h"
+#include <wx/graphics.h>
 
 // Default borders positions
 static const double DEFAULT_LEFT_BORDER = 0;
@@ -125,39 +126,12 @@ void wxAdapterDC::CadDrawLine(double x1, double y1, double x2, double y2)
 
 void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
 {
-    /**
-    // Alternate
-    double xc = pt.GetX();
-    double yc = pt.GetY();
-    double xa = xc + radius;
-    double xb = xa;
-    double ya = yc;
-    double yb = ya;
-    TransformCoordinatesToView(xa,ya,xb,yb);
-    yb += 1;
-    double sin_alpha = fabs(yb - ya)/radius;
-    double alpha = asin(sin_alpha);
-    double angle = -3.14;
-    double x_last = xc + radius*cos(angle);
-    double y_last = yc + radius*sin(angle);
-    while(angle<=3.14)
-    {
-        double x_val = xc + radius*cos(angle);
-        double y_val = yc + radius*sin(angle);
-        CadDrawLine(x_val, y_val, x_last, y_last);
-        x_last = x_val;
-        y_last = y_val;
-        angle += alpha;
-    }
-    **/
-
     double x = pt.GetX();
     double y = pt.GetY();
     double rad = x + radius;
     double dummy_coord = 0;
     TransformCoordinatesToView(x, y, rad, dummy_coord);
     DrawCircle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(rad - x));
-
 
     // Highlighted
     if(m_is_highlited)
@@ -182,36 +156,58 @@ void wxAdapterDC::CadDrawCircle(const Point &pt, const double &radius)
     }
 }
 
+static const double CURVE_SMOOTH = 0.1;
+static const int STEP_NUMBER = 2*3.14/CURVE_SMOOTH;
+
 void wxAdapterDC::CadDrawEllipse(double x1, double y1, double x2, double y2, double a, double b)
 {
-    double width = fabs(x1-x2);
-    double height = fabs(y1-y2);
     if(x1>x2)
         std::swap(x1,x2);
     if(y2>y1)
         std::swap(y1,y2);
 
-    double xc = (x2 - x1)/2;
-    double yc = (y2 - y1)/2;
+    Point points[STEP_NUMBER];
+    double delta_x = x1 + (x2 - x1)/2;
+    double delta_y = y1 + (y2 - y1)/2;
 
     double e = sqrt(1 - b*b/(a*a));
+
+    double angle = geometry::calculate_angle_rad(x1, y1, x2, y2);
+
     double t = -3.14;
-    double delta = fabs(a - a*e);
-    while(t<=3.14)
+    for(int i=0; i<STEP_NUMBER; i++)
     {
         double A = e*e/8 + e*e*e*e/16 + 71*e*e*e*e*e*e/2048;
         double B = 5*e*e*e*e/256 + 5*e*e*e*e*e*e/256;
         double C = 29*e*e*e*e*e*e/6144;
         double teta = t + A*sin(2*t) + B*sin(4*t) + C*sin(6*t);
 
-        double x = delta + a*cos(t);
-        double y = yc + b*sin(t);
-        CadDrawPoint(Point(x,y));
+        //double x = delta_x + a*cos(t);
+        //double y = delta_y + b*sin(t);
 
-        t += 0.1;
+        //double rot_x = x*cos(angle) - y*sin(angle);
+        //double rot_y = y*sin(angle) + y*cos(angle);
+
+        double x = a*cos(t);
+        double y = b*sin(t);
+
+        angle = 3.14/4;
+        //x = x*cos(angle) - y*sin(angle);
+        //y = -x*sin(angle) + y*cos(angle);
+
+        x += delta_x;
+        y += delta_y;
+
+        t += CURVE_SMOOTH;
+        points[i] = Point(x, y);
     }
-    //TransformCoordinatesToView(x1, y1);
-    //DrawEllipse(x1, y1, width, height);
+
+    // Draw by multi-lines
+    for(int i=0; i<STEP_NUMBER-1; i++)
+    {
+        CadDrawLine(points[i], points[i+1]);
+    }
+    CadDrawLine(points[0], points[STEP_NUMBER-1]);
 }
 
 void wxAdapterDC::CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end)

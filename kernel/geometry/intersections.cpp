@@ -4,17 +4,18 @@
 #include "../entities/line.h"
 #include "../entities/circle.h"
 #include "../entities/arc.h"
+#include "../entities/ellipse.h"
 #include <math.h>
 #include <float.h>
 #include <typeinfo>
 #include <string.h>
 
-static const int DEFAULT_BORDER_MARGIN = 50;
+static const int DEFAULT_BORDER_MARGIN = 0;
 
 static const char *ENTITY_TYPE_LINE = typeid(Line).name();
 static const char *ENTITY_TYPE_CIRCLE = typeid(Circle).name();
 static const char *ENTITY_TYPE_ARC = typeid(Arc).name();
-
+static const char *ENTITY_TYPE_ELLIPSE = typeid(Ellipse).name();
 
 int cad::geometry::get_border_margin()
 {
@@ -40,7 +41,8 @@ auto does_point_match_to_arc = [](double angle, double angle_start, double angle
 };
 
 
-void cad::geometry::calculate_intersections(Entity *entity_1, Entity *entity_2, std::vector<Point> &points)
+void cad::geometry::calculate_intersections(Entity *entity_1, Entity *entity_2,
+                                            std::vector<Point> &points)
 {
     const char *type_1 = typeid(*entity_1).name();
     const char *type_2 = typeid(*entity_2).name();

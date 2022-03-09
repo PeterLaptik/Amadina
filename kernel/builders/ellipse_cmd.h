@@ -3,6 +3,8 @@
 
 #include "../command/command.h"
 
+class Ellipse;
+
 class CmdEllipse: public Command
 {
     public:
@@ -14,6 +16,8 @@ class CmdEllipse: public Command
         virtual Command* Clone(Context *context) final;
 
     private:
+        inline Ellipse BuildEllipse(void);
+
         bool p1_selected;
         bool p2_selected;
         Point pt1;

@@ -20,8 +20,13 @@ class Ellipse: public Entity
         virtual void MoveTo(double delta_x, double delta_y, double delta_z = 0.0) override;
         virtual Entity* Clone(void) const override;
 
-        const Point& GetCenterPoint(void) const;
-        double GetRadius(void) const;
+        void SetFocuses(const Point &focus_1, const Point &focus_2);
+        void SetSemiAxisLong(double axis_a);
+        void SetSemiAxisShort(double axis_b);
+
+        void GetFocuses(Point &focus_1, Point &focus_2) const;
+        double GetSemiAxisLong(void) const;
+        double GetSemiAxisShort(void) const;
 
     private:
         Point f1;

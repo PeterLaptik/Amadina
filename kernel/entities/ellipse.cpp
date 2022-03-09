@@ -12,7 +12,7 @@ Ellipse::~Ellipse()
 
 void Ellipse::Draw(IAdapterDC &dc)
 {
-    //dc.CadDrawEllipse();
+    dc.CadDrawEllipse(f1.GetX(), f1.GetY(), f2.GetX(), f2.GetY(), a, b);
 }
 
 bool Ellipse::IsNearPoint(const Point &pt, double region_radius)
@@ -47,5 +47,41 @@ void Ellipse::MoveTo(double delta_x, double delta_y, double delta_z)
 
 Entity* Ellipse::Clone() const
 {
-    return new Ellipse();
+    Ellipse *clone = new Ellipse();
+    clone->SetFocuses(f1, f2);
+    clone->SetSemiAxisLong(a);
+    clone->SetSemiAxisShort(b);
+    return clone;
+}
+
+void Ellipse::SetFocuses(const Point &focus_1, const Point &focus_2)
+{
+    f1 = focus_1;
+    f2 = focus_2;
+}
+
+void Ellipse::SetSemiAxisLong(double axis_a)
+{
+    a = axis_a;
+}
+
+void Ellipse::SetSemiAxisShort(double axis_b)
+{
+    b = axis_b;
+}
+
+void Ellipse::GetFocuses(Point &focus_1, Point &focus_2) const
+{
+    focus_1 = f1;
+    focus_2 = f2;
+}
+
+double Ellipse::GetSemiAxisLong() const
+{
+    return a;
+}
+
+double Ellipse::GetSemiAxisShort() const
+{
+    return b;
 }

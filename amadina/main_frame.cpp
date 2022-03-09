@@ -6,7 +6,7 @@
 #include <wx/display.h>
 #include <wx/msgdlg.h>
 
-static const wxRect DEFAULT_WINDOW_SIZE = wxRect(0, 0, 1200, 800);
+static const wxRect DEFAULT_WINDOW_SIZE = wxRect(0, 0, 1800, 1000);
 
 // Hotkeys
 const char HOTKEY_COPY = 'C';
