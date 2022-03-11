@@ -47,11 +47,20 @@ namespace geometry {
 
 
     ///\brief Calculates center point on the line
+    /// Result values are written into xc,yc values
     ///\param x1, y1 - first line point coordinates
     ///\param x2, y2 - second line point coordinates
     ///\param xc, yc - center point coordinates values (result)
     void DLL_EXPORT calculate_center_point(double x1, double y1, double x2, double y2,
                                              double &xc, double &yc);
+
+    ///\brief Rotates point around center point.
+    /// Result values are written into x,y values
+    ///\param x, y - point coordinates
+    ///\param angle - rotate angle value in radians
+    ///\param xc, yc - center point ([x,y] is rotated around [xc,yc])
+    void DLL_EXPORT rotate_point(double &x, double &y, const double &angle,
+                                 const double &xc = 0.0, const double &yc = 0.0);
 }
 
 #endif

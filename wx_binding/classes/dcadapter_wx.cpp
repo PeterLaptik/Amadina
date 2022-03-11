@@ -172,7 +172,7 @@ void wxAdapterDC::CadDrawEllipse(double x1, double y1, double x2, double y2, dou
 
     double e = sqrt(1 - b*b/(a*a));
 
-    double angle = geometry::calculate_angle_rad(x1, y1, x2, y2);
+    double angle = geometry::calculate_angle_rad(delta_x, delta_y, x2, y2);
 
     double t = -3.14;
     for(int i=0; i<STEP_NUMBER; i++)
@@ -182,18 +182,9 @@ void wxAdapterDC::CadDrawEllipse(double x1, double y1, double x2, double y2, dou
         double C = 29*e*e*e*e*e*e/6144;
         double teta = t + A*sin(2*t) + B*sin(4*t) + C*sin(6*t);
 
-        //double x = delta_x + a*cos(t);
-        //double y = delta_y + b*sin(t);
-
-        //double rot_x = x*cos(angle) - y*sin(angle);
-        //double rot_y = y*sin(angle) + y*cos(angle);
-
         double x = a*cos(t);
         double y = b*sin(t);
-
-        angle = 3.14/4;
-        //x = x*cos(angle) - y*sin(angle);
-        //y = -x*sin(angle) + y*cos(angle);
+        //geometry::rotate_point(x, y, angle);
 
         x += delta_x;
         y += delta_y;

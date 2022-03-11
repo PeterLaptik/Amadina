@@ -66,6 +66,10 @@ double geometry::calculate_distance(double x1, double y1, double z1,
     return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
 }
 
+// Calculates center point on the line
+// x1, y1 - first line point coordinates
+// x2, y2 - second line point coordinates
+// xc, yc - center point coordinates values (result)
 void geometry::calculate_center_point(double x1, double y1, double x2, double y2,
                                 double &xc, double &yc)
 {
@@ -76,4 +80,26 @@ void geometry::calculate_center_point(double x1, double y1, double x2, double y2
 
     xc = x1 + (x2 - x1)/2;
     yc = y1 + (y2 - y1)/2;
+}
+
+// Rotates point around center point.
+// x, y - point coordinates
+// angle - rotate angle value in radians
+// xc, yc - center point ([x,y] is rotated around [xc,yc])
+void geometry::rotate_point(double &x, double &y, const double &angle,
+                                 const double &xc, const double &yc)
+{
+    // Shift to x-0-y point
+    double x_tr = x - xc;
+    double y_tr = y - yc;
+    // Rotated values
+    double rot_x = x_tr*cos(angle) - y_tr*sin(angle);
+    double rot_y = x_tr*sin(angle) - y_tr*cos(angle);
+
+//    double rot_x = x_tr*sin(angle) - y_tr*cos(angle);
+//    double rot_y = x_tr*cos(angle) - y_tr*sin(angle);
+
+    // Shift rollback
+    x = xc + rot_x;
+    y = yc + rot_y;
 }

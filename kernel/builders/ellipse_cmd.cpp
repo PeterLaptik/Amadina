@@ -70,60 +70,23 @@ void CmdEllipse::Redraw(IAdapterDC &dc, double x, double y)
         // Focal parameter
         double p = (1 - e*e);
         // Axis angle
-        double angle = geometry::calculate_angle_rad(xc, yc,
-                                    std::max(pt1.GetX(),pt2.GetX()),
-                                    std::max(pt1.GetY(),pt2.GetY()));
+        double angle = geometry::calculate_angle_rad(xc, yc, pt2.GetX(), pt2.GetY());
+
         // Focal coordinates
         double x1 = xc - c;
         double x2 = xc + c;
-        double y1 = std::min(pt1.GetY(),pt2.GetY());
-        double y2 = std::max(pt1.GetY(),pt2.GetY());
-
-
-        // Ellipse angle in radians
-        double f_angle = geometry::calculate_angle_rad(xc, yc, x2, y2);
-        double delta_angle = fabs(angle - f_angle);
-
-        y1 -= x1/sin(delta_angle);
-        //y2 -= x2/cos(delta_angle);
+        double y1 = pt1.GetY(); //std::min(pt1.GetY(),pt2.GetY());
+        double y2 = pt2.GetY(); //std::max(pt1.GetY(),pt2.GetY());
+        geometry::rotate_point(x1, y1, angle, xc, yc);
+        geometry::rotate_point(x2, y2, angle, xc, yc);
 
         // Focal points
         Point f1 = Point(x1,y1);
         Point f2 = Point(x2,y2);
         dc.CadDrawCircle(f1, 5);
         dc.CadDrawCircle(f2, 5);
-        //dc.CadDrawCircle(Point((xc - c)/cos(delta_angle),y1), 2);
-        //dc.CadDrawCircle(Point((xc + c)/cos(delta_angle),y2), 2);
-        /*
-        double val_1 = (pt1.GetX()-pt2.GetX())*(pt1.GetY()-y)
-                        - (pt1.GetX()-x)*(pt2.GetY()-pt1.GetY());
-        double val_2 = (pt2.GetX()-pt1.GetX())*(pt2.GetX()-pt1.GetX())
-                        + (pt2.GetY()-pt1.GetY())*(pt2.GetY()-pt1.GetY());
-        double b = fabs(val_1)/sqrt(val_2);
-        if(b<DBL_EPSILON)
-            return;
-
-        // Center point coordinates (between focus points)
-        double xc, yc;
-        geometry::calculate_center_point(pt1.GetX(),pt1.GetY(),pt2.GetX(),pt2.GetY(),xc,yc);
-
-        dc.CadDrawCircle(Point(xc,yc), 5);
-        double a = geometry::calculate_distance(xc, yc, x, y);
-        */
-
-        /*
-        double e = sqrt(1 - b*b/(a*a));
-        double angle = geometry::calculate_angle_rad(pt1.GetX(),pt1.GetY(),pt2.GetX(),pt2.GetY());
-        */
-        //a = a*cos(angle);
-
 
         dc.CadDrawConstraintLine(xc, yc, x, y);
-        /*
-        dc.CadDrawConstraintLine(pt1.GetX(),pt1.GetY(),pt2.GetX(),pt2.GetY());
-        */
-
-
         dc.CadDrawConstraintLine(f1.GetX(),f1.GetY(),f2.GetX(),f2.GetY());
 
         dc.CadDrawCircle(pt1, 5);
