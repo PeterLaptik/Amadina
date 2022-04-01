@@ -33,6 +33,8 @@ class wxAdapterDC: public wxBufferedPaintDC, public IAdapterDC
 
         virtual void CadSetColour(const Colour &colour);
 
+        virtual void CadDrawText(const std::string &txt, int x, int y);
+
         virtual void CadSetLayer(Layer *layer);
 
         // Overridden method of a base class

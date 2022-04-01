@@ -96,9 +96,6 @@ void geometry::rotate_point(double &x, double &y, const double &angle,
     double rot_x = x_tr*cos(angle) - y_tr*sin(angle);
     double rot_y = x_tr*sin(angle) - y_tr*cos(angle);
 
-//    double rot_x = x_tr*sin(angle) - y_tr*cos(angle);
-//    double rot_y = x_tr*cos(angle) - y_tr*sin(angle);
-
     // Shift rollback
     x = xc + rot_x;
     y = yc + rot_y;

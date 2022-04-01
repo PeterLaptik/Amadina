@@ -1,6 +1,8 @@
 #ifndef DC_H_INCLUDED
 #define DC_H_INCLUDED
 
+#include <string>
+
 class Point;
 class Colour;
 class Layer;
@@ -20,6 +22,8 @@ class IAdapterDC
         virtual void CadDrawLine(double x1, double y1, double x2, double y2) = 0;
 
         virtual void CadDrawCircle(const Point &pt, const double &radius) = 0;
+
+        virtual void CadDrawText(const std::string &txt, int x, int y) = 0;
 
         // TODO
         // Move out of this interface

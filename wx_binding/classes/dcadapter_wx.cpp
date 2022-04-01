@@ -161,18 +161,39 @@ static const int STEP_NUMBER = 2*3.14/CURVE_SMOOTH;
 
 void wxAdapterDC::CadDrawEllipse(double x1, double y1, double x2, double y2, double a, double b)
 {
-    if(x1>x2)
-        std::swap(x1,x2);
-    if(y2>y1)
-        std::swap(y1,y2);
+    double xc, yc;
+    geometry::calculate_center_point(x1, y1, x2, y2, xc, yc);
 
+    double lx = xc - a;
+    double ly = yc + a;
+    double rx = xc + a;
+    double ry = yc - b;
+
+    double width = 2*a;
+    double height = 2*b;
+
+    TransformCoordinatesToView(xc, yc);
+    TransformCoordinatesToView(rx, ry, lx, ly);
+    DrawCircle(xc, yc, 5);
+    DrawCircle(lx, ly, 5);
+    DrawEllipse(lx, ly, width, height);
+
+
+    /*
     Point points[STEP_NUMBER];
-    double delta_x = x1 + (x2 - x1)/2;
-    double delta_y = y1 + (y2 - y1)/2;
+    double xc, yc;
+    geometry::calculate_center_point(x1, y1, x2, y2, xc, yc);
+
+    CadDrawCircle(Point(xc,yc), 8);
 
     double e = sqrt(1 - b*b/(a*a));
 
-    double angle = geometry::calculate_angle_rad(delta_x, delta_y, x2, y2);
+    double angle = geometry::calculate_angle_rad(xc, yc, x2, y2);
+    std::string val = "angle= ";
+    val += std::to_string(round(angle*180/3.14*10)/10);
+    val += (" xc = ");
+    val += std::to_string(round(xc)/10);
+    CadDrawText(val, 200, 300);
 
     double t = -3.14;
     for(int i=0; i<STEP_NUMBER; i++)
@@ -184,10 +205,10 @@ void wxAdapterDC::CadDrawEllipse(double x1, double y1, double x2, double y2, dou
 
         double x = a*cos(t);
         double y = b*sin(t);
-        //geometry::rotate_point(x, y, angle);
 
-        x += delta_x;
-        y += delta_y;
+        x += xc;
+        y += yc;
+        //geometry::rotate_point(x, y, angle, xc, yc);
 
         t += CURVE_SMOOTH;
         points[i] = Point(x, y);
@@ -196,9 +217,11 @@ void wxAdapterDC::CadDrawEllipse(double x1, double y1, double x2, double y2, dou
     // Draw by multi-lines
     for(int i=0; i<STEP_NUMBER-1; i++)
     {
-        CadDrawLine(points[i], points[i+1]);
+        //CadDrawLine(points[i], points[i+1]);
+        CadDrawPoint(points[i]);
     }
-    CadDrawLine(points[0], points[STEP_NUMBER-1]);
+    //CadDrawLine(points[0], points[STEP_NUMBER-1]);
+    */
 }
 
 void wxAdapterDC::CadDrawArc(const Point &pt_center, const Point &pt_start, const Point &pt_end)
@@ -290,6 +313,15 @@ void wxAdapterDC::CadDrawConstraintSquare(double x1, double y1, double x2, doubl
     DrawRectangle(coord_x, coord_y, width, height);
     brush.SetStyle(wxBRUSHSTYLE_TRANSPARENT);
     SetBrush(brush);
+}
+
+void wxAdapterDC::CadDrawText(const std::string &txt, int x, int y)
+{
+    //wxBrush brush(wxBRUSHSTYLE_SOLID);
+    //brush.SetColour(*wxWHITE);
+    //SetBrush(brush);
+    SetTextForeground(*wxWHITE);
+    this->DrawText(txt, x, y);
 }
 
 // Transforms coordinates from real values to device coordinates

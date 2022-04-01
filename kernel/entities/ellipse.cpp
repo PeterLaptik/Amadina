@@ -60,6 +60,11 @@ void Ellipse::SetFocuses(const Point &focus_1, const Point &focus_2)
     f2 = focus_2;
 }
 
+void Ellipse::SetCenter(const double &x, const double &y, const double &z)
+{
+    center = Point(x,y,z);
+}
+
 void Ellipse::SetSemiAxisLong(double axis_a)
 {
     a = axis_a;
@@ -74,6 +79,13 @@ void Ellipse::GetFocuses(Point &focus_1, Point &focus_2) const
 {
     focus_1 = f1;
     focus_2 = f2;
+}
+
+void Ellipse::GetCenter(double &x, double &y, double &z)
+{
+    x = center.GetX();
+    y = center.GetY();
+    z = center.GetZ();
 }
 
 double Ellipse::GetSemiAxisLong() const

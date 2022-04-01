@@ -75,23 +75,34 @@ void CmdEllipse::Redraw(IAdapterDC &dc, double x, double y)
         // Focal coordinates
         double x1 = xc - c;
         double x2 = xc + c;
-        double y1 = pt1.GetY(); //std::min(pt1.GetY(),pt2.GetY());
-        double y2 = pt2.GetY(); //std::max(pt1.GetY(),pt2.GetY());
-        geometry::rotate_point(x1, y1, angle, xc, yc);
-        geometry::rotate_point(x2, y2, angle, xc, yc);
+        double y1 = yc; //std::min(pt1.GetY(),pt2.GetY());
+        double y2 = yc; //std::max(pt1.GetY(),pt2.GetY());
+        double sh = 0.1;
+        geometry::rotate_point(x1, y1, angle + sh, xc, yc);
+        geometry::rotate_point(x2, y2, angle + sh, xc, yc);
 
         // Focal points
         Point f1 = Point(x1,y1);
         Point f2 = Point(x2,y2);
-        dc.CadDrawCircle(f1, 5);
-        dc.CadDrawCircle(f2, 5);
+        dc.CadDrawCircle(f1, 8);
+        dc.CadDrawCircle(f2, 8);
 
         dc.CadDrawConstraintLine(xc, yc, x, y);
         dc.CadDrawConstraintLine(f1.GetX(),f1.GetY(),f2.GetX(),f2.GetY());
 
+        //dc.CadDrawCircle(Point(xc,yc), 2);
+        /*
         dc.CadDrawCircle(pt1, 5);
         dc.CadDrawCircle(pt2, 5);
+        dc.CadDrawConstraintLine(pt1.GetX(),pt1.GetY(),pt2.GetX(),pt2.GetY());
+        */
         dc.CadDrawEllipse(f1.GetX(),f1.GetY(),f2.GetX(),f2.GetY(),a,b);
+
+        std::string val = "angle= ";
+        val += std::to_string(round(angle*180/3.14*10)/10);
+        val += "  xc= ";
+        val += std::to_string(round(xc)/10);
+        dc.CadDrawText(val, 200, 200);
     }
 }
 
@@ -116,6 +127,7 @@ Ellipse CmdEllipse::BuildEllipse()
     double e = sqrt(1 - b*b/(a*a));
 
     result.SetFocuses(pt1, pt2);
+    result.SetCenter(xc, yc);
     result.SetSemiAxisLong(a);
     result.SetSemiAxisShort(b);
     return result;
