@@ -48,7 +48,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
                .Dock().Center().CaptionVisible(false).Resizable().FloatingSize(wxDefaultSize));
 
 	draw_panel = new wxOccPanel(m_auinotebook2, wxID_ANY, wxDefaultPosition,
-                        wxDefaultSize, wxTAB_TRAVERSAL);
+                        /*wxDefaultSize*/ wxSize(800,600), wxTAB_TRAVERSAL);
 
 	m_auinotebook2->AddPage(draw_panel, wxT("a page"), false, wxNullBitmap);
 

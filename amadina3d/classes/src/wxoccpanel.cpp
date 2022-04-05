@@ -1,9 +1,17 @@
 #include "../include/wxoccpanel.h"
+#include <BRepPrimAPI_MakeCylinder.hxx>
 
+
+const double SCALE_FACTOR = 1.1;
 const char *DEFAULT_NAME = "wxOCCPanel";
 
 wxBEGIN_EVENT_TABLE(wxOccPanel, wxPanel)
     EVT_PAINT(wxOccPanel::OnPaint)
+    EVT_SIZE(wxOccPanel::OnResize)
+    EVT_MOTION(wxOccPanel::OnMouseMove)
+    EVT_MOUSEWHEEL(wxOccPanel::OnMouseWheel)
+    EVT_LEFT_DOWN(wxOccPanel::OnMouseLeftButtonDown)
+    EVT_LEFT_UP(wxOccPanel::OnMouseLeftButtonUp)
 wxEND_EVENT_TABLE()
 
 wxOccPanel::wxOccPanel(wxWindow *parent,
@@ -13,6 +21,9 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
                     long style,
                     const wxString &name)
             : wxPanel(parent, winid, pos, size, style, name),
+            m_scale_factor(SCALE_FACTOR),
+            m_mouse_lb_clicked(false),
+            m_last_x(-1), m_last_y(-1),
             m_panel_name(DEFAULT_NAME)
 {
     HWND wnd = this->GetHandle();
@@ -34,12 +45,15 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
     // makes everything come alive
     m_viewer->SetLightOn();
 
-    m_view->SetBackgroundColor(Quantity_NOC_GRAY11);
+    m_view->SetBackgroundColor(Quantity_NOC_DARKSLATEGRAY4);
     m_view->MustBeResized();
-    m_view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.08, V3d_ZBUFFER);
+    m_view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.1, V3d_ZBUFFER);
 
-//    aisthing = new AIS_Shape(shape);
-//    context->Display(aisthing, true);
+    BRepPrimAPI_MakeCylinder cylinder(10., 50.);
+    const TopoDS_Shape &shape = cylinder.Shape();
+    aisthing = new AIS_Shape(shape);
+    m_context->Display(aisthing, AIS_Shaded, 0, true);
+
     m_context->DisplayAll(true);
     m_view->Redraw();
 }
@@ -52,4 +66,51 @@ wxOccPanel::~wxOccPanel()
 void wxOccPanel::OnPaint(wxPaintEvent &event)
 {
     m_view->Redraw();
+}
+
+void wxOccPanel::OnResize(wxSizeEvent &event)
+{
+    m_view->MustBeResized();
+}
+
+void wxOccPanel::OnMouseWheel(wxMouseEvent &event)
+{
+    int zoom = event.GetWheelRotation();
+    Standard_Real scale = m_view->Scale();
+
+    if(zoom<0)
+        scale /= SCALE_FACTOR;
+    else if(zoom>0)
+        scale *= SCALE_FACTOR;
+
+    m_view->SetScale(scale);
+}
+
+void wxOccPanel::OnMouseLeftButtonDown(wxMouseEvent &event)
+{
+    m_mouse_lb_clicked = true;
+}
+
+void wxOccPanel::OnMouseLeftButtonUp(wxMouseEvent &event)
+{
+    m_mouse_lb_clicked = false;
+}
+
+void wxOccPanel::OnMouseMove(wxMouseEvent &event)
+{
+    int x = event.GetX();
+    int y = event.GetY();
+    if(m_mouse_lb_clicked)
+    {
+        if(m_last_x<0 || m_last_y<0)
+        {
+            m_last_x = x;
+            m_last_y = y;
+            return;
+        }
+
+        int dx = m_last_x - x;
+        int dy = m_last_y - y;
+        m_view->Move(dx, dy, 0, Standard_True);
+    }
 }
