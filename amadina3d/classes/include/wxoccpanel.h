@@ -1,7 +1,9 @@
 #ifndef WXOCCPANEL_H
 #define WXOCCPANEL_H
 
+#include "../include/objectpool.h"
 #include <wx/panel.h>
+#include <AIS_ViewController.hxx>
 //#include <BRepPrimAPI_MakeBox.hxx>
 //#include <BRepPrimAPI_MakeCylinder.hxx>
 #include <V3d_Viewer.hxx>
@@ -10,10 +12,9 @@
 //#include <Aspect_DisplayConnection.hxx>
 #include <OpenGl_GraphicDriver.hxx>
 #include <V3d_View.hxx>
-
 #include <AIS_Shape.hxx>
 
-class wxOccPanel: public wxPanel
+class wxOccPanel: public wxPanel, public AIS_ViewController
 {
     public:
         ///\brief Constructor
@@ -30,6 +31,7 @@ class wxOccPanel: public wxPanel
                     const wxString &name = wxPanelNameStr);
 
         virtual ~wxOccPanel();
+        void AddShape(Handle(AIS_Shape) shape);
 
     protected:
         ///
@@ -39,10 +41,13 @@ class wxOccPanel: public wxPanel
         /// zoom in / zoom out on mouse wheel rotating
         void OnMouseWheel(wxMouseEvent &event);
         void OnMouseMove(wxMouseEvent &event);
-        void OnMouseLeftButtonDown(wxMouseEvent &event);
-        void OnMouseLeftButtonUp(wxMouseEvent &event);
+        void OnLeftMouseButtonDown(wxMouseEvent &event);
+        void OnLeftMouseButtonUp(wxMouseEvent &event);
 
     private:
+        inline Aspect_VKeyMouse GetMouseButton(wxMouseEvent &event);
+        inline Aspect_VKeyFlags GetPressedKey(void);
+
         double m_scale_factor;
         bool m_mouse_lb_clicked;
         int m_last_x, m_last_y;
@@ -55,6 +60,7 @@ class wxOccPanel: public wxPanel
         Handle(V3d_View) m_view;
         Handle(AIS_InteractiveContext) m_context;
 
+        ObjectPool m_object_pool;
         Handle(AIS_Shape) aisthing;
 
     DECLARE_EVENT_TABLE()

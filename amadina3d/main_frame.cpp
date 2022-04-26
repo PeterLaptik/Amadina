@@ -1,11 +1,17 @@
 #include "main_frame.h"
 #include "classes/include/wxoccpanel.h"
 #include <wx/artprov.h>
+#include <BRepPrimAPI_MakeCylinder.hxx>
 
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_PAINT(MainFrame::OnPaint)
+    EVT_TOOL(wxID_ANY, MainFrame::OnToolButtonClick)
 wxEND_EVENT_TABLE()
+
+const wxWindowID TOOL_ID_1 = wxNewId();
+const wxWindowID TOOL_ID_2 = wxNewId();
+const wxWindowID TOOL_ID_3 = wxNewId();
 
 
 MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
@@ -22,17 +28,17 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
                         wxID_ANY, wxDefaultPosition,
                         wxDefaultSize, wxAUI_TB_HORZ_LAYOUT);
 
-	m_tool1 = m_main_toolbar->AddTool(wxID_ANY, wxT("tool1"),
+	m_tool1 = m_main_toolbar->AddTool(wxNewId(), wxT("tool1"),
                             wxArtProvider::GetBitmap(wxART_FILE_SAVE),
                             wxNullBitmap, wxITEM_NORMAL,
                             wxEmptyString, wxEmptyString, NULL);
 
-	m_tool2 = m_main_toolbar->AddTool(wxID_ANY, wxT("tool2"),
+	m_tool2 = m_main_toolbar->AddTool(wxNewId(), wxT("tool2"),
                             wxArtProvider::GetBitmap(wxART_FILE_SAVE),
                             wxNullBitmap, wxITEM_NORMAL, wxEmptyString,
                             wxEmptyString, NULL);
 
-	m_tool3 = m_main_toolbar->AddTool(wxID_ANY, wxT("tool3"),
+	m_tool3 = m_main_toolbar->AddTool(wxNewId(), wxT("tool3"),
                             wxArtProvider::GetBitmap(wxART_FILE_SAVE),
                             wxNullBitmap, wxITEM_NORMAL, wxEmptyString,
                             wxEmptyString, NULL );
@@ -64,4 +70,22 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 MainFrame::~MainFrame()
 {
     m_mgr.UnInit();
+}
+
+#include <wx/msgdlg.h>
+void MainFrame::OnToolButtonClick(wxCommandEvent &event)
+{
+    int id = event.GetId();
+    wxAuiToolBarItem *item = m_main_toolbar->FindTool(id);
+    const wxString &cmd = item->GetLabel();
+
+    if(cmd=="tool1")
+    {
+        wxOccPanel *panel = dynamic_cast<wxOccPanel*>(draw_panel);
+        //wxMessageBox(cmd);
+        BRepPrimAPI_MakeCylinder cylinder(10., 50.);
+        const TopoDS_Shape &shape = cylinder.Shape();
+        Handle(AIS_Shape) object = new AIS_Shape(shape);
+        panel->AddShape(object);
+    }
 }

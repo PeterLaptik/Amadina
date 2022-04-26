@@ -23,6 +23,7 @@ class MainFrame: public wxFrame
 
     protected:
         void OnPaint(wxPaintEvent &evt);
+        void OnToolButtonClick(wxCommandEvent &event);
 
         wxAuiToolBar* m_main_toolbar;
 		wxAuiToolBarItem* m_tool1;
