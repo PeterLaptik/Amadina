@@ -33,6 +33,8 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
         virtual ~wxOccPanel();
         void AddShape(Handle(AIS_Shape) shape);
 
+        wxString TestMessage(void);
+
     protected:
         ///
         void OnPaint(wxPaintEvent &event);

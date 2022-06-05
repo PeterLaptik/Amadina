@@ -1,91 +1,82 @@
 #include "main_frame.h"
 #include "classes/include/wxoccpanel.h"
 #include <wx/artprov.h>
-#include <BRepPrimAPI_MakeCylinder.hxx>
+#include <wx/ribbon/art.h>
+#include <wx/ribbon/bar.h>
+#include <wx/ribbon/buttonbar.h>
 
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_PAINT(MainFrame::OnPaint)
-    EVT_TOOL(wxID_ANY, MainFrame::OnToolButtonClick)
 wxEND_EVENT_TABLE()
-
-const wxWindowID TOOL_ID_1 = wxNewId();
-const wxWindowID TOOL_ID_2 = wxNewId();
-const wxWindowID TOOL_ID_3 = wxNewId();
 
 
 MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
           const wxPoint& pos, const wxSize& size, long style)
-          :wxFrame(parent, id, title, pos, size, style)
+          : wxFrame(parent, id, title, pos, size, style)
 {
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
-
-
-	m_mgr.SetManagedWindow(this);
+    m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
 
-	m_main_toolbar = new wxAuiToolBar(this,
-                        wxID_ANY, wxDefaultPosition,
-                        wxDefaultSize, wxAUI_TB_HORZ_LAYOUT);
+    m_main_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition,
+                               wxDefaultSize, wxTAB_TRAVERSAL);
 
-	m_tool1 = m_main_toolbar->AddTool(wxNewId(), wxT("tool1"),
-                            wxArtProvider::GetBitmap(wxART_FILE_SAVE),
-                            wxNullBitmap, wxITEM_NORMAL,
-                            wxEmptyString, wxEmptyString, NULL);
+	m_mgr.AddPane(m_main_panel, wxAuiPaneInfo().Left()
+               .CaptionVisible(false)
+               .CloseButton(false)
+               .PinButton(true)
+               .Dock()
+               .Resizable()
+               .FloatingSize(wxDefaultSize)
+               .CentrePane());
 
-	m_tool2 = m_main_toolbar->AddTool(wxNewId(), wxT("tool2"),
-                            wxArtProvider::GetBitmap(wxART_FILE_SAVE),
-                            wxNullBitmap, wxITEM_NORMAL, wxEmptyString,
-                            wxEmptyString, NULL);
+    m_main_sizer = new wxBoxSizer(wxVERTICAL);
+    m_ribbon = new wxRibbonBar(m_main_panel, wxID_ANY, wxDefaultPosition,
+                               wxDefaultSize, wxRIBBON_BAR_DEFAULT_STYLE);
 
-	m_tool3 = m_main_toolbar->AddTool(wxNewId(), wxT("tool3"),
-                            wxArtProvider::GetBitmap(wxART_FILE_SAVE),
-                            wxNullBitmap, wxITEM_NORMAL, wxEmptyString,
-                            wxEmptyString, NULL );
+    m_ribbon->SetArtProvider(new wxRibbonAUIArtProvider);
 
+    RibbonInit();
 
-	m_mgr.AddPane(m_main_toolbar, wxAuiPaneInfo().Name(_("main toolbar"))
-               .ToolbarPane().Caption(_("menu")).Top().Gripper());
+    m_ribbon->Realise();
+    m_main_sizer->Add(m_ribbon, 0, wxEXPAND | wxALL, 0);
 
-	m_auinotebook2 = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition,
-                                    wxDefaultSize, wxAUI_NB_DEFAULT_STYLE);
+    m_notebook = new wxAuiNotebook(m_main_panel, wxID_ANY, wxDefaultPosition,
+                                   wxDefaultSize, wxAUI_NB_DEFAULT_STYLE);
+	m_main_sizer->Add(m_notebook, 1, wxEXPAND | wxALL, 0);
 
-	m_mgr.AddPane(m_auinotebook2, wxAuiPaneInfo().Left().PinButton(true)
-               .Dock().Center().CaptionVisible(false).Resizable().FloatingSize(wxDefaultSize));
+    m_main_panel->SetSizer(m_main_sizer);
+	m_main_panel->Layout();
+	m_main_sizer->Fit(m_main_panel);
 
-	draw_panel = new wxOccPanel(m_auinotebook2, wxID_ANY, wxDefaultPosition,
-                        /*wxDefaultSize*/ wxSize(800,600), wxTAB_TRAVERSAL);
-
-	m_auinotebook2->AddPage(draw_panel, wxT("a page"), false, wxNullBitmap);
-
-	m_main_toolbar->Realize();
-
+	m_status_bar = this->CreateStatusBar(1, wxSTB_SIZEGRIP, wxID_ANY);
 	m_mgr.Update();
-	/**/
 	this->Centre(wxBOTH);
 
-	//Draw();
+	m_notebook->AddPage(new wxOccPanel(this), "test");
 }
+
+
 
 MainFrame::~MainFrame()
 {
     m_mgr.UnInit();
 }
 
-#include <wx/msgdlg.h>
-void MainFrame::OnToolButtonClick(wxCommandEvent &event)
+void MainFrame::RibbonInit()
 {
-    int id = event.GetId();
-    wxAuiToolBarItem *item = m_main_toolbar->FindTool(id);
-    const wxString &cmd = item->GetLabel();
+    wxRibbonPage *m_ribbonPage6 = new wxRibbonPage(m_ribbon, wxID_ANY, wxT("Main"), wxArtProvider::GetBitmap(wxART_FILE_OPEN), 0);
+    new wxRibbonPage(m_ribbon, wxID_ANY, wxT("Drawing"), wxArtProvider::GetBitmap(wxART_FILE_OPEN) , 0);
+    wxRibbonPanel *m_ribbonPanel5 = new wxRibbonPanel(m_ribbonPage6, wxID_ANY, wxT("File") , wxNullBitmap ,
+                                                      wxDefaultPosition, wxDefaultSize,
+                                                      wxRIBBON_PANEL_DEFAULT_STYLE | wxRIBBON_PANEL_NO_AUTO_MINIMISE);
+    wxRibbonPanel *m_ribbonPanel6 = new wxRibbonPanel(m_ribbonPage6, wxID_ANY, wxT("Sketch") , wxNullBitmap , wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_DEFAULT_STYLE);
+    wxRibbonButtonBar *m_ribbonButtonBar5 = new wxRibbonButtonBar( m_ribbonPanel5,
+                                                                  wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 
-    if(cmd=="tool1")
-    {
-        wxOccPanel *panel = dynamic_cast<wxOccPanel*>(draw_panel);
-        //wxMessageBox(cmd);
-        BRepPrimAPI_MakeCylinder cylinder(10., 50.);
-        const TopoDS_Shape &shape = cylinder.Shape();
-        Handle(AIS_Shape) object = new AIS_Shape(shape);
-        panel->AddShape(object);
-    }
+    m_ribbonButtonBar5->AddDropdownButton( wxID_ANY, wxT("New"), wxArtProvider::GetBitmap(wxART_NEW), wxEmptyString);
+    m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN), wxEmptyString);
+    m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE), wxEmptyString);
+    m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save As"), wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS), wxEmptyString);
 }

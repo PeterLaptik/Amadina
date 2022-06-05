@@ -48,8 +48,8 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
     m_viewer->SetDefaultLights();
     // makes everything come alive
     m_viewer->SetLightOn();
-
-    m_view->SetBackgroundColor(Quantity_NOC_DARKSLATEGRAY4);
+    m_view->SetBgGradientColors(Quantity_NOC_GRAY80, Quantity_NOC_GRAY30,
+                                Aspect_GradientFillMethod_Vertical);
     m_view->MustBeResized();
     m_view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.1, V3d_ZBUFFER);
 
@@ -96,6 +96,7 @@ void wxOccPanel::OnMouseWheel(wxMouseEvent &event)
     AIS_ViewController::FlushViewEvents (m_context, m_view, true);
 }
 
+#include <wx/msgdlg.h>
 void wxOccPanel::OnLeftMouseButtonDown(wxMouseEvent &event)
 {
     m_mouse_lb_clicked = true;
@@ -103,6 +104,16 @@ void wxOccPanel::OnLeftMouseButtonDown(wxMouseEvent &event)
     Aspect_VKeyFlags flags = GetPressedKey();
     AIS_ViewController::PressMouseButton(pos, Aspect_VKeyMouse_LeftButton,
                                          flags, true);
+
+    //m_context->MoveTo(pos.x(), pos.y(), m_view, false);
+    //m_context->Select(false);
+}
+
+wxString wxOccPanel::TestMessage(void)
+{
+    wxString result;
+    result = m_context->HasSelectedShape() ? "yes" : "no";
+    return result;
 }
 
 void wxOccPanel::OnLeftMouseButtonUp(wxMouseEvent &event)
