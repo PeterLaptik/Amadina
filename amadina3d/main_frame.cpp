@@ -1,10 +1,13 @@
 #include "main_frame.h"
+#include "resources/art.h"
 #include "classes/include/wxoccpanel.h"
 #include <wx/artprov.h>
 #include <wx/ribbon/art.h>
 #include <wx/ribbon/bar.h>
 #include <wx/ribbon/buttonbar.h>
 
+using modeller::art::Icons;
+using modeller::art::get_icon;
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_PAINT(MainFrame::OnPaint)
@@ -71,12 +74,23 @@ void MainFrame::RibbonInit()
     wxRibbonPanel *m_ribbonPanel5 = new wxRibbonPanel(m_ribbonPage6, wxID_ANY, wxT("File") , wxNullBitmap ,
                                                       wxDefaultPosition, wxDefaultSize,
                                                       wxRIBBON_PANEL_DEFAULT_STYLE | wxRIBBON_PANEL_NO_AUTO_MINIMISE);
-    wxRibbonPanel *m_ribbonPanel6 = new wxRibbonPanel(m_ribbonPage6, wxID_ANY, wxT("Sketch") , wxNullBitmap , wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_DEFAULT_STYLE);
+    wxRibbonPanel *m_ribbonPanel6 = new wxRibbonPanel(m_ribbonPage6, wxID_ANY, wxT("View") , wxNullBitmap ,
+                                                      wxDefaultPosition, wxDefaultSize, wxRIBBON_PANEL_DEFAULT_STYLE);
     wxRibbonButtonBar *m_ribbonButtonBar5 = new wxRibbonButtonBar( m_ribbonPanel5,
+                                                                  wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+    wxRibbonButtonBar *m_ribbonButtonBar6 = new wxRibbonButtonBar( m_ribbonPanel6,
                                                                   wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 
     m_ribbonButtonBar5->AddDropdownButton( wxID_ANY, wxT("New"), wxArtProvider::GetBitmap(wxART_NEW), wxEmptyString);
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN), wxEmptyString);
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE), wxEmptyString);
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save As"), wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS), wxEmptyString);
+
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Top"), get_icon(Icons::ICO_VIEW_LEFT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Left"), get_icon(Icons::ICO_VIEW_LEFT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Front"), get_icon(Icons::ICO_VIEW_FRONT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Bottom"), get_icon(Icons::ICO_VIEW_BOTTOM), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Right"), get_icon(Icons::ICO_VIEW_RIGHT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Back"), get_icon(Icons::ICO_VIEW_BACK), wxEmptyString);
 }

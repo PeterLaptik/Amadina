@@ -5,11 +5,23 @@ ObjectPool::ObjectPool()
 
 ObjectPool::~ObjectPool()
 {
-    m_shapes.clear();
+    m_objects.clear();
 }
 
 
-void ObjectPool::AppendShape(Handle(AIS_Shape) shape)
+void ObjectPool::AppendObject(Handle(AIS_InteractiveObject) object)
 {
-    m_shapes.push_back(shape);
+    m_objects.push_back(object);
+}
+
+bool ObjectPool::Contains(AIS_InteractiveObject *object) const
+{
+    if(object==nullptr)
+        return false;
+
+    for(auto obj_handler: m_objects)
+        if(object==obj_handler.get())
+            return true;
+
+    return false;
 }

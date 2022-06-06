@@ -3,15 +3,21 @@
 
 #include <AIS_Shape.hxx>
 
+///\brief Geometric object handler.
 class ObjectPool
 {
     public:
         ObjectPool();
         ~ObjectPool();
-        void AppendShape(Handle(AIS_Shape) shape);
+        void AppendObject(Handle(AIS_InteractiveObject) object);
+        bool Contains(AIS_InteractiveObject *object) const;
+        Handle(AIS_InteractiveObject) GetLast(void) const
+        {
+            return m_objects[m_objects.size()-1];
+        }
 
     private:
-        std::vector<Handle(AIS_Shape)> m_shapes;
+        std::vector<Handle(AIS_InteractiveObject)> m_objects;
 
 };
 
