@@ -87,7 +87,7 @@ void MainFrame::RibbonInit()
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE), wxEmptyString);
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save As"), wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS), wxEmptyString);
 
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Top"), get_icon(Icons::ICO_VIEW_LEFT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Top"), get_icon(Icons::ICO_VIEW_TOP), wxEmptyString);
     m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Left"), get_icon(Icons::ICO_VIEW_LEFT), wxEmptyString);
     m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Front"), get_icon(Icons::ICO_VIEW_FRONT), wxEmptyString);
     m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Bottom"), get_icon(Icons::ICO_VIEW_BOTTOM), wxEmptyString);
