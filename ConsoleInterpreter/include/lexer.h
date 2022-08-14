@@ -2,6 +2,7 @@
 #define COMMAND_LEXER_H
 
 #include <string>
+#include <vector>
 
 namespace cad
 {
@@ -13,13 +14,15 @@ namespace cad
                 Lexer();
                 ~Lexer();
 
-                // Parse and evaluate expression
+                // Parses and evaluates expression
                 double Evaluate(const std::string &expr);
+
+                bool IsExpression(const std::string &expr) const;
 
             private:
                 // Pointer to active istringstream-object
-                std::istream *m_instring_pt;
-                double number_value;
+                std::istream *m_current_instring;
+                double m_number_value;
 
                 enum Token
                 {
@@ -33,11 +36,15 @@ namespace cad
                     END
                 } current_token;
 
+                static std::vector<char> m_allowed_chars;
+                static std::vector<std::string> m_allowed_substrings;
+
                 Token GetToken();
                 double Expression(bool get);
                 double Term(bool get);
                 double Prim(bool get);
         };
+
 
 
         class LexerError: public std::exception

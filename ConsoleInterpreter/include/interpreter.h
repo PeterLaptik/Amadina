@@ -1,7 +1,7 @@
 #ifndef COMMAND_INTERPRETER_H
 #define COMMAND_INTERPRETER_H
 
-#include <string>
+#include "lexer.h"
 #include <vector>
 
 namespace cad
@@ -18,9 +18,14 @@ namespace cad
 
             private:
                 void PurgeDelimiters(std::string &expr);
-                void ReadSubExpressions(std::string &line,std::vector<std::string> &tokens);
+                void Tokenize(const std::string &line);
+                bool IsList(const std::string &token);
+                void ParseList(const std::string &list_str);
 
-                void TrimSpacesAfterCommas(std::string &expr);
+                // Expressions evaluator
+                Lexer m_lexer;
+                // Keeps all string tokens for a current expression
+                std::vector<std::string> m_string_tokens_container;
         };
     }
 }

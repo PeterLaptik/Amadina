@@ -2,10 +2,20 @@
 #include <sstream>
 #include <memory>
 
+// Exceptions messages
 const std::string ERR_MSG_BAD_TOKEN = "Lexer error. bad token:";
 const std::string ERR_MSG_DIV_ZERO = "Lexer error. dividing by zero";
 const std::string ERR_MSG_PRIM = "Lexer error. primary expected";
 const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected";
+
+// Characters which can appear in expressions.
+// Other characters are not allowed:
+// if an expression contains other characters then the expression is invalid
+// and must be considered as a regular string and is not to be parsed by the lexer
+std::vector<char> cad::command::Lexer::m_allowed_chars = {'*', '/', '-', '+', '(', ')',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '};
+
+std::vector<std::string> cad::command::Lexer::m_allowed_substrings = {};
 
 cad::command::Lexer::Lexer()
 { }
@@ -20,7 +30,7 @@ double cad::command::Lexer::Evaluate(const std::string &expr)
     std::string expression = expr + ';';
     std::unique_ptr<std::istream> stream(new std::istringstream(expression.c_str()));
 
-    m_instring_pt = stream.get();
+    m_current_instring = stream.get();
     GetToken();
     return Expression(false);
 }
@@ -30,7 +40,7 @@ cad::command::Lexer::Token cad::command::Lexer::GetToken()
     char ch;
 
     do {
-		if(!m_instring_pt->get(ch)) return current_token=END;
+		if(!m_current_instring->get(ch)) return current_token=END;
 	} while (isspace(ch) && ch!='\n');
 
 	switch(ch)
@@ -48,8 +58,8 @@ cad::command::Lexer::Token cad::command::Lexer::GetToken()
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         case '.':
-            m_instring_pt->putback(ch);
-            *m_instring_pt >> number_value;
+            m_current_instring->putback(ch);
+            *m_current_instring >> m_number_value;
             return current_token = NUMBER;
 
         default:
@@ -103,7 +113,7 @@ double cad::command::Lexer::Prim(bool get)
 	{
         case Lexer::NUMBER:
             GetToken();
-            return number_value;
+            return m_number_value;
         case Lexer::MINUS:
             return -Prim(1);
         case Lexer::LP:
@@ -117,4 +127,34 @@ double cad::command::Lexer::Prim(bool get)
         default:
             throw LexerError(ERR_MSG_PRIM);
 	}
+}
+
+#include <iostream>
+bool cad::command::Lexer::IsExpression(const std::string &expr) const
+{
+    std::string::size_type length = expr.size();
+    std::string::size_type cursor = 0;
+
+label_loop:
+    while(cursor<length)
+    {
+        // Check sub-strings
+        for(auto &str: m_allowed_substrings)
+        {
+            std::string::size_type sz = str.size();
+            if(cursor + sz <= length)
+                if(expr.substr(cursor, sz)==str)
+                {
+                    cursor += ++sz;
+                    goto label_loop;
+                }
+        }
+
+        // Check characters
+        char symbol = expr.at(cursor++);
+        auto found = std::find(m_allowed_chars.begin(), m_allowed_chars.end(), symbol);
+        if(found==m_allowed_chars.end())
+            return false;
+    }
+    return true;
 }

@@ -11,6 +11,7 @@ using cad::command::Interpreter;
 
 void test_expressions(void);
 void test_interpreter(void);
+void test_expressions_validation(void);
 
 const double ALLOWABLE_TOLERANCE = 0.01;
 
@@ -24,10 +25,14 @@ int main(int argc, char **argv)
     std::cout << std::endl << "Allowable tolerances: ";
     std::cout << ALLOWABLE_TOLERANCE*100 << "%" << std::endl;
 
-    //test_expressions();
+    test_expressions();
+
+    std::cout << std::endl << "Testing... Expressions validations." << std::endl;
+    test_expressions_validation();
 
     std::cout << std::endl << "Testing... Interpreter parsing." << std::endl;
-    test_interpreter();
+
+    //test_interpreter();
 
     std::cout << std::endl;
     std::cout << "*********************************" << std::endl;
@@ -87,8 +92,56 @@ void test_expressions()
     }
 }
 
+std::map<std::string,bool> expr_validation_examples = {
+    {"0  ", true},
+    {"10a", false},
+    {"5+5", true},
+    {"1+2", true},
+    {"20.5+10*2", true},
+    {"20.5 + (10*2)", true},
+    {"(20.5+10x)*2", false},
+    {"4/10+2*(4+1)", true},
+    {"-8+2*4.1+b", false},
+    {"(-4+ (5- 9)) * 2.5 +2. 25*2", true},
+    {"-200*(sqrt(4)+1)", false},
+    {"50+((10-15)*0,3)", false},
+    {"10*((10-15)*0.3)", true},
+    {"0*25+4*sin(0)", false},
+    {"-1+1", true},
+};
+
+void test_expressions_validation()
+{
+    // Maximum size of expression string-value
+    size_t max_size = 0;
+    for(auto &expr: expr_validation_examples)
+        if(expr.first.size()>max_size)
+            max_size = expr.first.size();
+
+    // Size to align
+    max_size++;
+
+    Lexer lexer;
+    bool result;
+    for(auto &expr: expr_validation_examples)
+    {
+        result = lexer.IsExpression(expr.first);
+        std::string expression = expr.first;
+        expression.append(max_size - expression.size(), ' '); // align
+        std::cout << expression << " is valid:" << (result ? "true" : "false");
+        std::cout << "\texpected value: " << (expr.second ? "true" : "false");
+        assert(result==expr.second);
+        std::cout << "\tOK\t" << "evaluated: ";
+        std::cout << (result ? lexer.Evaluate(expr.first) : -0) << " ...OK" << std::endl;
+    }
+}
+
 void test_interpreter()
 {
     Interpreter interpreter;
-    interpreter.ParseExpression("line 10,10 x \t20 , 20");
+    interpreter.ParseExpression("line 10,10 x \t20 , 20+8/2 255.4 10");
+//    interpreter.ParseExpression(" , ");
+//    interpreter.ParseExpression(",");
+//    interpreter.ParseExpression(" , ,");
+//    interpreter.ParseExpression(", ,");
 }
