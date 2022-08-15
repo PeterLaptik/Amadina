@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     std::cout << std::endl << "Allowable tolerances: ";
     std::cout << ALLOWABLE_TOLERANCE*100 << "%" << std::endl;
 
-    test_expressions();
+    //test_expressions();
 
     std::cout << std::endl << "Testing... Expressions validations." << std::endl;
     test_expressions_validation();
@@ -93,21 +93,21 @@ void test_expressions()
 }
 
 std::map<std::string,bool> expr_validation_examples = {
-    {"0  ", true},
-    {"10a", false},
-    {"5+5", true},
-    {"1+2", true},
-    {"20.5+10*2", true},
-    {"20.5 + (10*2)", true},
-    {"(20.5+10x)*2", false},
-    {"4/10+2*(4+1)", true},
-    {"-8+2*4.1+b", false},
-    {"(-4+ (5- 9)) * 2.5 +2. 25*2", true},
-    {"-200*(sqrt(4)+1)", false},
-    {"50+((10-15)*0,3)", false},
-    {"10*((10-15)*0.3)", true},
-    {"0*25+4*sin(0)", false},
-    {"-1+1", true},
+//    {"0  ", true},
+//    {"10a", false},
+//    {"5+5", true},
+//    {"1+2", true},
+//    {"20.5+10*2", true},
+//    {"20.5 + (10*2)", true},
+//    {"(20.5+10x)*2", false},
+//    {"4/10+2*(4+1)", true},
+//    {"-8+2*4.1+b", false},
+//    {"(-4+ (5- 9)) * 2.5 +2. 25*2", true},
+    {"-200*(sqrt(4+18/(2+4)-3)+1)", true}
+//    {"50+((10-15)*0,3)", false},
+//    {"10*((10-15)*0.3)", true},
+//    {"0*25+4*sin(0)", false},
+//    {"-1+1", true},
 };
 
 void test_expressions_validation()

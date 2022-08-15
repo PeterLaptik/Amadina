@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include "lexer_functions.h"
 
 namespace cad
 {
@@ -15,9 +17,11 @@ namespace cad
                 ~Lexer();
 
                 // Parses and evaluates expression
-                double Evaluate(const std::string &expr);
+                double Evaluate(std::string expr);
 
                 bool IsExpression(const std::string &expr) const;
+
+                static bool AddFunction(std::string name, lexer_function_t fn);
 
             private:
                 // Pointer to active istringstream-object
@@ -38,7 +42,9 @@ namespace cad
 
                 static std::vector<char> m_allowed_chars;
                 static std::vector<std::string> m_allowed_substrings;
+                static std::map<std::string,lexer_function_t> m_functions;
 
+                double EvaluateFunctions(std::string &expr);
                 Token GetToken();
                 double Expression(bool get);
                 double Term(bool get);

@@ -1,6 +1,10 @@
 #include "../include/lexer.h"
 #include <sstream>
 #include <memory>
+#include <iostream>
+
+using Lexer = cad::command::Lexer;
+using lexer_function_t = cad::command::lexer_function_t;
 
 // Exceptions messages
 const std::string ERR_MSG_BAD_TOKEN = "Lexer error. bad token:";
@@ -12,30 +16,37 @@ const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected";
 // Other characters are not allowed:
 // if an expression contains other characters then the expression is invalid
 // and must be considered as a regular string and is not to be parsed by the lexer
-std::vector<char> cad::command::Lexer::m_allowed_chars = {'*', '/', '-', '+', '(', ')',
+std::vector<char> Lexer::m_allowed_chars = {'*', '/', '-', '+', '(', ')',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '};
 
-std::vector<std::string> cad::command::Lexer::m_allowed_substrings = {};
+std::vector<std::string> Lexer::m_allowed_substrings = {"sqrt"};
 
-cad::command::Lexer::Lexer()
-{ }
+std::map<std::string,lexer_function_t> Lexer::m_functions;
 
-
-cad::command::Lexer::~Lexer()
-{ }
-
-
-double cad::command::Lexer::Evaluate(const std::string &expr)
+Lexer::Lexer()
 {
-    std::string expression = expr + ';';
-    std::unique_ptr<std::istream> stream(new std::istringstream(expression.c_str()));
+    if(m_functions.size()<1)
+        lexer_functions_init();
+}
 
+
+Lexer::~Lexer()
+{ }
+
+
+double Lexer::Evaluate(std::string expression)
+{
+    expression += ';';
+    EvaluateFunctions(expression);
+
+    std::unique_ptr<std::istream> stream(new std::istringstream(expression.c_str()));
     m_current_instring = stream.get();
+
     GetToken();
     return Expression(false);
 }
 
-cad::command::Lexer::Token cad::command::Lexer::GetToken()
+cad::command::Lexer::Token Lexer::GetToken()
 {
     char ch;
 
@@ -67,7 +78,7 @@ cad::command::Lexer::Token cad::command::Lexer::GetToken()
 	}
 }
 
-double cad::command::Lexer::Expression(bool get)
+double Lexer::Expression(bool get)
 {
     double left = Term(get);
 	for(;;)
@@ -84,7 +95,7 @@ double cad::command::Lexer::Expression(bool get)
 		}
 }
 
-double cad::command::Lexer::Term(bool get)
+double Lexer::Term(bool get)
 {
     double left = Prim(get);
 
@@ -105,7 +116,7 @@ double cad::command::Lexer::Term(bool get)
 		}
 }
 
-double cad::command::Lexer::Prim(bool get)
+double Lexer::Prim(bool get)
 {
     if (get) GetToken();
 
@@ -129,8 +140,8 @@ double cad::command::Lexer::Prim(bool get)
 	}
 }
 
-#include <iostream>
-bool cad::command::Lexer::IsExpression(const std::string &expr) const
+
+bool Lexer::IsExpression(const std::string &expr) const
 {
     std::string::size_type length = expr.size();
     std::string::size_type cursor = 0;
@@ -138,9 +149,10 @@ bool cad::command::Lexer::IsExpression(const std::string &expr) const
 label_loop:
     while(cursor<length)
     {
-        // Check sub-strings
-        for(auto &str: m_allowed_substrings)
+        // Check functions (sub-strings)
+        for(auto& func: m_functions)
         {
+            std::string str = func.first;
             std::string::size_type sz = str.size();
             if(cursor + sz <= length)
                 if(expr.substr(cursor, sz)==str)
@@ -156,5 +168,78 @@ label_loop:
         if(found==m_allowed_chars.end())
             return false;
     }
+    return true;
+}
+
+double Lexer::EvaluateFunctions(std::string &expr)
+{
+    std::string::size_type sz = expr.size();
+    std::string fn_name = "";
+    lexer_function_t fn_ptr = nullptr;
+
+
+    std::string::size_type fn_pos = std::string::npos;
+    while(true)
+    {
+        std::cout<<"Evaluating: "<<std::endl;
+        for(auto fn: m_functions)
+        {
+            std::string::size_type pos = expr.find(fn.first);
+            if(fn_pos > pos || fn_pos == std::string::npos)
+            {
+                fn_pos = pos;
+                fn_name = fn.first;
+                fn_ptr = fn.second;
+            }
+        }
+
+        if(fn_pos==std::string::npos)
+            break;
+
+        if(expr.at(fn_pos+fn_name.size())!='(' || fn_pos+fn_name.size()>=expr.size())
+            throw LexerError("Function error!");
+
+        std::string::size_type cursor = fn_pos+fn_name.size();
+        int bracket_counter = 1;
+        while(bracket_counter!=0 && cursor<expr.size())
+        {
+            char symbol = expr.at(++cursor);
+            if(symbol=='(')
+                bracket_counter++;
+            else if(symbol==')')
+                bracket_counter--;
+
+            std::cout<<"Symbol: "<<symbol<<"  counter:"<<bracket_counter<<
+            "  cursor:"<<cursor<<std::endl;
+        }
+
+        ++cursor;
+        std::string subexpr = expr.substr(fn_pos+fn_name.size(),
+                                          cursor-(fn_pos+fn_name.size()));
+
+        double fn_arg = Evaluate(subexpr);
+        double fn_result = fn_ptr(fn_arg);
+        expr.replace(fn_pos, cursor - fn_pos, std::to_string(fn_result));
+        std::cout<<"Result:"<<fn_arg<<"  sqrt="<<fn_result<<std::endl;
+        std::cout<<"Replaced:"<<expr<<std::endl;
+
+
+        std::cout<<"Found: "<<expr.substr(fn_pos, fn_name.size())
+        <<"->'"<<expr.at(fn_pos+fn_name.size())<<"'"<<std::endl;
+
+        std::cout<<"Subexpr: "<<subexpr<<"  counter:"<<bracket_counter<<std::endl;
+
+        break;
+    }
+
+    return 0;
+}
+
+bool Lexer::AddFunction(std::string name, lexer_function_t fn)
+{
+    if(Lexer::m_functions.find(name)!=m_functions.end())
+        return false;
+
+    Lexer::m_functions.insert(std::pair<std::string, lexer_function_t>(name,fn));
     return true;
 }
