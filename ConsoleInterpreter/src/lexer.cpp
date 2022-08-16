@@ -19,13 +19,16 @@ const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected";
 std::vector<char> Lexer::m_allowed_chars = {'*', '/', '-', '+', '(', ')',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '};
 
-std::vector<std::string> Lexer::m_allowed_substrings = {"sqrt"};
+std::vector<std::string> Lexer::m_allowed_substrings;
+
+bool Lexer::m_functions_initilized = false;
 
 std::map<std::string,lexer_function_t> Lexer::m_functions;
 
+
 Lexer::Lexer()
 {
-    if(m_functions.size()<1)
+    if(!m_functions_initilized)
         lexer_functions_init();
 }
 
@@ -171,28 +174,40 @@ label_loop:
     return true;
 }
 
-double Lexer::EvaluateFunctions(std::string &expr)
+void Lexer::EvaluateFunctions(std::string &expr)
 {
     std::string::size_type sz = expr.size();
     std::string fn_name = "";
     lexer_function_t fn_ptr = nullptr;
 
-
-    std::string::size_type fn_pos = std::string::npos;
     while(true)
     {
-        std::cout<<"Evaluating: "<<std::endl;
-        for(auto fn: m_functions)
+        //std::cout<<"\nEvaluating: "<<expr<<std::endl;
+        std::string::size_type fn_pos = std::string::npos;
+        size_t max_brackets = 0;
+        for(auto fn: Lexer::m_functions)
         {
             std::string::size_type pos = expr.find(fn.first);
-            if(fn_pos > pos || fn_pos == std::string::npos)
+            if(pos != std::string::npos)
             {
-                fn_pos = pos;
-                fn_name = fn.first;
-                fn_ptr = fn.second;
+                size_t brackets = 0;
+                for(int c=0; c<pos; c++)
+                    if(expr.at(c)=='(')
+                       brackets++;
+
+                //std::cout<<"\nIN: brackets:"<<brackets<<" max:"<<max_brackets<<std::endl;
+                if(brackets>=max_brackets)
+                {
+                    max_brackets = brackets;
+                    fn_pos = pos;
+                    fn_name = fn.first;
+                    fn_ptr = fn.second;
+                    //std::cout<<fn_name<<" cbrackets:"<<max_brackets<<std::endl;
+                }
             }
         }
 
+        //std::cout<<"Is end:"<<(fn_pos==std::string::npos)<<std::endl;
         if(fn_pos==std::string::npos)
             break;
 
@@ -209,30 +224,23 @@ double Lexer::EvaluateFunctions(std::string &expr)
             else if(symbol==')')
                 bracket_counter--;
 
-            std::cout<<"Symbol: "<<symbol<<"  counter:"<<bracket_counter<<
-            "  cursor:"<<cursor<<std::endl;
+            //std::cout<<"Symbol: "<<symbol<<"  counter:"<<bracket_counter<<
+            //"  cursor:"<<cursor<<std::endl;
         }
 
         ++cursor;
         std::string subexpr = expr.substr(fn_pos+fn_name.size(),
                                           cursor-(fn_pos+fn_name.size()));
 
+        //std::cout<<"subexpr: "<<subexpr<<std::endl;
         double fn_arg = Evaluate(subexpr);
         double fn_result = fn_ptr(fn_arg);
         expr.replace(fn_pos, cursor - fn_pos, std::to_string(fn_result));
-        std::cout<<"Result:"<<fn_arg<<"  sqrt="<<fn_result<<std::endl;
-        std::cout<<"Replaced:"<<expr<<std::endl;
-
-
-        std::cout<<"Found: "<<expr.substr(fn_pos, fn_name.size())
-        <<"->'"<<expr.at(fn_pos+fn_name.size())<<"'"<<std::endl;
-
-        std::cout<<"Subexpr: "<<subexpr<<"  counter:"<<bracket_counter<<std::endl;
-
-        break;
+        //std::cout<<"Result:"<<fn_arg<<"  "<<fn_name<<" = "<<fn_result<<std::endl;
+        //std::cout<<"Replaced:"<<expr<<std::endl;
     }
 
-    return 0;
+    return;
 }
 
 bool Lexer::AddFunction(std::string name, lexer_function_t fn)

@@ -24,10 +24,6 @@ namespace cad
                 static bool AddFunction(std::string name, lexer_function_t fn);
 
             private:
-                // Pointer to active istringstream-object
-                std::istream *m_current_instring;
-                double m_number_value;
-
                 enum Token
                 {
                     NUMBER,
@@ -40,15 +36,22 @@ namespace cad
                     END
                 } current_token;
 
-                static std::vector<char> m_allowed_chars;
-                static std::vector<std::string> m_allowed_substrings;
-                static std::map<std::string,lexer_function_t> m_functions;
-
-                double EvaluateFunctions(std::string &expr);
+                void EvaluateFunctions(std::string &expr);
                 Token GetToken();
                 double Expression(bool get);
                 double Term(bool get);
                 double Prim(bool get);
+
+                // Pointer to active istringstream-object
+                std::istream *m_current_instring;
+                double m_number_value;
+
+                static std::vector<char> m_allowed_chars;
+                static std::vector<std::string> m_allowed_substrings;
+
+                static bool m_functions_initilized;
+                static std::map<std::string,lexer_function_t> m_functions;
+
         };
 
 

@@ -7,11 +7,13 @@
 #include <limits>
 
 using cad::command::Lexer;
+using cad::command::LexerError;
 using cad::command::Interpreter;
 
 void test_expressions(void);
 void test_interpreter(void);
 void test_expressions_validation(void);
+bool evaluate(Lexer &lexer, std::string expression);
 
 const double ALLOWABLE_TOLERANCE = 0.01;
 
@@ -46,7 +48,8 @@ int main(int argc, char **argv)
 /**************************************************************/
 /***************   Expressions tests   ************************/
 /**************************************************************/
-std::map<std::string,double> expr_examples = {
+std::map<std::string,double> expr_examples =
+{
     {"0  ", 0},
     {"10", 10},
     {"5+5", 10},
@@ -92,7 +95,8 @@ void test_expressions()
     }
 }
 
-std::map<std::string,bool> expr_validation_examples = {
+std::map<std::string,bool> expr_validation_examples =
+{
 //    {"0  ", true},
 //    {"10a", false},
 //    {"5+5", true},
@@ -103,7 +107,9 @@ std::map<std::string,bool> expr_validation_examples = {
 //    {"4/10+2*(4+1)", true},
 //    {"-8+2*4.1+b", false},
 //    {"(-4+ (5- 9)) * 2.5 +2. 25*2", true},
-    {"-200*(sqrt(4+18/(2+4)-3)+1)", true}
+    //{"sqrt(-200*(sqrt(4+18/(2+4)-3)+1)+604)", true},
+    {"2*cos(sin(3.14))", true},
+    {"sqrt(4*(cos(0.5)*cos(0.25*2) + sin(0.5)*sin(0.5 )))+cos(0.5)", true}
 //    {"50+((10-15)*0,3)", false},
 //    {"10*((10-15)*0.3)", true},
 //    {"0*25+4*sin(0)", false},
@@ -132,7 +138,7 @@ void test_expressions_validation()
         std::cout << "\texpected value: " << (expr.second ? "true" : "false");
         assert(result==expr.second);
         std::cout << "\tOK\t" << "evaluated: ";
-        std::cout << (result ? lexer.Evaluate(expr.first) : -0) << " ...OK" << std::endl;
+        std::cout << (evaluate(lexer, expr.first) ? " ...OK" : "...ERROR")<< std::endl;
     }
 }
 
@@ -144,4 +150,19 @@ void test_interpreter()
 //    interpreter.ParseExpression(",");
 //    interpreter.ParseExpression(" , ,");
 //    interpreter.ParseExpression(", ,");
+}
+
+bool evaluate(Lexer &lexer, std::string expression)
+{
+    try
+    {
+        double result = lexer.Evaluate(expression);
+        std::cout<<result;
+        return true;
+    }
+    catch(const LexerError &e)
+    {
+        std::cout<<e.what();
+        return false;
+    }
 }
