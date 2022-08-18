@@ -21,7 +21,9 @@ namespace cad
 
                 bool IsExpression(const std::string &expr) const;
 
-                static bool AddFunction(std::string name, lexer_function_t fn);
+                static bool AddFunction(const std::string &name, lexer_function_t fn);
+
+                static void UseDegreesForAngles(bool use_degrees);
 
             private:
                 enum Token
@@ -36,8 +38,8 @@ namespace cad
                     END
                 } current_token;
 
-                void EvaluateFunctions(std::string &expr);
                 Token GetToken();
+                void EvaluateFunctions(std::string &expr);
                 double Expression(bool get);
                 double Term(bool get);
                 double Prim(bool get);
@@ -47,10 +49,12 @@ namespace cad
                 double m_number_value;
 
                 static std::vector<char> m_allowed_chars;
-                static std::vector<std::string> m_allowed_substrings;
 
                 static bool m_functions_initilized;
                 static std::map<std::string,lexer_function_t> m_functions;
+                static std::vector<std::string> m_functions_names;
+
+                static std::map<std::string,double> m_constants;
 
         };
 
@@ -64,9 +68,7 @@ namespace cad
                 { }
 
                 virtual char const* what() const
-                {
-                    return m_msg.c_str();
-                }
+                { return m_msg.c_str(); }
 
             private:
                 std::string m_msg;

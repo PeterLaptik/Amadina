@@ -2,6 +2,7 @@
 #include <sstream>
 #include <memory>
 #include <iostream>
+#include <algorithm>
 
 using Lexer = cad::command::Lexer;
 using lexer_function_t = cad::command::lexer_function_t;
@@ -19,11 +20,13 @@ const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected";
 std::vector<char> Lexer::m_allowed_chars = {'*', '/', '-', '+', '(', ')',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '};
 
-std::vector<std::string> Lexer::m_allowed_substrings;
-
 bool Lexer::m_functions_initilized = false;
 
 std::map<std::string,lexer_function_t> Lexer::m_functions;
+
+std::vector<std::string> Lexer::m_functions_names;
+
+std::map<std::string,double> Lexer::m_constants;
 
 
 Lexer::Lexer()
@@ -182,12 +185,11 @@ void Lexer::EvaluateFunctions(std::string &expr)
 
     while(true)
     {
-        //std::cout<<"\nEvaluating: "<<expr<<std::endl;
         std::string::size_type fn_pos = std::string::npos;
         size_t max_brackets = 0;
-        for(auto fn: Lexer::m_functions)
+        for(auto fn_str: Lexer::m_functions_names)
         {
-            std::string::size_type pos = expr.find(fn.first);
+            std::string::size_type pos = expr.find(fn_str);
             if(pos != std::string::npos)
             {
                 size_t brackets = 0;
@@ -195,19 +197,17 @@ void Lexer::EvaluateFunctions(std::string &expr)
                     if(expr.at(c)=='(')
                        brackets++;
 
-                //std::cout<<"\nIN: brackets:"<<brackets<<" max:"<<max_brackets<<std::endl;
                 if(brackets>=max_brackets)
                 {
                     max_brackets = brackets;
                     fn_pos = pos;
-                    fn_name = fn.first;
-                    fn_ptr = fn.second;
-                    //std::cout<<fn_name<<" cbrackets:"<<max_brackets<<std::endl;
+                    auto fn_pair = Lexer::m_functions.find(fn_str);
+                    fn_name = fn_pair->first;
+                    fn_ptr = fn_pair->second;
                 }
             }
         }
 
-        //std::cout<<"Is end:"<<(fn_pos==std::string::npos)<<std::endl;
         if(fn_pos==std::string::npos)
             break;
 
@@ -223,31 +223,38 @@ void Lexer::EvaluateFunctions(std::string &expr)
                 bracket_counter++;
             else if(symbol==')')
                 bracket_counter--;
-
-            //std::cout<<"Symbol: "<<symbol<<"  counter:"<<bracket_counter<<
-            //"  cursor:"<<cursor<<std::endl;
         }
 
         ++cursor;
         std::string subexpr = expr.substr(fn_pos+fn_name.size(),
                                           cursor-(fn_pos+fn_name.size()));
 
-        //std::cout<<"subexpr: "<<subexpr<<std::endl;
         double fn_arg = Evaluate(subexpr);
         double fn_result = fn_ptr(fn_arg);
         expr.replace(fn_pos, cursor - fn_pos, std::to_string(fn_result));
-        //std::cout<<"Result:"<<fn_arg<<"  "<<fn_name<<" = "<<fn_result<<std::endl;
-        //std::cout<<"Replaced:"<<expr<<std::endl;
     }
 
     return;
 }
 
-bool Lexer::AddFunction(std::string name, lexer_function_t fn)
+bool Lexer::AddFunction(const std::string &name, lexer_function_t fn)
 {
     if(Lexer::m_functions.find(name)!=m_functions.end())
         return false;
 
+    m_functions_names.push_back(name);
+    std::sort(m_functions_names.begin(), m_functions_names.end(),
+              [&](const std::string name_1, const std::string name_2)
+              {
+                  return name_1.size()<name_2.size();
+              }
+    );
+
     Lexer::m_functions.insert(std::pair<std::string, lexer_function_t>(name,fn));
     return true;
+}
+
+void Lexer::UseDegreesForAngles(bool use_degrees)
+{
+    lexer_set_angle_units(use_degrees);
 }

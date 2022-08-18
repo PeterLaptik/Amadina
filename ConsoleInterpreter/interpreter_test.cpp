@@ -1,5 +1,6 @@
 #include "include/lexer.h"
 #include "include/interpreter.h"
+
 #include <iostream>
 #include <map>
 #include <cfloat>
@@ -97,23 +98,23 @@ void test_expressions()
 
 std::map<std::string,bool> expr_validation_examples =
 {
-//    {"0  ", true},
-//    {"10a", false},
-//    {"5+5", true},
-//    {"1+2", true},
-//    {"20.5+10*2", true},
-//    {"20.5 + (10*2)", true},
-//    {"(20.5+10x)*2", false},
-//    {"4/10+2*(4+1)", true},
-//    {"-8+2*4.1+b", false},
-//    {"(-4+ (5- 9)) * 2.5 +2. 25*2", true},
-    //{"sqrt(-200*(sqrt(4+18/(2+4)-3)+1)+604)", true},
-    {"2*cos(sin(3.14))", true},
-    {"sqrt(4*(cos(0.5)*cos(0.25*2) + sin(0.5)*sin(0.5 )))+cos(0.5)", true}
-//    {"50+((10-15)*0,3)", false},
-//    {"10*((10-15)*0.3)", true},
-//    {"0*25+4*sin(0)", false},
-//    {"-1+1", true},
+    {")0  ", true},
+    {"10a", false},
+    {"5+5", true},
+    {"1+2", true},
+    {"20.5+10*2", true},
+    {"20.5 + (10*2)", true},
+    {"(20.5+10x)*2", false},
+    {"4/10+2*(4+1)", true},
+    {"-8+2*4.1+b", false},
+    {"(-4+ (5- 9)) * 2.5 +2. 25*2", true},
+    {"sqrt(-200*(sqrt(4+18/(2+4)-3)+1)+604)", true},
+    {"1+cotan(1)", true},
+    {"sqrt(4*(cos(0.5)*cos(0.25*2) + sin(0.5)*sin(0.5)))", true},
+    {"50+((10-15)*0,3)", false},
+    {"10*((10-15)*0.3)", true},
+    {"0*25+4*sin(0)", true},
+    {"-1+1", true},
 };
 
 void test_expressions_validation()
@@ -128,6 +129,7 @@ void test_expressions_validation()
     max_size++;
 
     Lexer lexer;
+    Lexer::UseDegreesForAngles(true);
     bool result;
     for(auto &expr: expr_validation_examples)
     {
@@ -137,7 +139,7 @@ void test_expressions_validation()
         std::cout << expression << " is valid:" << (result ? "true" : "false");
         std::cout << "\texpected value: " << (expr.second ? "true" : "false");
         assert(result==expr.second);
-        std::cout << "\tOK\t" << "evaluated: ";
+        std::cout << "\tresult: ";
         std::cout << (evaluate(lexer, expr.first) ? " ...OK" : "...ERROR")<< std::endl;
     }
 }
@@ -161,6 +163,11 @@ bool evaluate(Lexer &lexer, std::string expression)
         return true;
     }
     catch(const LexerError &e)
+    {
+        std::cout<<e.what();
+        return false;
+    }
+    catch(const std::exception &e)
     {
         std::cout<<e.what();
         return false;
