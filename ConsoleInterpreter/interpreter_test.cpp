@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
     //test_expressions();
 
-    std::cout << std::endl << "Testing... Expressions validations." << std::endl;
+    std::cout << std::endl << "Testing... Expressions validations." << std::endl << std::endl;
     test_expressions_validation();
 
     std::cout << std::endl << "Testing... Interpreter parsing." << std::endl;
@@ -115,6 +115,8 @@ std::map<std::string,bool> expr_validation_examples =
     {"10*((10-15)*0.3)", true},
     {"0*25+4*sin(0)", true},
     {"-1+1", true},
+    {"(", true},
+    {")", true}
 };
 
 void test_expressions_validation()
@@ -140,7 +142,8 @@ void test_expressions_validation()
         std::cout << "\texpected value: " << (expr.second ? "true" : "false");
         assert(result==expr.second);
         std::cout << "\tresult: ";
-        std::cout << (evaluate(lexer, expr.first) ? " ...OK" : "...ERROR")<< std::endl;
+        evaluate(lexer, expr.first);
+        std::cout << std::endl;
     }
 }
 
@@ -161,11 +164,6 @@ bool evaluate(Lexer &lexer, std::string expression)
         double result = lexer.Evaluate(expression);
         std::cout<<result;
         return true;
-    }
-    catch(const LexerError &e)
-    {
-        std::cout<<e.what();
-        return false;
     }
     catch(const std::exception &e)
     {

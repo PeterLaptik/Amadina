@@ -56,6 +56,13 @@ namespace cad
 
                 static std::map<std::string,double> m_constants;
 
+                // Emergency flag
+                //
+                // Counts 'GetToken'-method recursive calls
+                // If number of calls cross the available limit,
+                // then 'Recursive error'-exception is thrown
+                unsigned int m_call_counter;
+
         };
 
 

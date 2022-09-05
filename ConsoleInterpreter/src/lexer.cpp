@@ -8,14 +8,14 @@ using Lexer = cad::command::Lexer;
 using lexer_function_t = cad::command::lexer_function_t;
 
 // Exceptions messages
-const std::string ERR_MSG_BAD_TOKEN = "Lexer error. bad token:";
-const std::string ERR_MSG_DIV_ZERO = "Lexer error. dividing by zero";
-const std::string ERR_MSG_PRIM = "Lexer error. primary expected";
-const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected";
+const std::string ERR_MSG_BAD_TOKEN = "Lexer error. bad token: ";
+const std::string ERR_MSG_DIV_ZERO = "Lexer error. dividing by zero.";
+const std::string ERR_MSG_PRIM = "Lexer error. primary expected.";
+const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected.";
 
 // Characters which can appear in expressions.
 // Other characters are not allowed:
-// if an expression contains other characters then the expression is invalid
+// if an expression contains other characters, then the expression is invalid
 // and must be considered as a regular string and is not to be parsed by the lexer
 std::vector<char> Lexer::m_allowed_chars = {'*', '/', '-', '+', '(', ')',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' '};
@@ -43,6 +43,7 @@ Lexer::~Lexer()
 double Lexer::Evaluate(std::string expression)
 {
     expression += ';';
+    m_call_counter = 0;
     EvaluateFunctions(expression);
 
     std::unique_ptr<std::istream> stream(new std::istringstream(expression.c_str()));
@@ -55,6 +56,10 @@ double Lexer::Evaluate(std::string expression)
 cad::command::Lexer::Token Lexer::GetToken()
 {
     char ch;
+
+    m_call_counter++;
+    if(m_call_counter>1000)
+        throw LexerError("Recursive error.");
 
     do {
 		if(!m_current_instring->get(ch)) return current_token=END;
@@ -71,12 +76,14 @@ cad::command::Lexer::Token Lexer::GetToken()
         case '+':
         case '(':
         case ')':
+            m_call_counter--;
             return current_token=Token(ch);
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         case '.':
             m_current_instring->putback(ch);
             *m_current_instring >> m_number_value;
+            m_call_counter--;
             return current_token = NUMBER;
 
         default:
@@ -243,14 +250,13 @@ bool Lexer::AddFunction(const std::string &name, lexer_function_t fn)
         return false;
 
     m_functions_names.push_back(name);
+    Lexer::m_functions.insert(std::pair<std::string, lexer_function_t>(name,fn));
     std::sort(m_functions_names.begin(), m_functions_names.end(),
               [&](const std::string name_1, const std::string name_2)
               {
                   return name_1.size()<name_2.size();
               }
     );
-
-    Lexer::m_functions.insert(std::pair<std::string, lexer_function_t>(name,fn));
     return true;
 }
 

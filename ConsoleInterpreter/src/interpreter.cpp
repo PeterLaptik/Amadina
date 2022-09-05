@@ -11,7 +11,6 @@ static const char DEFAULT_DELIMITER = ' ';
 const char DELIMITERS[] {'\t'};
 
 
-
 cad::command::Interpreter::Interpreter()
 { }
 
@@ -72,7 +71,7 @@ void cad::command::Interpreter::ParseList(const std::string &list_str)
 // Replaces all allowed delimiters with space-delimiter.
 // Following tokenizing will be performed for the default (space) delimiter only.
 // In addition, delimiters before and after commas are removed
-// For example: '1 , 1' -> '1,1'
+// For example: '1 , 1' translates into '1,1'
 void cad::command::Interpreter::PurgeDelimiters(std::string &expr)
 {
     // Change all allowed delimiters to main delimiter (spae by default)
