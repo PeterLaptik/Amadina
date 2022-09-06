@@ -59,7 +59,7 @@ cad::command::Lexer::Token Lexer::GetToken()
 
     m_call_counter++;
     if(m_call_counter>1000)
-        throw LexerError("Recursive error.");
+        throw LexerError("Bad expression.");
 
     do {
 		if(!m_current_instring->get(ch)) return current_token=END;
@@ -262,5 +262,5 @@ bool Lexer::AddFunction(const std::string &name, lexer_function_t fn)
 
 void Lexer::UseDegreesForAngles(bool use_degrees)
 {
-    lexer_set_angle_units(use_degrees);
+    lexer_set_use_degree_units(use_degrees);
 }

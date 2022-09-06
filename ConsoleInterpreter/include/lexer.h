@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "lexer_functions.h"
+#include "lexer_math_functions.h"
 
 namespace cad
 {
@@ -50,19 +50,21 @@ namespace cad
 
                 static std::vector<char> m_allowed_chars;
 
-                static bool m_functions_initilized;
+
+
                 static std::map<std::string,lexer_function_t> m_functions;
                 static std::vector<std::string> m_functions_names;
 
                 static std::map<std::string,double> m_constants;
 
-                // Emergency flag
-                //
+                // Emergency flag.
                 // Counts 'GetToken'-method recursive calls
                 // If number of calls cross the available limit,
-                // then 'Recursive error'-exception is thrown
+                // then 'Bad expression'-exception is thrown
                 unsigned int m_call_counter;
 
+                //
+                static bool m_functions_initilized;
         };
 
 

@@ -28,14 +28,14 @@ int main(int argc, char **argv)
     std::cout << std::endl << "Allowable tolerances: ";
     std::cout << ALLOWABLE_TOLERANCE*100 << "%" << std::endl;
 
-    //test_expressions();
+    test_expressions();
 
     std::cout << std::endl << "Testing... Expressions validations." << std::endl << std::endl;
     test_expressions_validation();
 
     std::cout << std::endl << "Testing... Interpreter parsing." << std::endl;
 
-    //test_interpreter();
+    test_interpreter();
 
     std::cout << std::endl;
     std::cout << "*********************************" << std::endl;
@@ -116,7 +116,10 @@ std::map<std::string,bool> expr_validation_examples =
     {"0*25+4*sin(0)", true},
     {"-1+1", true},
     {"(", true},
-    {")", true}
+    {")", true},
+    {"", true},
+    {" ", true},
+    {"asin(sin(30))", true}
 };
 
 void test_expressions_validation()
