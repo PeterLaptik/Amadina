@@ -119,7 +119,8 @@ std::map<std::string,bool> expr_validation_examples =
     {")", true},
     {"", true},
     {" ", true},
-    {"asin(sin(30))", true}
+    {"asin(sin(30))", true},
+    {"pi*2", true}
 };
 
 void test_expressions_validation()

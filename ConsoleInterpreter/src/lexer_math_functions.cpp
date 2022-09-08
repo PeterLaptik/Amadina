@@ -35,6 +35,9 @@ void cad::command::lexer_functions_init()
     Lexer::AddFunction("cotan", &fn_ctan);
     Lexer::AddFunction("asin", &fn_asin);
     Lexer::AddFunction("acos", &fn_acos);
+    Lexer::AddConstant("pi", M_PI);
+    Lexer::AddConstant("e", M_E);
+
 }
 
 // Sets degree / radian mode for functions

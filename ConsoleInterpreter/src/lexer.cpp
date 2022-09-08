@@ -28,6 +28,8 @@ std::vector<std::string> Lexer::m_functions_names;
 
 std::map<std::string,double> Lexer::m_constants;
 
+std::vector<std::string> Lexer::m_constants_names;
+
 
 Lexer::Lexer()
 {
@@ -163,12 +165,22 @@ label_loop:
     while(cursor<length)
     {
         // Check functions (sub-strings)
-        for(auto& func: m_functions)
+        for(auto& func: m_functions_names)
         {
-            std::string str = func.first;
-            std::string::size_type sz = str.size();
+            std::string::size_type sz = func.size();
             if(cursor + sz <= length)
-                if(expr.substr(cursor, sz)==str)
+                if(expr.substr(cursor, sz)==func)
+                {
+                    cursor += ++sz;
+                    goto label_loop;
+                }
+        }
+        // Check constants (sub-strings)
+        for(auto& cnst: m_constants_names)
+        {
+            std::string::size_type sz = cnst.size();
+            if(cursor + sz <= length)
+                if(expr.substr(cursor, sz)==cnst)
                 {
                     cursor += ++sz;
                     goto label_loop;
@@ -240,8 +252,22 @@ void Lexer::EvaluateFunctions(std::string &expr)
         double fn_result = fn_ptr(fn_arg);
         expr.replace(fn_pos, cursor - fn_pos, std::to_string(fn_result));
     }
+}
 
-    return;
+bool Lexer::AddConstant(const std::string &name, double value)
+{
+    if(Lexer::m_constants.find(name)!=m_constants.end())
+        return false;
+
+    m_constants_names.push_back(name);
+    Lexer::m_constants.insert(std::pair<std::string, double>(name,value));
+    std::sort(m_constants_names.begin(), m_constants_names.end(),
+              [&](const std::string name_1, const std::string name_2)
+              {
+                  return name_1.size()<name_2.size();
+              }
+    );
+    return true;
 }
 
 bool Lexer::AddFunction(const std::string &name, lexer_function_t fn)

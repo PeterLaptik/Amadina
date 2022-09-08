@@ -22,6 +22,7 @@ namespace cad
                 bool IsExpression(const std::string &expr) const;
 
                 static bool AddFunction(const std::string &name, lexer_function_t fn);
+                static bool AddConstant(const std::string &name, double value);
 
                 static void UseDegreesForAngles(bool use_degrees);
 
@@ -56,6 +57,7 @@ namespace cad
                 static std::vector<std::string> m_functions_names;
 
                 static std::map<std::string,double> m_constants;
+                static std::vector<std::string> m_constants_names;
 
                 // Emergency flag.
                 // Counts 'GetToken'-method recursive calls
