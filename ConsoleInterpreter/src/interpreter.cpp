@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
+using Interpreter = cad::command::Interpreter;
+
 // Main delimiter
 static const char DEFAULT_DELIMITER = ' ';
 // Other allowed delimiters
@@ -11,13 +13,13 @@ static const char DEFAULT_DELIMITER = ' ';
 const char DELIMITERS[] {'\t'};
 
 
-cad::command::Interpreter::Interpreter()
+Interpreter::Interpreter()
 { }
 
-cad::command::Interpreter::~Interpreter()
+Interpreter::~Interpreter()
 { }
 
-void cad::command::Interpreter::ParseExpression(std::string expr)
+void Interpreter::ParseExpression(std::string expr)
 {
     m_string_tokens_container.clear();
     std::cout << "Start string: " << expr << std::endl;
@@ -27,31 +29,41 @@ void cad::command::Interpreter::ParseExpression(std::string expr)
     std::cout << "Tokens: " << m_string_tokens_container.size() << std::endl;
     for(auto token: m_string_tokens_container)
     {
-        if(IsList(token))
-            ParseList(token);
+//        if(IsList(token))
+//            ParseList(token);
 
-        //std::cout << token << " is list:" << IsList(token) << std::endl;
+        std::cout << token << " is list:" << IsList(token) << std::endl;
     }
 
 }
 
 // Splits expression into tokens using default-delimiter
-void cad::command::Interpreter::Tokenize(const std::string &line)
+void Interpreter::Tokenize(const std::string &line)
 {
-    std::string token;
-    std::stringstream sstream(line);
+    const char START_LIST = '[';
+    const char END_LIST = ']';
 
-    while(getline(sstream, token, DEFAULT_DELIMITER))
-        if(token.size()>0)
-            m_string_tokens_container.push_back(token);
+    std::stringstream sstream;
+    std::string::size_type sz = line.size();
+    std::string::size_type cursor = 0;
+    while(cursor<sz)
+    {
+        char ch = line.at(cursor);
+        sstream<<ch;
+        std::cout<<ch;
+        cursor++;
+    }
+    std::cout<<std::endl<<"srtream: "<<sstream.str()<<std::endl;
+    m_string_tokens_container.push_back(sstream.str());
 }
 
-bool cad::command::Interpreter::IsList(const std::string &token)
+bool Interpreter::IsList(const std::string &token)
 {
+    std::cout << "Checking:" << token << " is list:" << token.find(',') << std::endl;
     return token.find(',')!=std::string::npos;
 }
 
-void cad::command::Interpreter::ParseList(const std::string &list_str)
+void Interpreter::ParseList(const std::string &list_str)
 {
     std::cout << "List: " << list_str << std::endl;
 
@@ -72,9 +84,9 @@ void cad::command::Interpreter::ParseList(const std::string &list_str)
 // Following tokenizing will be performed for the default (space) delimiter only.
 // In addition, delimiters before and after commas are removed
 // For example: '1 , 1' translates into '1,1'
-void cad::command::Interpreter::PurgeDelimiters(std::string &expr)
+void Interpreter::PurgeDelimiters(std::string &expr)
 {
-    // Change all allowed delimiters to main delimiter (spae by default)
+    // Change all allowed delimiters to main delimiter (space by default)
     for(int i=0; i<sizeof(DELIMITERS)/sizeof(char); i++)
         std::replace(std::begin(expr),std::end(expr), DELIMITERS[i], DEFAULT_DELIMITER);
 

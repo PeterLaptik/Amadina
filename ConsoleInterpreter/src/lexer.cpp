@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 
 using Lexer = cad::command::Lexer;
 using lexer_function_t = cad::command::lexer_function_t;
@@ -45,9 +46,10 @@ Lexer::~Lexer()
 double Lexer::Evaluate(std::string expression)
 {
     expression += ';';
+    ToLowerCase(expression);
     m_call_counter = 0;
     EvaluateFunctions(expression);
-
+    ReplaceConstants(expression);
     std::unique_ptr<std::istream> stream(new std::istringstream(expression.c_str()));
     m_current_instring = stream.get();
 
@@ -155,7 +157,8 @@ double Lexer::Prim(bool get)
 	}
 }
 
-
+// Checks if the expression contains only available characters,
+// functions names, constants names
 bool Lexer::IsExpression(const std::string &expr) const
 {
     std::string::size_type length = expr.size();
@@ -254,9 +257,24 @@ void Lexer::EvaluateFunctions(std::string &expr)
     }
 }
 
-bool Lexer::AddConstant(const std::string &name, double value)
+void Lexer::ReplaceConstants(std::string &expr)
 {
-    if(Lexer::m_constants.find(name)!=m_constants.end())
+    for(auto const_name: Lexer::m_constants_names)
+    {
+        std::string::size_type c_pos = expr.find(const_name);
+        while(c_pos!=std::string::npos)
+        {
+            std::string substitution = std::to_string(Lexer::m_constants.find(const_name)->second);
+            expr.replace(c_pos, const_name.size(), substitution);
+            c_pos = expr.find(const_name);
+        }
+    }
+}
+
+bool Lexer::AddConstant(std::string name, double value)
+{
+    ToLowerCase(name);
+    if(Lexer::m_constants.find(name)!=m_constants.end() || name.empty())
         return false;
 
     m_constants_names.push_back(name);
@@ -270,9 +288,10 @@ bool Lexer::AddConstant(const std::string &name, double value)
     return true;
 }
 
-bool Lexer::AddFunction(const std::string &name, lexer_function_t fn)
+bool Lexer::AddFunction(std::string name, lexer_function_t fn)
 {
-    if(Lexer::m_functions.find(name)!=m_functions.end())
+    ToLowerCase(name);
+    if(Lexer::m_functions.find(name)!=m_functions.end() || name.empty())
         return false;
 
     m_functions_names.push_back(name);
@@ -289,4 +308,13 @@ bool Lexer::AddFunction(const std::string &name, lexer_function_t fn)
 void Lexer::UseDegreesForAngles(bool use_degrees)
 {
     lexer_set_use_degree_units(use_degrees);
+}
+
+void Lexer::ToLowerCase(std::string &str)
+{
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](std::string::value_type ch)
+                   {
+                       return std::tolower(ch);
+                   });
 }

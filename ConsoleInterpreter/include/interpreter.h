@@ -24,6 +24,7 @@ namespace cad
 
                 // Expressions evaluator
                 Lexer m_lexer;
+
                 // Keeps all string tokens for a current expression
                 std::vector<std::string> m_string_tokens_container;
         };

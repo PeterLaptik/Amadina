@@ -5,10 +5,10 @@ namespace cad
 {
     namespace command
     {
-        // Any function available in lexer must have the following signature
+        // Any function available in a lexer must have the following signature
         typedef double (*lexer_function_t)(double);
 
-        // Initializes available lexer functions
+        // Initializes available lexer functions and constants
         void lexer_functions_init(void);
 
         // Sets degrees / radians mode

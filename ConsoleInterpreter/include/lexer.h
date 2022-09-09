@@ -21,8 +21,8 @@ namespace cad
 
                 bool IsExpression(const std::string &expr) const;
 
-                static bool AddFunction(const std::string &name, lexer_function_t fn);
-                static bool AddConstant(const std::string &name, double value);
+                static bool AddFunction(std::string name, lexer_function_t fn);
+                static bool AddConstant(std::string name, double value);
 
                 static void UseDegreesForAngles(bool use_degrees);
 
@@ -41,9 +41,11 @@ namespace cad
 
                 Token GetToken();
                 void EvaluateFunctions(std::string &expr);
+                void ReplaceConstants(std::string &expr);
                 double Expression(bool get);
                 double Term(bool get);
                 double Prim(bool get);
+                static void ToLowerCase(std::string &str);
 
                 // Pointer to active istringstream-object
                 std::istream *m_current_instring;
@@ -51,9 +53,10 @@ namespace cad
 
                 static std::vector<char> m_allowed_chars;
 
-
-
+                // Function holder:
+                // Keeps functions names and pointers
                 static std::map<std::string,lexer_function_t> m_functions;
+                // List of available functions, sorted by length
                 static std::vector<std::string> m_functions_names;
 
                 static std::map<std::string,double> m_constants;
@@ -65,7 +68,9 @@ namespace cad
                 // then 'Bad expression'-exception is thrown
                 unsigned int m_call_counter;
 
-                //
+                // Flag which shows whether functions and constants
+                // were added to function/constant holders.
+                // False-value by default.
                 static bool m_functions_initilized;
         };
 

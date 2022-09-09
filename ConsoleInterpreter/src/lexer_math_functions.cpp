@@ -27,7 +27,7 @@ static bool lexer_degree_mode = true;
 // Default functions available in interpretor
 void cad::command::lexer_functions_init()
 {
-    lexer_degree_mode = false;
+    lexer_degree_mode = false; // default state
     Lexer::AddFunction("sqrt", &fn_sqrt);
     Lexer::AddFunction("sin", &fn_sin);
     Lexer::AddFunction("cos", &fn_cos);
