@@ -1,6 +1,9 @@
 #ifndef LEXER_FUNCTIONS_H_INCLUDED
 #define LEXER_FUNCTIONS_H_INCLUDED
 
+// The translation unit contains initializer for functions
+// which can be evaluated by an interpreter (lexer).
+// For more information see the implementation.
 namespace cad
 {
     namespace command
@@ -8,7 +11,8 @@ namespace cad
         // Any function available in a lexer must have the following signature
         typedef double (*lexer_function_t)(double);
 
-        // Initializes available lexer functions and constants
+        // Initializes available interpreter (lexer) functions and constants.
+        // This function is to be called once, as lexer functions holders are static.
         void lexer_functions_init(void);
 
         // Sets degrees / radians mode
@@ -23,6 +27,7 @@ namespace cad
         // out-coming values will be converted from radians to degrees.
         //
         // Use this calls for trigonometric functions, and other functions computing angles
+        // See examples in implementations fn_sin, fn_asin, and others
         //
         // Converts angle from degrees to radians if it is necessary
         double deg_to_rad(double x);

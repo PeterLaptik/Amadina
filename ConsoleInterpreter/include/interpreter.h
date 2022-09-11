@@ -2,12 +2,15 @@
 #define COMMAND_INTERPRETER_H
 
 #include "lexer.h"
+#include "token.h"
 #include <vector>
 
 namespace cad
 {
     namespace command
     {
+        class Token;
+
         class Interpreter
         {
             public:
@@ -26,7 +29,7 @@ namespace cad
                 Lexer m_lexer;
 
                 // Keeps all string tokens for a current expression
-                std::vector<std::string> m_string_tokens_container;
+                std::vector<Token> m_string_tokens_container;
         };
     }
 }

@@ -13,6 +13,14 @@ static const char DEFAULT_DELIMITER = ' ';
 const char DELIMITERS[] {'\t'};
 
 
+
+enum TokenState
+{
+    STATE_REGULAR,
+    STATE_STRING,
+    STATE_LIST
+};
+
 Interpreter::Interpreter()
 { }
 
@@ -26,13 +34,10 @@ void Interpreter::ParseExpression(std::string expr)
     PurgeDelimiters(expr);
     std::cout << "End   string: " << expr << std::endl;
     Tokenize(expr);
-    std::cout << "Tokens: " << m_string_tokens_container.size() << std::endl;
+    //std::cout << "Tokens: " << m_string_tokens_container.size() << std::endl;
     for(auto token: m_string_tokens_container)
     {
-//        if(IsList(token))
-//            ParseList(token);
-
-        std::cout << token << " is list:" << IsList(token) << std::endl;
+        std::cout << "Token: value = " << token.value << std::endl;
     }
 
 }
@@ -42,19 +47,57 @@ void Interpreter::Tokenize(const std::string &line)
 {
     const char START_LIST = '[';
     const char END_LIST = ']';
+    const char STRING_QUOTES = '"';
 
     std::stringstream sstream;
     std::string::size_type sz = line.size();
     std::string::size_type cursor = 0;
+    TokenState state = STATE_REGULAR;
     while(cursor<sz)
     {
+        Token token{};
         char ch = line.at(cursor);
+
+        // Process string
+        if(ch==STRING_QUOTES && state==STATE_REGULAR)
+        {
+            state = STATE_STRING;
+            cursor++;
+            continue;
+        }
+        else if(ch==STRING_QUOTES && state==STATE_STRING)
+        {
+            state = STATE_REGULAR;
+            token.type = Token::TokenType::TOKEN_STRING;
+            sstream>>token.value;
+            m_string_tokens_container.push_back(token);
+            cursor++;
+            continue;
+        }
+        else if(state==STATE_STRING)
+        {
+            sstream<<ch;
+            cursor++;
+            continue;
+        }
+
+        if(ch==DEFAULT_DELIMITER && state==STATE_REGULAR)
+        {
+            token.type = Token::TokenType::TOKEN_TEXT;
+            sstream>>token.value;
+            if(!token.value.empty())
+                m_string_tokens_container.push_back(token);
+            sstream.clear();
+            cursor++;
+            continue;
+        }
+
         sstream<<ch;
         std::cout<<ch;
         cursor++;
     }
     std::cout<<std::endl<<"srtream: "<<sstream.str()<<std::endl;
-    m_string_tokens_container.push_back(sstream.str());
+    //m_string_tokens_container.push_back(sstream.str());
 }
 
 bool Interpreter::IsList(const std::string &token)
