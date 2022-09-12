@@ -13,6 +13,8 @@ const std::string ERR_MSG_BAD_TOKEN = "Lexer error. bad token: ";
 const std::string ERR_MSG_DIV_ZERO = "Lexer error. dividing by zero.";
 const std::string ERR_MSG_PRIM = "Lexer error. primary expected.";
 const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected.";
+const std::string ERR_MSG_EXPR_ERROR = "Expression error.";
+const std::string ERR_MSG_FUNCTION_ERROR = "Function error!";
 
 // Characters which can appear in expressions.
 // Other characters are not allowed:
@@ -63,7 +65,7 @@ cad::command::Lexer::Token Lexer::GetToken()
 
     m_call_counter++;
     if(m_call_counter>1000)
-        throw LexerError("Bad expression.");
+        throw LexerError(ERR_MSG_EXPR_ERROR);
 
     do {
 		if(!m_current_instring->get(ch)) return current_token=END;
@@ -234,7 +236,7 @@ void Lexer::EvaluateFunctions(std::string &expr)
             break;
 
         if(expr.at(fn_pos+fn_name.size())!='(' || fn_pos+fn_name.size()>=expr.size())
-            throw LexerError("Function error!");
+            throw LexerError(ERR_MSG_FUNCTION_ERROR);
 
         std::string::size_type cursor = fn_pos+fn_name.size();
         int bracket_counter = 1;
@@ -250,7 +252,7 @@ void Lexer::EvaluateFunctions(std::string &expr)
         ++cursor;
         std::string subexpr = expr.substr(fn_pos+fn_name.size(),
                                           cursor-(fn_pos+fn_name.size()));
-
+        // Recursive call
         double fn_arg = Evaluate(subexpr);
         double fn_result = fn_ptr(fn_arg);
         expr.replace(fn_pos, cursor - fn_pos, std::to_string(fn_result));

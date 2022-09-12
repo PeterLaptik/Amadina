@@ -6,20 +6,18 @@
 using Interpreter = cad::command::Interpreter;
 
 // Main delimiter
-static const char DEFAULT_DELIMITER = ' ';
+const char DEFAULT_DELIMITER = ' ';
 // Other allowed delimiters
 // The delimiters will be replaced with main delimiter
 // during string-expression processing
 const char DELIMITERS[] {'\t'};
-
-
-
-enum TokenState
-{
-    STATE_REGULAR,
-    STATE_STRING,
-    STATE_LIST
-};
+//
+const char START_LIST = '[';
+const char END_LIST = ']';
+//
+const char STRING_QUOTES = '"';
+//
+const std::string ERR_MSG_QUOTES = "Lexer error: expecting \"";
 
 Interpreter::Interpreter()
 { }
@@ -37,7 +35,7 @@ void Interpreter::ParseExpression(std::string expr)
     //std::cout << "Tokens: " << m_string_tokens_container.size() << std::endl;
     for(auto token: m_string_tokens_container)
     {
-        std::cout << "Token: value = " << token.value << std::endl;
+        std::cout << "Token: value = " << token.GetStringValue() << std::endl;
     }
 
 }
@@ -45,59 +43,66 @@ void Interpreter::ParseExpression(std::string expr)
 // Splits expression into tokens using default-delimiter
 void Interpreter::Tokenize(const std::string &line)
 {
-    const char START_LIST = '[';
-    const char END_LIST = ']';
-    const char STRING_QUOTES = '"';
-
     std::stringstream sstream;
     std::string::size_type sz = line.size();
     std::string::size_type cursor = 0;
-    TokenState state = STATE_REGULAR;
     while(cursor<sz)
     {
-        Token token{};
         char ch = line.at(cursor);
-
-        // Process string
-        if(ch==STRING_QUOTES && state==STATE_REGULAR)
+        // Delimited symbolic value
+        if(ch==DEFAULT_DELIMITER)
         {
-            state = STATE_STRING;
-            cursor++;
-            continue;
-        }
-        else if(ch==STRING_QUOTES && state==STATE_STRING)
-        {
-            state = STATE_REGULAR;
-            token.type = Token::TokenType::TOKEN_STRING;
-            sstream>>token.value;
-            m_string_tokens_container.push_back(token);
-            cursor++;
-            continue;
-        }
-        else if(state==STATE_STRING)
-        {
-            sstream<<ch;
+            ProcessText(sstream);
             cursor++;
             continue;
         }
 
-        if(ch==DEFAULT_DELIMITER && state==STATE_REGULAR)
+        // Process string (in-quotes value)
+        if(ch==STRING_QUOTES)
         {
-            token.type = Token::TokenType::TOKEN_TEXT;
-            sstream>>token.value;
-            if(!token.value.empty())
-                m_string_tokens_container.push_back(token);
-            sstream.clear();
             cursor++;
+            ProcessString(sstream, line, cursor);
             continue;
         }
-
         sstream<<ch;
-        std::cout<<ch;
         cursor++;
     }
-    std::cout<<std::endl<<"srtream: "<<sstream.str()<<std::endl;
-    //m_string_tokens_container.push_back(sstream.str());
+    // Flush remainder
+    ProcessText(sstream);
+}
+
+void Interpreter::ProcessText(std::stringstream &sstream)
+{
+    std::istreambuf_iterator<char> eos;
+    std::string value(std::istreambuf_iterator<char>(sstream), eos);
+    std::cout<<"buffer:"<<value<<std::endl;
+    if(value.empty())
+        return;
+    // Check list
+    // todo
+    m_string_tokens_container.push_back(Token(value, TOKEN_STRING));
+}
+
+void Interpreter::ProcessString(std::stringstream &sstream, const std::string &line,
+                             std::string::size_type &cursor)
+{
+    std::string::size_type sz = line.size();
+    while(cursor<sz)
+    {
+        char ch = line.at(cursor);
+        if(ch==STRING_QUOTES)
+        {
+            std::istreambuf_iterator<char> eos;
+            std::string value(std::istreambuf_iterator<char>(sstream), eos);
+            m_string_tokens_container.push_back(Token(value, TOKEN_STRING));
+            cursor++;
+            return;
+        }
+        sstream<<ch;
+        cursor++;
+    }
+    if(cursor==sz)
+        throw LexerError(ERR_MSG_QUOTES);
 }
 
 bool Interpreter::IsList(const std::string &token)
@@ -142,16 +147,11 @@ void Interpreter::PurgeDelimiters(std::string &expr)
         while(pos<expr.size() && expr.at(pos)==DEFAULT_DELIMITER)
             expr.erase(pos++, 1);
         // left trim
-        pos -= 3;
-        while(pos<expr.size() && expr.at(pos)==DEFAULT_DELIMITER)
+        pos -= 2;
+        while(pos<expr.size() && pos>=0 && expr.at(pos)==DEFAULT_DELIMITER)
             expr.erase(pos--, 1);
         // return to the last position
-        pos += 3;
+        pos += 2;
     }
-
-    // Trim spaces inside brackets
 }
-
-
-
 

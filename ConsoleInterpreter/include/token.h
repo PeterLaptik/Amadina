@@ -7,21 +7,33 @@ namespace cad
 {
     namespace command
     {
-        struct Token
+        enum TokenType
         {
-            enum TokenType
-            {
-                TOKEN_TEXT,
-                TOKEN_NUMERIC,
-                TOKEN_LIST,
-                TOKEN_STRING
-            } type;
+            TOKEN_TEXT,
+            TOKEN_NUMERIC,
+            TOKEN_LIST,
+            TOKEN_STRING
+        };
 
-            Token()
-                : type(TOKEN_TEXT), value("")
-                {}
+        class Token
+        {
+            public:
+                Token(const std::string &value, TokenType type);
+                Token(std::string &&value, TokenType type);
+                ~Token(void);
 
-            std::string value;
+                bool IsText(void) const;
+                bool IsNumeric(void) const;
+                bool IsList(void) const;
+                bool IsString(void) const;
+
+                std::string GetStringValue(void) const;
+                double GetNumericValue(void) const;
+
+
+            private:
+                std::string m_value;
+                TokenType m_type;
         };
     }
 }

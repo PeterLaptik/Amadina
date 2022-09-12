@@ -208,7 +208,7 @@ void test_expressions_with_functions_evaluations()
 void test_interpreter()
 {
     Interpreter interpreter;
-    interpreter.ParseExpression(" print \"xyz abc +\"");
+    interpreter.ParseExpression("   print \"xyz abc + \" hghg \"j h\" \"kk l\" kj 1+4,2+3,10/5+3" );
 //    try
 //    {
 //        interpreter.ParseExpression(" line [10,10] x \t20 , [20+8/2] 255.4 10");

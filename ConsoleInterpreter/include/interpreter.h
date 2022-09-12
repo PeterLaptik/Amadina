@@ -25,6 +25,9 @@ namespace cad
                 bool IsList(const std::string &token);
                 void ParseList(const std::string &list_str);
 
+                void ProcessString(std::stringstream &sstream, const std::string &line,
+                                std::string::size_type &cursor);
+                void ProcessText(std::stringstream &sstream);
                 // Expressions evaluator
                 Lexer m_lexer;
 
