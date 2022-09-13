@@ -12,12 +12,16 @@ const char DEFAULT_DELIMITER = ' ';
 // during string-expression processing
 const char DELIMITERS[] {'\t'};
 //
-const char START_LIST = '[';
-const char END_LIST = ']';
+const char LIST_DELIMITER = ',';
 //
-const char STRING_QUOTES = '"';
+const char CH_START_LIST = '[';
+const char CH_END_LIST = ']';
 //
-const std::string ERR_MSG_QUOTES = "Lexer error: expecting \"";
+const char CH_STRING_QUOTES = '"';
+//
+const std::string ERR_MSG_QUOTES = "Lexer error. expecting \"";
+const std::string ERR_MSG_BRACKET = "Lexer error. expecting ]";
+const std::string ERR_MSG_LIST_ERROR = "List parsing error. ";
 
 Interpreter::Interpreter()
 { }
@@ -30,12 +34,34 @@ void Interpreter::ParseExpression(std::string expr)
     m_string_tokens_container.clear();
     std::cout << "Start string: " << expr << std::endl;
     PurgeDelimiters(expr);
+
+    // Force all symbols to lower case
+    std::transform(expr.begin(), expr.end(), expr.begin(),
+                   [](std::string::value_type ch)
+                   {
+                       return std::tolower(ch);
+                   });
+
     std::cout << "End   string: " << expr << std::endl;
     Tokenize(expr);
     //std::cout << "Tokens: " << m_string_tokens_container.size() << std::endl;
+
+    auto lambda = [](Token token){
+        if(token.IsText()){
+            return "text    | ";
+        } else if(token.IsNumeric()){
+            return "numeric | ";
+        } else if(token.IsList()) {
+            return "list    | ";
+        } else if(token.IsString()) {
+            return "string  | ";
+        }
+        return "unknown |";
+    };
+
     for(auto token: m_string_tokens_container)
     {
-        std::cout << "Token: value = " << token.GetStringValue() << std::endl;
+        std::cout << "Token: value = " << lambda(token) << token.GetStringValue() << std::endl;
     }
 
 }
@@ -49,16 +75,22 @@ void Interpreter::Tokenize(const std::string &line)
     while(cursor<sz)
     {
         char ch = line.at(cursor);
-        // Delimited symbolic value
+        // Process delimited symbolic value
         if(ch==DEFAULT_DELIMITER)
         {
             ProcessText(sstream);
             cursor++;
             continue;
         }
-
+        // Process list (in-brackets value)
+        if(ch==CH_START_LIST)
+        {
+            cursor++;
+            ProcessList(sstream, line, cursor);
+            continue;
+        }
         // Process string (in-quotes value)
-        if(ch==STRING_QUOTES)
+        if(ch==CH_STRING_QUOTES)
         {
             cursor++;
             ProcessString(sstream, line, cursor);
@@ -75,12 +107,79 @@ void Interpreter::ProcessText(std::stringstream &sstream)
 {
     std::istreambuf_iterator<char> eos;
     std::string value(std::istreambuf_iterator<char>(sstream), eos);
-    std::cout<<"buffer:"<<value<<std::endl;
     if(value.empty())
         return;
+    // Check number
+    if(m_lexer.IsExpression(value))
+    {
+        TryProcessNumberOrExpr(value);
+        m_string_tokens_container.push_back(Token(value, TOKEN_NUMERIC));
+        return;
+    }
     // Check list
-    // todo
-    m_string_tokens_container.push_back(Token(value, TOKEN_STRING));
+    if(IsList(value))
+    {
+        try
+        {
+            ParseList(value);
+            m_string_tokens_container.push_back(Token(value, TOKEN_LIST));
+            return;
+        }
+        catch(const std::exception &e)
+        {
+            throw LexerError(ERR_MSG_LIST_ERROR + e.what());
+        }
+    }
+    // Otherwise text token
+    m_string_tokens_container.push_back(Token(value, TOKEN_TEXT));
+}
+
+void Interpreter::TryProcessNumberOrExpr(std::string &value)
+{
+    double num_value = m_lexer.Evaluate(value);
+    value = std::to_string(num_value);
+}
+
+void Interpreter::ProcessList(std::stringstream &sstream, const std::string &line,
+                             std::string::size_type &cursor)
+{
+    std::string::size_type sz = line.size();
+    while(cursor<sz)
+    {
+        char ch = line.at(cursor);
+        if(ch==CH_END_LIST)
+        {
+            std::istreambuf_iterator<char> eos;
+            std::string value(std::istreambuf_iterator<char>(sstream), eos);
+            ParseList(value);
+            m_string_tokens_container.push_back(Token(value, TOKEN_LIST));
+            cursor++;
+            return;
+        }
+        sstream<<ch;
+        cursor++;
+    }
+    if(cursor==sz)
+        throw LexerError(ERR_MSG_BRACKET);
+}
+
+void Interpreter::ParseList(std::string &lst)
+{
+    std::string lst_result;
+    std::string list_element;
+    std::stringstream sstream(lst);
+
+    while(getline(sstream, list_element, LIST_DELIMITER))
+    {
+        if(list_element.size()!=0)
+        {
+            double result = m_lexer.Evaluate(list_element);
+            lst_result += std::to_string(result);
+            lst_result += LIST_DELIMITER;
+            //std::cout << "List element: " << result << std::endl;
+        }
+    }
+    lst = lst_result.erase(lst_result.size()-1);
 }
 
 void Interpreter::ProcessString(std::stringstream &sstream, const std::string &line,
@@ -90,7 +189,7 @@ void Interpreter::ProcessString(std::stringstream &sstream, const std::string &l
     while(cursor<sz)
     {
         char ch = line.at(cursor);
-        if(ch==STRING_QUOTES)
+        if(ch==CH_STRING_QUOTES)
         {
             std::istreambuf_iterator<char> eos;
             std::string value(std::istreambuf_iterator<char>(sstream), eos);
@@ -107,25 +206,7 @@ void Interpreter::ProcessString(std::stringstream &sstream, const std::string &l
 
 bool Interpreter::IsList(const std::string &token)
 {
-    std::cout << "Checking:" << token << " is list:" << token.find(',') << std::endl;
-    return token.find(',')!=std::string::npos;
-}
-
-void Interpreter::ParseList(const std::string &list_str)
-{
-    std::cout << "List: " << list_str << std::endl;
-
-    std::string list_element;
-    std::stringstream sstream(list_str);
-
-    while(getline(sstream, list_element, ','))
-    {
-        if(list_element.size()!=0)
-        {
-            double result = m_lexer.Evaluate(list_element);
-            std::cout << "List element: " << result << std::endl;
-        }
-    }
+    return token.find(LIST_DELIMITER)!=std::string::npos;
 }
 
 // Replaces all allowed delimiters with space-delimiter.
@@ -140,18 +221,18 @@ void Interpreter::PurgeDelimiters(std::string &expr)
 
     // Trim spaces around commas
     std::string::size_type pos = 0;
-    while(pos<expr.size() && (pos = expr.find(',', pos))!=std::string::npos)
+    while(pos<expr.size() && (pos = expr.find(LIST_DELIMITER, pos))!=std::string::npos)
     {
         // right trim
         pos++;
         while(pos<expr.size() && expr.at(pos)==DEFAULT_DELIMITER)
             expr.erase(pos++, 1);
         // left trim
-        pos -= 2;
+        pos -= 3;
         while(pos<expr.size() && pos>=0 && expr.at(pos)==DEFAULT_DELIMITER)
             expr.erase(pos--, 1);
         // return to the last position
-        pos += 2;
+        pos += 3;
     }
 }
 

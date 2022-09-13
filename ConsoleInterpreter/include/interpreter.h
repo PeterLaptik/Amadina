@@ -23,11 +23,16 @@ namespace cad
                 void PurgeDelimiters(std::string &expr);
                 void Tokenize(const std::string &line);
                 bool IsList(const std::string &token);
-                void ParseList(const std::string &list_str);
+                void ParseList(std::string &list_str);
 
+                void ProcessText(std::stringstream &sstream);
+                void ProcessList(std::stringstream &sstream, const std::string &line,
+                                std::string::size_type &cursor);
                 void ProcessString(std::stringstream &sstream, const std::string &line,
                                 std::string::size_type &cursor);
-                void ProcessText(std::stringstream &sstream);
+
+                void TryProcessNumberOrExpr(std::string &value);
+
                 // Expressions evaluator
                 Lexer m_lexer;
 

@@ -17,7 +17,7 @@ namespace cad
                 ~Lexer();
 
                 // Parses and evaluates expression
-                double Evaluate(std::string expr);
+                double Evaluate(std::string expression);
 
                 bool IsExpression(const std::string &expr) const;
 

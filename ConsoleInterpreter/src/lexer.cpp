@@ -16,6 +16,8 @@ const std::string ERR_MSG_BRACKET = "Lexer error. ')' expected.";
 const std::string ERR_MSG_EXPR_ERROR = "Expression error.";
 const std::string ERR_MSG_FUNCTION_ERROR = "Function error!";
 
+const int MAX_RECURSIVE_DEBT = 10;
+
 // Characters which can appear in expressions.
 // Other characters are not allowed:
 // if an expression contains other characters, then the expression is invalid
@@ -47,16 +49,25 @@ Lexer::~Lexer()
 
 double Lexer::Evaluate(std::string expression)
 {
-    expression += ';';
-    ToLowerCase(expression);
-    m_call_counter = 0;
-    EvaluateFunctions(expression);
-    ReplaceConstants(expression);
-    std::unique_ptr<std::istream> stream(new std::istringstream(expression.c_str()));
-    m_current_instring = stream.get();
+    double result = 0;
+    try
+    {
+        expression += ';';
+        ToLowerCase(expression);
+        m_call_counter = 0;
+        EvaluateFunctions(expression);
+        ReplaceConstants(expression);
+        std::unique_ptr<std::istream> stream(new std::istringstream(expression.c_str()));
+        m_current_instring = stream.get();
 
-    GetToken();
-    return Expression(false);
+        GetToken();
+        result = Expression(false);
+    }
+    catch (const std::exception &e)
+    {
+        throw LexerError(std::string("In expression '") + expression + "'. " + e.what());
+    }
+    return result;
 }
 
 cad::command::Lexer::Token Lexer::GetToken()
@@ -64,7 +75,7 @@ cad::command::Lexer::Token Lexer::GetToken()
     char ch;
 
     m_call_counter++;
-    if(m_call_counter>1000)
+    if(m_call_counter>MAX_RECURSIVE_DEBT)
         throw LexerError(ERR_MSG_EXPR_ERROR);
 
     do {
@@ -282,7 +293,7 @@ bool Lexer::AddConstant(std::string name, double value)
     m_constants_names.push_back(name);
     Lexer::m_constants.insert(std::pair<std::string, double>(name,value));
     std::sort(m_constants_names.begin(), m_constants_names.end(),
-              [&](const std::string name_1, const std::string name_2)
+              [](const std::string &name_1, const std::string &name_2)
               {
                   return name_1.size()<name_2.size();
               }
@@ -299,7 +310,7 @@ bool Lexer::AddFunction(std::string name, lexer_function_t fn)
     m_functions_names.push_back(name);
     Lexer::m_functions.insert(std::pair<std::string, lexer_function_t>(name,fn));
     std::sort(m_functions_names.begin(), m_functions_names.end(),
-              [&](const std::string name_1, const std::string name_2)
+              [](const std::string &name_1, const std::string &name_2)
               {
                   return name_1.size()<name_2.size();
               }

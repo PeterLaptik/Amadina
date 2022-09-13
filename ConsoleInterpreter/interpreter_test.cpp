@@ -208,7 +208,11 @@ void test_expressions_with_functions_evaluations()
 void test_interpreter()
 {
     Interpreter interpreter;
-    interpreter.ParseExpression("   print \"xyz abc + \" hghg \"j h\" \"kk l\" kj 1+4,2+3,10/5+3" );
+    try{
+        interpreter.ParseExpression("   pRiNt \"xyz abc + \" hghg \"j h\" \"kk l\" 1+sqrt(32/2) 1+4 , 2+2 , 10/5+3 [2.3, 5+1, sqrt(2*2)] abc" );
+    } catch (const std::exception &e){
+        std::cout << e.what() << std::endl;
+    }
 //    try
 //    {
 //        interpreter.ParseExpression(" line [10,10] x \t20 , [20+8/2] 255.4 10");
