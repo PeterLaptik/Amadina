@@ -15,9 +15,10 @@ namespace cad
             TOKEN_STRING
         };
 
-        class Token
+        class Token final
         {
             public:
+                Token() = delete;
                 Token(const std::string &value, TokenType type);
                 Token(std::string &&value, TokenType type);
                 ~Token(void);
