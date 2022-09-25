@@ -5,7 +5,7 @@
 
 wxBitmap create_image(const unsigned char *data, int size);
 
-wxBitmap modeller::art::get_icon(Icons icon)
+wxBitmap modeller::art::get_icon(Icon icon)
 {
     switch(icon)
     {

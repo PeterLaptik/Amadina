@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ConsoleInterpreter" />
+		<Option pch_mode="2" />
+		<Option compiler="msvc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/ConsoleInterpreter" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="msvc" />
+				<Compiler>
+					<Add option="/MDd" />
+					<Add option="/Zi" />
+					<Add option="/FS" />
+					<Add option="/D_DEBUG" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="/debug" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/ConsoleInterpreter" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="msvc" />
+				<Compiler>
+					<Add option="/Ox" />
+					<Add option="/DNDEBUG" />
+					<Add directory="include" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="/W3" />
+		</Compiler>
+		<Unit filename="include/history.h" />
+		<Unit filename="include/interpreter.h" />
+		<Unit filename="include/lexer.h" />
+		<Unit filename="include/lexer_math_functions.h" />
+		<Unit filename="include/token.h" />
+		<Unit filename="interpreter_test.cpp" />
+		<Unit filename="src/interpreter.cpp" />
+		<Unit filename="src/lexer.cpp" />
+		<Unit filename="src/lexer_math_functions.cpp" />
+		<Unit filename="src/token.cpp" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

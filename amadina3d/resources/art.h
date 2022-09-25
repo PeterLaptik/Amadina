@@ -6,7 +6,7 @@ class wxBitmap;
 namespace modeller {
     namespace art {
 
-        enum Icons
+        enum Icon
         {
             ICO_VIEW_TOP,
             ICO_VIEW_LEFT,
@@ -17,7 +17,7 @@ namespace modeller {
             ICO_VIEW_ISO
         };
 
-        wxBitmap get_icon(Icons icon);
+        wxBitmap get_icon(Icon icon);
 
     }
 }

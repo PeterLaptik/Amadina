@@ -1,6 +1,6 @@
 #include "include/lexer.h"
 #include "include/interpreter.h"
-
+#include "include/history.h"
 #include <iostream>
 #include <map>
 #include <cfloat>
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     //test_expressions_with_functions_evaluations();
 
     std::cout << std::endl << "Testing... Interpreter parsing." << std::endl;
-    test_interpreter();
+    //test_interpreter();
 
     std::cout << std::endl;
     std::cout << "*********************************" << std::endl;
