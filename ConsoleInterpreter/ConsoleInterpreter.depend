@@ -1,0 +1,59 @@
+# depslib dependency file v1.0
+1663100315 source:c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\interpreter_test.cpp
+	"include/lexer.h"
+	"include/interpreter.h"
+	"include/history.h"
+	<iostream>
+	<map>
+	<cfloat>
+	<assert.h>
+	<limits>
+
+1662753377 c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\include\lexer.h
+	<string>
+	<vector>
+	<map>
+	"lexer_math_functions.h"
+
+1663014914 c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\include\interpreter.h
+	"lexer.h"
+	"token.h"
+	<vector>
+
+1663015198 source:c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\src\interpreter.cpp
+	"../include/interpreter.h"
+	<sstream>
+	<algorithm>
+	<iostream>
+
+1663013340 source:c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\src\lexer.cpp
+	"../include/lexer.h"
+	<sstream>
+	<memory>
+	<iostream>
+	<algorithm>
+	<cctype>
+
+1663013082 source:c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\src\token.cpp
+	"token.h"
+
+1663013073 c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\include\token.h
+	<string>
+
+1662494473 c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\include\lexer_functions.h
+
+1662493003 source:c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\src\lexer_functions.cpp
+	<math.h>
+	"../include/lexer_functions.h"
+	"../include/lexer.h"
+
+1662925022 c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\include\lexer_math_functions.h
+
+1662924893 source:c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\src\lexer_math_functions.cpp
+	"../include/lexer_math_functions.h"
+	"../include/lexer.h"
+	<math.h>
+
+1663100606 c:\users\petruccio\documents\c_projects\amadina\consoleinterpreter\include\history.h
+	<vector>
+

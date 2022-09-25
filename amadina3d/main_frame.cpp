@@ -1,16 +1,20 @@
 #include "main_frame.h"
+#include "wxmodeller3d.h"
 #include "resources/art.h"
-#include "classes/include/wxoccpanel.h"
+#include "wxoccpanel.h"
 #include <wx/artprov.h>
+#include <wx/treectrl.h>
 #include <wx/ribbon/art.h>
 #include <wx/ribbon/bar.h>
 #include <wx/ribbon/buttonbar.h>
 
-using modeller::art::Icons;
+using modeller::art::Icon;
 using modeller::art::get_icon;
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_PAINT(MainFrame::OnPaint)
+    EVT_RIBBONBUTTONBAR_CLICKED(wxID_ANY, MainFrame::OnButtonClicked)
+    //EVT_RIBBONBAR_TAB_LEFT_DCLICK(wxID_ANY, MainFrame::OnButtonClicked)
 wxEND_EVENT_TABLE()
 
 
@@ -57,7 +61,8 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 	m_mgr.Update();
 	this->Centre(wxBOTH);
 
-	m_notebook->AddPage(new wxOccPanel(this), "test");
+	m_modeller = new wxModeller3D(this);
+	m_notebook->AddPage(m_modeller, "test");
 }
 
 
@@ -87,10 +92,17 @@ void MainFrame::RibbonInit()
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE), wxEmptyString);
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save As"), wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS), wxEmptyString);
 
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Top"), get_icon(Icons::ICO_VIEW_TOP), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Left"), get_icon(Icons::ICO_VIEW_LEFT), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Front"), get_icon(Icons::ICO_VIEW_FRONT), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Bottom"), get_icon(Icons::ICO_VIEW_BOTTOM), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Right"), get_icon(Icons::ICO_VIEW_RIGHT), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Back"), get_icon(Icons::ICO_VIEW_BACK), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Top"), get_icon(Icon::ICO_VIEW_LEFT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Left"), get_icon(Icon::ICO_VIEW_LEFT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Front"), get_icon(Icon::ICO_VIEW_FRONT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Bottom"), get_icon(Icon::ICO_VIEW_BOTTOM), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Right"), get_icon(Icon::ICO_VIEW_RIGHT), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Back"), get_icon(Icon::ICO_VIEW_BACK), wxEmptyString);
+}
+
+#include <wx/msgdlg.h>
+void MainFrame::OnButtonClicked(wxRibbonButtonBarEvent &event)
+{
+    //wxMessageBox("test");
+    m_modeller->Test();
 }
