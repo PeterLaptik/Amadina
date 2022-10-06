@@ -16,7 +16,8 @@ namespace modeller {
             ICO_VIEW_RIGHT,
             ICO_VIEW_FRONT,
             ICO_VIEW_BACK,
-            ICO_VIEW_ISO
+            ICO_VIEW_ISO,
+            ICO_SKETCH_MODE
         };
 
         wxBitmap get_icon(Icon icon);

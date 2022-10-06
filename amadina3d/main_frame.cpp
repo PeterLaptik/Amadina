@@ -75,7 +75,7 @@ MainFrame::~MainFrame()
 void MainFrame::RibbonInit()
 {
     wxRibbonPage *m_ribbonPage6 = new wxRibbonPage(m_ribbon, wxID_ANY, wxT("Main"), wxArtProvider::GetBitmap(wxART_FILE_OPEN), 0);
-    new wxRibbonPage(m_ribbon, wxID_ANY, wxT("Drawing"), wxArtProvider::GetBitmap(wxART_FILE_OPEN) , 0);
+    wxRibbonPage *m_ribbon_drawing = new wxRibbonPage(m_ribbon, wxID_ANY, wxT("Drawing"), wxArtProvider::GetBitmap(wxART_FILE_OPEN) , 0);
     wxRibbonPanel *m_ribbonPanel5 = new wxRibbonPanel(m_ribbonPage6, wxID_ANY, wxT("File") , wxNullBitmap ,
                                                       wxDefaultPosition, wxDefaultSize,
                                                       wxRIBBON_PANEL_DEFAULT_STYLE | wxRIBBON_PANEL_NO_AUTO_MINIMISE);
@@ -98,6 +98,8 @@ void MainFrame::RibbonInit()
     m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Bottom"), get_icon(Icon::ICO_VIEW_BOTTOM), wxEmptyString);
     m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Right"), get_icon(Icon::ICO_VIEW_RIGHT), wxEmptyString);
     m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Back"), get_icon(Icon::ICO_VIEW_BACK), wxEmptyString);
+
+    m_ribbonButtonBar6->AddToggleButton(wxID_ANY, wxT("Sketch"), get_icon(Icon::ICO_SKETCH_MODE), wxEmptyString);
 }
 
 #include <wx/msgdlg.h>

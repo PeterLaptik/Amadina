@@ -22,6 +22,8 @@ wxBitmap modeller::art::get_icon(Icon icon)
             return create_image(cube_top_ico, cube_top_ico_size);
         case ICO_VIEW_BOTTOM:
             return create_image(cube_bottom_ico, cube_bottom_ico_size);
+        case ICO_SKETCH_MODE:
+            return create_image(sketch_mode_ico, sketch_mode_ico_size);
     }
     return wxArtProvider::GetBitmap(wxART_QUESTION);
 }
