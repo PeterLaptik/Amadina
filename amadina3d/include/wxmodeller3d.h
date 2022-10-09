@@ -1,12 +1,16 @@
 #ifndef WXMODELLER3D_H
 #define WXMODELLER3D_H
 
+#include "context.h"
 #include <wx/panel.h>
+#include <memory>
 
 class wxTreeCtrl;
 class wxOccPanel;
 class wxBoxSizer;
 class wxSplitterWindow;
+
+using cad::modeller::Context;
 
 ///\brief Composite widget for interactive modelling
 class wxModeller3D: public wxPanel
@@ -21,9 +25,12 @@ class wxModeller3D: public wxPanel
 
         virtual ~wxModeller3D();
 
+        Context* GetContext(void) const;
+
         void Test(void);
 
     private:
+        std::unique_ptr<Context> m_context;
         wxTreeCtrl *m_model_tree;
         wxOccPanel *m_occpanel;
         wxBoxSizer *m_sizer;

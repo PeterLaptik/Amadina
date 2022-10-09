@@ -2,6 +2,7 @@
 #define WXOCCPANEL_H
 
 #include "../include/objectpool.h"
+#include "screen_modes.h"
 #include <wx/panel.h>
 #include <AIS_ViewController.hxx>
 //#include <BRepPrimAPI_MakeBox.hxx>
@@ -15,6 +16,8 @@
 #include <AIS_Shape.hxx>
 #include <AIS_ViewCube.hxx>
 #include <AIS_Line.hxx>
+
+using cad::modeller::ScreenMode;
 
 class wxOccPanel: public wxPanel, public AIS_ViewController
 {
@@ -38,6 +41,19 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
         bool IsGridShown(void) const;
         void DeleteSelected(void);
         void Test(void);
+
+        void SetScreenMode(ScreenMode mode);
+        ScreenMode GetScreenMode(void) const;
+
+        Handle(V3d_View) GetView(void)
+        {
+            return m_view;
+        }
+
+        Handle(AIS_ViewCube) GetViewCube(void)
+        {
+            return m_view_cube;
+        }
 
     protected:
         ///
@@ -75,6 +91,8 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
 
         ObjectPool m_object_pool;
         Handle(AIS_Shape) aisthing;
+
+        ScreenMode m_mode;
 
     DECLARE_EVENT_TABLE()
 };

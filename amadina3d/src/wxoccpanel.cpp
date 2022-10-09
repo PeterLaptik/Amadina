@@ -32,7 +32,8 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
       m_scale_factor(WHEEL_DELTA),
       m_mouse_lb_clicked(false),
       m_last_x(-1), m_last_y(-1),
-      m_panel_name(DEFAULT_NAME)
+      m_panel_name(DEFAULT_NAME),
+      m_mode(ScreenMode::SCREEN_MODELLING)
 {
     HWND wnd = this->GetHandle();
     m_display_connection = new Aspect_DisplayConnection();
@@ -323,4 +324,14 @@ Aspect_VKeyFlags wxOccPanel::GetPressedKey() const
 bool wxOccPanel::IsGridShown() const
 {
     return m_viewer->IsGridActive();
+}
+
+void wxOccPanel::SetScreenMode(ScreenMode mode)
+{
+    m_mode = mode;
+}
+
+ScreenMode wxOccPanel::GetScreenMode(void) const
+{
+    return m_mode;
 }

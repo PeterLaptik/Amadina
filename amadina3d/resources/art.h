@@ -10,6 +10,7 @@ namespace modeller {
     namespace art {
         enum Icon
         {
+            ICO_EMPTY,
             ICO_VIEW_TOP,
             ICO_VIEW_LEFT,
             ICO_VIEW_BOTTOM,
@@ -17,7 +18,9 @@ namespace modeller {
             ICO_VIEW_FRONT,
             ICO_VIEW_BACK,
             ICO_VIEW_ISO,
-            ICO_SKETCH_MODE
+            ICO_SKETCH_MODE,
+            ICO_SKETCH_POINT,
+            ICO_SKETCH_LINE,
         };
 
         wxBitmap get_icon(Icon icon);

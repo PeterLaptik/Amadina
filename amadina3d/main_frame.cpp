@@ -1,13 +1,16 @@
 #include "main_frame.h"
 #include "wxmodeller3d.h"
 #include "resources/art.h"
+#include "commands_names.h"
 #include "wxoccpanel.h"
+#include <wx/msgdlg.h>
 #include <wx/artprov.h>
 #include <wx/treectrl.h>
 #include <wx/ribbon/art.h>
 #include <wx/ribbon/bar.h>
 #include <wx/ribbon/buttonbar.h>
 
+using namespace cad::modeller::command::names;
 using modeller::art::Icon;
 using modeller::art::get_icon;
 
@@ -22,7 +25,8 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
           const wxPoint& pos, const wxSize& size, long style)
           : wxFrame(parent, id, title, pos, size, style)
 {
-    this->SetSizeHints(wxDefaultSize, wxDefaultSize);
+    this->SetSizeHints(1300, 850);
+    this->SetPosition(wxPoint(0,0));
     m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
 
@@ -92,19 +96,63 @@ void MainFrame::RibbonInit()
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE), wxEmptyString);
     m_ribbonButtonBar5->AddButton(wxID_ANY, wxT("Save As"), wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS), wxEmptyString);
 
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Top"), get_icon(Icon::ICO_VIEW_LEFT), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Left"), get_icon(Icon::ICO_VIEW_LEFT), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Front"), get_icon(Icon::ICO_VIEW_FRONT), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Bottom"), get_icon(Icon::ICO_VIEW_BOTTOM), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Right"), get_icon(Icon::ICO_VIEW_RIGHT), wxEmptyString);
-    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Back"), get_icon(Icon::ICO_VIEW_BACK), wxEmptyString);
+    AddButtonCommand(m_ribbonButtonBar6, wxT("Top"), get_icon(Icon::ICO_VIEW_TOP), wxEmptyString, CMD_VIEW_TOP);
+    AddButtonCommand(m_ribbonButtonBar6, wxT("Left"), get_icon(Icon::ICO_VIEW_LEFT), wxEmptyString, CMD_VIEW_LEFT);
+    AddButtonCommand(m_ribbonButtonBar6, wxT("Front"), get_icon(Icon::ICO_VIEW_FRONT), wxEmptyString, CMD_VIEW_FRONT);
+    AddButtonCommand(m_ribbonButtonBar6, wxT("Bottom"), get_icon(Icon::ICO_VIEW_BOTTOM), wxEmptyString, CMD_VIEW_BOTTOM);
+    AddButtonCommand(m_ribbonButtonBar6, wxT("Right"), get_icon(Icon::ICO_VIEW_RIGHT), wxEmptyString, CMD_VIEW_RIGHT);
+    AddButtonCommand(m_ribbonButtonBar6, wxT("Back"), get_icon(Icon::ICO_VIEW_BACK), wxEmptyString, CMD_VIEW_BACK);
 
-    m_ribbonButtonBar6->AddToggleButton(wxID_ANY, wxT("Sketch"), get_icon(Icon::ICO_SKETCH_MODE), wxEmptyString);
+    AddSystemCommand(m_ribbonButtonBar6, wxT("Sketch"), get_icon(Icon::ICO_SKETCH_MODE),
+                     wxEmptyString, true, &MainFrame::SketchModeHandler);
+
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Point"), get_icon(Icon::ICO_EMPTY), wxEmptyString);
+    m_ribbonButtonBar6->AddButton(wxID_ANY, wxT("Line"), get_icon(Icon::ICO_SKETCH_LINE), wxEmptyString);
 }
 
-#include <wx/msgdlg.h>
+void MainFrame::AddButtonCommand(wxRibbonButtonBar *bar, const wxString &label,
+                              const wxBitmap &bitmap, const wxString &help,
+                              const std::string &command_name)
+{
+    wxWindowID button_id = wxNewId();
+    bar->AddButton(button_id, label, bitmap, wxEmptyString);
+    m_commands_buttons_map.insert(std::pair<wxWindowID, std::string>(button_id, command_name));
+}
+
+
+
+void MainFrame::AddSystemCommand(wxRibbonButtonBar *bar, const wxString &label,
+                              const wxBitmap &bitmap, const wxString &help,
+                              bool is_toggle, CommandHandler handler)
+{
+    wxWindowID button_id = wxNewId();
+    is_toggle ? bar->AddToggleButton(button_id, label, bitmap, wxEmptyString)
+                : bar->AddButton(button_id, label, bitmap, wxEmptyString);
+    m_system_commands_map.insert(std::pair<wxWindowID,CommandHandler>(button_id, handler));
+}
+
 void MainFrame::OnButtonClicked(wxRibbonButtonBarEvent &event)
 {
-    //wxMessageBox("test");
-    m_modeller->Test();
+    wxWindowID id = event.GetId();
+    // Check for a system command
+    auto it_sys = m_system_commands_map.find(id);
+    if(it_sys!=m_system_commands_map.end())
+    {
+        CommandHandler meth = it_sys->second;
+        (this->*meth)(id);
+        return;
+    }
+    // Check for a regular command
+    // Find command name
+    auto it = m_commands_buttons_map.find(id);
+    if(it==m_commands_buttons_map.end())
+        return;
+    // Try to run command in the context
+    Context *ctx = m_modeller->GetContext();
+    ctx->RunCommand(it->second);
+}
+
+void MainFrame::SketchModeHandler(wxWindowID button_id)
+{
+    wxMessageBox("OK");
 }
