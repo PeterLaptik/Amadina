@@ -1,6 +1,7 @@
 #include "wxmodeller3d.h"
 #include "wxoccpanel.h"
 #include "context.h"
+#include "wxpointinput.h"
 #include <wx/sizer.h>
 #include <wx/treectrl.h>
 #include <wx/splitter.h>
@@ -23,7 +24,7 @@ wxModeller3D::wxModeller3D(wxWindow *parent,
     m_occpanel = new wxOccPanel(m_splitter);
     m_splitter->SplitVertically(m_model_tree, m_occpanel, 342);
 
-    m_context = std::unique_ptr<Context>(new Context(m_occpanel->GetView(), m_occpanel->GetViewCube()));
+    m_context = std::unique_ptr<Context>(new Context(m_occpanel));
 
 	this->SetSizer(m_sizer);
 }
@@ -38,7 +39,8 @@ Context* wxModeller3D::GetContext() const
 
 void wxModeller3D::Test()
 {
-    Handle(V3d_View) m_view = m_occpanel->GetView();
-    m_view->SetProj(V3d_Xpos);
+//    Handle(V3d_View) m_view = m_occpanel->GetView();
+//    m_view->SetProj(V3d_Xpos);
     //m_occpanel->Test();
+    m_occpanel->SetInterractor(new wxPointInput(m_occpanel));
 }

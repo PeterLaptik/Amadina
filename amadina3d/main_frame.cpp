@@ -2,6 +2,7 @@
 #include "wxmodeller3d.h"
 #include "resources/art.h"
 #include "commands_names.h"
+#include "wxpointinput.h"
 #include "wxoccpanel.h"
 #include <wx/msgdlg.h>
 #include <wx/artprov.h>
@@ -154,5 +155,13 @@ void MainFrame::OnButtonClicked(wxRibbonButtonBarEvent &event)
 
 void MainFrame::SketchModeHandler(wxWindowID button_id)
 {
-    wxMessageBox("OK");
+    Context *ctx = m_modeller->GetContext();
+
+    Handle(AIS_ViewCube) view_cube = ctx->GetViewCube();
+    Handle(AIS_ViewCubeOwner) click_emulator(new AIS_ViewCubeOwner(view_cube, V3d_Zpos));
+    view_cube->HandleClick(click_emulator);
+
+    ctx->SetScreenMode(ScreenMode::SCREEN_SKETCHING);
+    m_modeller->Test();
+    //wxMessageBox("OK");
 }

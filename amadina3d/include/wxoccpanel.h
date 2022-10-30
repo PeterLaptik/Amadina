@@ -45,6 +45,20 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
         void SetScreenMode(ScreenMode mode);
         ScreenMode GetScreenMode(void) const;
 
+        void SetInterractor(wxPanel *interractor)
+        {
+            if(m_interractor!=nullptr)
+                RemoveInterractor();
+
+            m_interractor = interractor;
+        }
+
+        void RemoveInterractor(void)
+        {
+            delete m_interractor;
+            m_interractor = nullptr;
+        }
+
         Handle(V3d_View) GetView(void)
         {
             return m_view;
@@ -72,6 +86,7 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
         inline Aspect_VKeyFlags GetPressedKey(void) const;
         inline void CreateViewCube(void);
         inline gp_Pnt GetIntersectionPoint(int mouse_x, int mouse_y);
+        void MoveInterractor(wxMouseEvent &event);
 
         gp_Pln m_plane;
         Handle(AIS_Line) tmp_line;
@@ -93,6 +108,7 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
         Handle(AIS_Shape) aisthing;
 
         ScreenMode m_mode;
+        wxPanel *m_interractor;
 
     DECLARE_EVENT_TABLE()
 };

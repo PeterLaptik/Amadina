@@ -6,8 +6,10 @@ using Context = cad::modeller::Context;
 using CommandDispatcher = cad::modeller::CommandDispatcher;
 using CommandAbstract = cad::modeller::command::CommandAbstract;
 
-Context::Context(Handle(V3d_View) view, Handle(AIS_ViewCube) view_cube)
-    : m_view(view), m_view_cube(view_cube)
+Context::Context(wxOccPanel *panel)
+    : m_panel(panel),
+    m_view(panel->GetView()),
+    m_view_cube(panel->GetViewCube())
 { }
 
 Context::~Context()
@@ -22,6 +24,11 @@ void Context::RunCommand(const std::string &cmd_name)
 
     cmd->Execute();
     delete cmd;
+}
+
+void Context::SetScreenMode(ScreenMode mode)
+{
+    m_panel->SetScreenMode(mode);
 }
 
 Handle(V3d_View) Context::GetView()

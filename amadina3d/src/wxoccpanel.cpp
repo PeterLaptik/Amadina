@@ -33,7 +33,8 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
       m_mouse_lb_clicked(false),
       m_last_x(-1), m_last_y(-1),
       m_panel_name(DEFAULT_NAME),
-      m_mode(ScreenMode::SCREEN_MODELLING)
+      m_mode(ScreenMode::SCREEN_MODELLING),
+      m_interractor(nullptr)
 {
     HWND wnd = this->GetHandle();
     m_display_connection = new Aspect_DisplayConnection();
@@ -74,7 +75,7 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
 
 wxOccPanel::~wxOccPanel()
 {
-
+    delete m_interractor;
 }
 
 void wxOccPanel::AddShape(Handle(AIS_InteractiveObject) shape)
@@ -267,6 +268,15 @@ void wxOccPanel::OnMouseMove(wxMouseEvent &event)
     tmp_line = new AIS_Line(cpoint1, cpoint2);
     AddShape(tmp_line);
 
+    MoveInterractor(event);
+}
+
+void wxOccPanel::MoveInterractor(wxMouseEvent &event)
+{
+    if(m_interractor==nullptr)
+        return;
+
+    m_interractor->SetPosition(wxPoint(event.GetX(), event.GetY()));
 }
 
 gp_Pnt wxOccPanel::GetIntersectionPoint(int mouse_x, int mouse_y)
@@ -329,6 +339,8 @@ bool wxOccPanel::IsGridShown() const
 void wxOccPanel::SetScreenMode(ScreenMode mode)
 {
     m_mode = mode;
+    // Ignore rotation on sketch mode
+    SetAllowRotation(m_mode!=ScreenMode::SCREEN_SKETCHING);
 }
 
 ScreenMode wxOccPanel::GetScreenMode(void) const

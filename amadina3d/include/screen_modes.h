@@ -8,7 +8,7 @@ namespace cad
         enum ScreenMode
         {
             SCREEN_MODELLING,
-            SCREEN_SCETCHING
+            SCREEN_SKETCHING
         };
     }
 }
