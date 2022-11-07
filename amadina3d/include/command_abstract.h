@@ -12,9 +12,6 @@ namespace cad
             class CommandAbstract
             {
                 public:
-                    virtual ~CommandAbstract(void)
-                    {}
-
                     virtual void Execute() = 0;
                     virtual CommandAbstract* Clone(Context *context) = 0;
             };

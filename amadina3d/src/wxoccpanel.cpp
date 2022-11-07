@@ -34,7 +34,7 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
       m_last_x(-1), m_last_y(-1),
       m_panel_name(DEFAULT_NAME),
       m_mode(ScreenMode::SCREEN_MODELLING),
-      m_interractor(nullptr)
+      m_floating_input(nullptr)
 {
     HWND wnd = this->GetHandle();
     m_display_connection = new Aspect_DisplayConnection();
@@ -75,7 +75,7 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
 
 wxOccPanel::~wxOccPanel()
 {
-    delete m_interractor;
+    delete m_floating_input;
 }
 
 void wxOccPanel::AddShape(Handle(AIS_InteractiveObject) shape)
@@ -273,10 +273,11 @@ void wxOccPanel::OnMouseMove(wxMouseEvent &event)
 
 void wxOccPanel::MoveInterractor(wxMouseEvent &event)
 {
-    if(m_interractor==nullptr)
+    if(m_floating_input==nullptr)
         return;
 
-    m_interractor->SetPosition(wxPoint(event.GetX(), event.GetY()));
+    m_floating_input->MoveTo(event.GetX(), event.GetY());
+    Update();
 }
 
 gp_Pnt wxOccPanel::GetIntersectionPoint(int mouse_x, int mouse_y)

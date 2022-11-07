@@ -2,6 +2,7 @@
 #define WXOCCPANEL_H
 
 #include "../include/objectpool.h"
+#include "floating_inputbox.h"
 #include "screen_modes.h"
 #include <wx/panel.h>
 #include <AIS_ViewController.hxx>
@@ -45,18 +46,21 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
         void SetScreenMode(ScreenMode mode);
         ScreenMode GetScreenMode(void) const;
 
-        void SetInterractor(wxPanel *interractor)
+        void SetInterractor(FloatingInputBox *floating_input)
         {
-            if(m_interractor!=nullptr)
+            if(m_floating_input!=nullptr)
                 RemoveInterractor();
 
-            m_interractor = interractor;
+            m_floating_input = floating_input;
         }
 
         void RemoveInterractor(void)
         {
-            delete m_interractor;
-            m_interractor = nullptr;
+            if(m_floating_input==nullptr)
+                return;
+
+            delete m_floating_input;
+            m_floating_input = nullptr;
         }
 
         Handle(V3d_View) GetView(void)
@@ -108,7 +112,7 @@ class wxOccPanel: public wxPanel, public AIS_ViewController
         Handle(AIS_Shape) aisthing;
 
         ScreenMode m_mode;
-        wxPanel *m_interractor;
+        FloatingInputBox *m_floating_input;
 
     DECLARE_EVENT_TABLE()
 };

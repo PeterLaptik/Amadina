@@ -3,14 +3,8 @@
 #include <wx/textctrl.h>
 #include <wx/sizer.h>
 
-wxPointInput::wxPointInput(wxWindow *parent,
-                           wxWindowID id,
-                           const wxPoint &pos,
-                           const wxSize &size,
-                           long style,
-                           const wxString &name)
-        : wxPanel(parent, id, pos, size, style, name),
-            m_last_x(-1), m_last_y(-1)
+wxPointInput::wxPointInput(wxWindow *parent)
+        : FloatingInputBox(parent, wxID_ANY, wxDefaultPosition, wxSize(179,45), wxTAB_TRAVERSAL, wxEmptyString)
 {
     wxBoxSizer* v_sizer;
 	v_sizer = new wxBoxSizer(wxVERTICAL);

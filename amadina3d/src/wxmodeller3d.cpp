@@ -40,7 +40,7 @@ Context* wxModeller3D::GetContext() const
 void wxModeller3D::Test()
 {
 //    Handle(V3d_View) m_view = m_occpanel->GetView();
-//    m_view->SetProj(V3d_Xpos);
+//    m_view->SetProj(V3d_Zpos);
     //m_occpanel->Test();
     m_occpanel->SetInterractor(new wxPointInput(m_occpanel));
 }
