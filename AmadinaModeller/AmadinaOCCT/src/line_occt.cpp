@@ -1,16 +1,15 @@
-#include "point.h"
 #include "line_occt.h"
+#include "point.h"
 #include "occt_canvas.h"
 #include <Geom_CartesianPoint.hxx>
 #include <GC_MakeSegment.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <BRepBuilderAPI_MakeWire.hxx>
 
-using cad::modeller::shapes2D::Point;
+using Point = cad::modeller::shapes2D::Point;
 
 void cad::modeller::occt::shapes2D::LineOcct::Draw(AbstractCanvas &cnv)
 {
-	using cad::modeller::shapes2D::Point;
 	Point pt1 = GetFirstPoint();
 	Handle(Geom_Point) c_point_1 = new Geom_CartesianPoint(pt1.GetX(), pt1.GetY(), pt1.GetZ());
 	Point pt2 = GetSecondPoint();
@@ -20,7 +19,7 @@ void cad::modeller::occt::shapes2D::LineOcct::Draw(AbstractCanvas &cnv)
 	c.AddShape(line);
 }
 
-void cad::modeller::occt::shapes2D::LineOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_TrimmedCurve)> &container)
+void cad::modeller::occt::shapes2D::LineOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container)
 {
 	const Point &point_1 = GetFirstPoint();
 	const Point &point_2 = GetSecondPoint();

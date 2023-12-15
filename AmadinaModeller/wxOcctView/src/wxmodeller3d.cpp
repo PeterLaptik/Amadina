@@ -8,8 +8,10 @@
 #include <wx/splitter.h>
 
 #include "sketch_occt.h"
+#include "op_extrude_occt.h"
 
 using SketchOcct = cad::modeller::occt::SketchOcct;
+using OpExtrudeOcct = cad::modeller::occt::operations::OpExtrudeOcct;
 
 wxModeller3D::wxModeller3D(wxWindow *parent,
                        wxWindowID winid,
@@ -56,11 +58,13 @@ Context* wxModeller3D::GetContext() const
 #include "line_occt.h"
 #include "circle_occt.h"
 #include "sketch.h"
+#include "direction_vector.h"
 void wxModeller3D::Test()
 {
     using cad::modeller::shapes2D::Point;
     using cad::modeller::shapes2D::Line;
     using cad::modeller::shapes2D::Direction;
+    using cad::modeller::geometry::DirectionVector;
     using cad::modeller::occt::shapes2D::PointOcct;
     using cad::modeller::occt::shapes2D::LineOcct;
     using cad::modeller::occt::shapes2D::CircleOcct;
@@ -77,20 +81,32 @@ void wxModeller3D::Test()
     sketch->AppendObject(new PointOcct(4, 4));
     sketch->AppendObject(new PointOcct(3, 3));
     
-    /*
-    Sketch *sketch_2 = new Sketch("Test_2");
+    
+    SketchOcct *sketch_2 = new SketchOcct("Test_2");
 
     Point c_c(0, 0, 50);
-    OcctCircle *c_obj = new OcctCircle(c_c, 150.0);
+    CircleOcct *circle_obj = new CircleOcct(c_c, 150.0);
     Direction angles(1, 0, 0);
-    c_obj->SetDirection(angles);
-    sketch_2->AppendShape(c_obj);
-    */
+    circle_obj->SetDirection(angles);
+    sketch_2->SetDirectionVector(DirectionVector(c_c, angles));
+    sketch_2->AppendObject(circle_obj);
+    
+
     // Sketch circle
     // 
     //sketch->AppendShape(new OcctLine(pt1, pt2));
 
+    OpExtrudeOcct *op_extrude = new OpExtrudeOcct(sketch, 50);
+    OpExtrudeOcct *op_extrude2 = new OpExtrudeOcct(sketch_2, 50);
+
     m_model_tree->AppendObject(sketch);
+    m_model_tree->AppendObject(op_extrude);
+    m_model_tree->AppendObject(sketch_2);
+    m_model_tree->AppendObject(op_extrude2);
+
+
+    
+
     //m_model_tree->AppendObject(sketch_2);
 
     m_model_tree->RedrawTree(static_cast<AbstractCanvas&>(*m_occpanel));

@@ -12,7 +12,6 @@ namespace cad
 	namespace modeller
 	{
 		///\brief Marker-interface for widgets able to show geometrical entities.
-		/// Kernel-independent.
 		///\see OcctCanvas implementation as an example
 		class DLL_EXPORT AbstractCanvas
 		{

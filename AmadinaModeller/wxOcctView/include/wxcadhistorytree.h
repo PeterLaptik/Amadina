@@ -4,6 +4,7 @@
 #include "abstract_shape.h"
 #include "abstract_canvas.h"
 #include <wx/treectrl.h>
+#include <vector>
 #include <map>
 
 using cad::modeller::AbstractShape;

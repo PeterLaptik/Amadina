@@ -12,7 +12,7 @@ void cad::modeller::occt::shapes2D::PointOcct::Draw(AbstractCanvas &cnv)
 	canvas.AddShape(m_point);
 }
 
-void cad::modeller::occt::shapes2D::PointOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_TrimmedCurve)> &container)
+void cad::modeller::occt::shapes2D::PointOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container)
 {
 	// empty implementation
 }

@@ -22,7 +22,7 @@ namespace cad
 			using cad::modeller::shapes2D::Sketch;
 			using cad::modeller::geometry::DirectionVector;
 
-			///\brief An interface for OCCT-canvas implementation
+			///\brief Sketch draft assembled from 2D elements (e.g. points, lines, circles etc.)
 			class SketchOcct : public Sketch
 			{
 				public:
@@ -34,11 +34,14 @@ namespace cad
 
 					DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
 
+					DLL_EXPORT void SetDirectionVector(DirectionVector vector);
+
 					void GetShapes(std::vector<AbstractShape*> &receiver) const;
 
-				private:
-					void ExtractEdges(AbstractCanvas &cnv);
+					DLL_EXPORT DirectionVector GetDirectionVector() const;
 
+
+				private:
 					std::string m_name;
 					DirectionVector m_vector;
 					std::vector<std::unique_ptr<AbstractShape>> m_shapes;

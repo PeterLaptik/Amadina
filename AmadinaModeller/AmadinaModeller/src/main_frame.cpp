@@ -27,8 +27,8 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
           const wxPoint& pos, const wxSize& size, long style)
           : wxFrame(parent, id, title, pos, size, style)
 {
-    this->SetSizeHints(1300, 850);
-    this->SetPosition(wxPoint(0,0));
+    SetSizeHints(1300, 850);
+    SetPosition(wxPoint(0,0));
     m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
 

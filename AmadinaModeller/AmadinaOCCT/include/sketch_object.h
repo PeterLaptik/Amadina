@@ -2,7 +2,7 @@
 #define SKETCH_SHAPE_H
 
 #include <vector>
-#include <Geom_TrimmedCurve.hxx>
+#include <Geom_Curve.hxx>
 
 #ifdef _WINDLL
 	#define DLL_EXPORT __declspec(dllexport)
@@ -23,7 +23,7 @@ namespace cad
 					public:
 						virtual ~SketchObject() = default;
 
-						virtual void GetAisInteractiveObjects(std::vector<Handle(Geom_TrimmedCurve)> &container) = 0;
+						virtual void GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container) = 0;
 				};
 			}
 		}

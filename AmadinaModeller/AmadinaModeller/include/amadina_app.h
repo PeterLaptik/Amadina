@@ -6,7 +6,7 @@
 class AmadinaApp: public wxApp
 {
     public:
-        virtual bool OnInit();
+        bool OnInit() override;
 };
 
 #endif // AMADINA_APP_H_INCLUDED

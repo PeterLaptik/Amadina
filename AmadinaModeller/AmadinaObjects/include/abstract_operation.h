@@ -2,29 +2,33 @@
 #define ABSTRACT_OPERATION_H
 
 #include "abstract_shape.h"
+#include <vector>
 
 #ifdef _WINDLL
-	#define DLL_EXPORT __declspec(dllexport)
+#define DLL_EXPORT __declspec(dllexport)
 #else
-	#define DLL_EXPORT
+#define DLL_EXPORT
 #endif
 
 namespace cad
 {
 	namespace modeller
 	{
-		using cad::modeller::AbstractShape;
-
-		///\brief Abstract operation represents an interface for operation leading to creating solids or surfaces
-		class AbstractOperation: public AbstractShape
+		namespace operations
 		{
+			///\brief Represents basic operation and its result
+			class DLL_EXPORT AbstractOperation : public AbstractShape
+			{
 			public:
-				DLL_EXPORT AbstractOperation() = default;
+				AbstractOperation() = default;
 
-				DLL_EXPORT ~AbstractOperation() override = default;
+				~AbstractOperation() override = default;
 
+				virtual bool IsValid(void) = 0;
 
-		};
+				virtual void Purge(const std::vector<AbstractShape*>&) = 0;
+			};
+		}
 	}
 }
 

@@ -30,7 +30,7 @@ namespace cad
 
 						DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
 
-						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(Geom_TrimmedCurve)> &container) final;
+						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container) final;
 
 					private:
 						Handle(AIS_Line) m_line = nullptr;

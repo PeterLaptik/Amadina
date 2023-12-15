@@ -6,7 +6,7 @@ IMPLEMENT_APP(AmadinaApp);
 bool AmadinaApp::OnInit()
 {
     wxInitAllImageHandlers();
-    MainFrame* frame = new MainFrame(0);
+    MainFrame* frame = new MainFrame(nullptr);
     frame->Show();
     SetTopWindow(frame);
     return true;

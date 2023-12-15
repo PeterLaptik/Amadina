@@ -1,15 +1,18 @@
 #include "circle_occt.h"
+#include "point.h"
 #include "occt_canvas.h"
 #include <gp_Pnt.hxx>
 #include <gp_Circ.hxx>
 #include <Geom_Circle.hxx>
 #include <Geom_CartesianPoint.hxx>
+#include <GC_MakeCircle.hxx>
+
+using Point = cad::modeller::shapes2D::Point;
+using Point = cad::modeller::shapes2D::Point;
+using Direction = cad::modeller::shapes2D::Direction;
 
 void cad::modeller::occt::shapes2D::CircleOcct::Draw(AbstractCanvas &cnv)
 {
-	using cad::modeller::shapes2D::Point;
-	using cad::modeller::shapes2D::Direction;
-
 	OcctCanvas &canvas = static_cast<OcctCanvas &>(cnv);
 	Point center = GetCenter();
 	double radius = GetRadius();
@@ -25,7 +28,17 @@ void cad::modeller::occt::shapes2D::CircleOcct::Draw(AbstractCanvas &cnv)
 	canvas.AddShape(m_circle);
 }
 
-void cad::modeller::occt::shapes2D::CircleOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_TrimmedCurve)> &container)
+void cad::modeller::occt::shapes2D::CircleOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container)
 {
-	// empty implementation
+	double radius = GetRadius();
+
+	const Point &point_1 = GetCenter();
+	gp_Pnt gp_point(point_1.GetX(), point_1.GetY(), point_1.GetZ());
+
+	Direction dir = GetDirection();
+	gp_Dir gp_dir(dir.GetX(), dir.GetY(), dir.GetZ());
+	gp_Ax1 gp_axis(gp_point, gp_dir);
+
+	Handle(Geom_Circle) segment = GC_MakeCircle(gp_axis, radius);
+	container.push_back(segment);
 }

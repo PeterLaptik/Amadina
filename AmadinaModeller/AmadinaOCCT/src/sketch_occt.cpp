@@ -1,11 +1,13 @@
-#include "abstract_shape.h"
 #include "sketch_occt.h"
+#include "abstract_shape.h"
 #include "sketch_object.h"
 #include "occt_canvas.h"
 #include <algorithm>
 
 using SketchObject = cad::modeller::occt::shapes2D::SketchObject;
 using Direction = cad::modeller::geometry::Direction;
+using DirectionVector = cad::modeller::geometry::DirectionVector;
+
 
 cad::modeller::occt::SketchOcct::SketchOcct(const std::string &name)
     : m_name(name)
@@ -24,15 +26,26 @@ void cad::modeller::occt::SketchOcct::Draw(AbstractCanvas &cnv)
 	};
 
 	std::for_each(m_shapes.begin(), m_shapes.end(), executor);
-	ExtractEdges(cnv);
 }
 
-void cad::modeller::occt::SketchOcct::GetShapes(std::vector<AbstractShape *> &receiver) const
+void cad::modeller::occt::SketchOcct::SetDirectionVector(DirectionVector vector)
+{
+	m_vector = vector;
+}
+
+void cad::modeller::occt::SketchOcct::GetShapes(std::vector<AbstractShape*> &receiver) const
 {
 	for(auto &entity: m_shapes)
 		receiver.push_back(entity.get());
 }
 
+DirectionVector cad::modeller::occt::SketchOcct::GetDirectionVector() const
+{
+	return m_vector;
+}
+
+// TODO Remove
+/*
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <BRepBuilderAPI_MakeWire.hxx>
 #include <TopoDS_Edge.hxx>
@@ -72,3 +85,4 @@ void cad::modeller::occt::SketchOcct::ExtractEdges(AbstractCanvas &cnv)
 	OcctCanvas &c = static_cast<OcctCanvas &>(cnv);
 	c.AddShape(shape);
 }
+*/
