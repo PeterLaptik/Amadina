@@ -2,7 +2,7 @@
 #define OCCT_POINT_H
 
 #include "point.h"
-#include "sketch_object.h"
+#include "occt_object_container.h"
 #include <AIS_Point.hxx>
 
 #ifdef _WINDLL
@@ -21,7 +21,7 @@ namespace cad
 			{
 				using cad::modeller::shapes2D::Point;
 
-				class PointOcct : public Point, public SketchObject
+				class PointOcct : public Point, public OcctObjectContainer
 				{
 					public:
 						using Point::Point;
@@ -30,7 +30,9 @@ namespace cad
 
 						DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
 
-						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container) final;
+						DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+
+						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
 
 					private:
 						Handle(AIS_Point) m_point = nullptr;

@@ -1,12 +1,17 @@
 #include "op_bool_fuse.h"
 
-using AbstractShape = cad::modeller::AbstractShape;
+using cad::modeller::AbstractShape;
+//using cad::modeller::ShapeIterator;
 
-cad::modeller::operations::OpBoolFuse::OpBoolFuse(std::vector<AbstractShape *> &&shapes)
-	: m_initial_shapes(std::move(shapes))
-{ }
-
-const std::vector<AbstractShape *>& cad::modeller::operations::OpBoolFuse::GetShapes() const
+void cad::modeller::operations::OpBoolFuse::AddShape(AbstractShape *shape)
 {
-	return m_initial_shapes;
+	// TODO check if exists
+	m_initial_shapes.push_back(shape);
 }
+
+/*
+ShapeIterator cad::modeller::operations::OpBoolFuse::GetShapes() const
+{
+	return ShapeIterator(m_initial_shapes);
+}
+*/

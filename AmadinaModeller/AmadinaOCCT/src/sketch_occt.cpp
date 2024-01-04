@@ -1,22 +1,18 @@
 #include "sketch_occt.h"
 #include "abstract_shape.h"
-#include "sketch_object.h"
+#include "occt_object_container.h"
 #include "occt_canvas.h"
 #include <algorithm>
 
-using SketchObject = cad::modeller::occt::shapes2D::SketchObject;
-using Direction = cad::modeller::geometry::Direction;
-using DirectionVector = cad::modeller::geometry::DirectionVector;
+using cad::modeller::occt::shapes2D::OcctObjectContainer;
+using cad::modeller::geometry::Direction;
+using cad::modeller::geometry::DirectionVector;
 
 
 cad::modeller::occt::SketchOcct::SketchOcct(const std::string &name)
     : m_name(name)
 { }
 
-void cad::modeller::occt::SketchOcct::AppendObject(AbstractShape *shape)
-{
-    m_shapes.emplace_back(shape);
-}
 
 void cad::modeller::occt::SketchOcct::Draw(AbstractCanvas &cnv)
 {
@@ -25,18 +21,14 @@ void cad::modeller::occt::SketchOcct::Draw(AbstractCanvas &cnv)
 		object->Draw(cnv);
 	};
 
-	std::for_each(m_shapes.begin(), m_shapes.end(), executor);
+	std::vector<AbstractShape*> shapes;
+	GetShapes(shapes);
+	std::for_each(shapes.begin(), shapes.end(), executor);
 }
 
 void cad::modeller::occt::SketchOcct::SetDirectionVector(DirectionVector vector)
 {
 	m_vector = vector;
-}
-
-void cad::modeller::occt::SketchOcct::GetShapes(std::vector<AbstractShape*> &receiver) const
-{
-	for(auto &entity: m_shapes)
-		receiver.push_back(entity.get());
 }
 
 DirectionVector cad::modeller::occt::SketchOcct::GetDirectionVector() const

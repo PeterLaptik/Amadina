@@ -1,7 +1,7 @@
 #include "circle.h"
 
-using Point = cad::modeller::shapes2D::Point;
-using Direction = cad::modeller::geometry::Direction;
+using cad::modeller::shapes2D::Point;
+using cad::modeller::geometry::Direction;
 
 cad::modeller::shapes2D::Circle::Circle(const Point &p, double radius)
 	: m_center(p), m_radius(radius)
@@ -39,9 +39,4 @@ const Point& cad::modeller::shapes2D::Circle::GetCenter() const
 double cad::modeller::shapes2D::Circle::GetRadius() const
 {
 	return m_radius;
-}
-
-void cad::modeller::shapes2D::Circle::Draw(AbstractCanvas & cnv)
-{
-	// no concrete canvas defined
 }

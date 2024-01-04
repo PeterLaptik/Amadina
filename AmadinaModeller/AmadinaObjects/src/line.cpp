@@ -1,6 +1,6 @@
 #include "line.h"
 
-using Point = cad::modeller::shapes2D::Point;
+using cad::modeller::shapes2D::Point;
 
 cad::modeller::shapes2D::Line::Line(const Point &p1, const Point &p2)
 	: m_first(p1), m_second(p2)
@@ -31,9 +31,4 @@ const Point& cad::modeller::shapes2D::Line::GetFirstPoint() const
 const Point& cad::modeller::shapes2D::Line::GetSecondPoint() const
 {
 	return m_second;
-}
-
-void  cad::modeller::shapes2D::Line::Draw(AbstractCanvas & cnv)
-{
-	// no concrete canvas defined
 }

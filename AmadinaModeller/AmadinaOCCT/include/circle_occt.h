@@ -2,7 +2,7 @@
 #define OCCT_CIRCLE_H
 
 #include "circle.h"
-#include "sketch_object.h"
+#include "occt_object_container.h"
 #include <AIS_Circle.hxx>
 
 #ifdef _WINDLL
@@ -21,7 +21,7 @@ namespace cad
 			{
 				using cad::modeller::shapes2D::Circle;
 
-				class CircleOcct : public Circle, public SketchObject
+				class CircleOcct : public Circle, public OcctObjectContainer
 				{
 					public:
 						using Circle::Circle;
@@ -30,7 +30,9 @@ namespace cad
 
 						DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
 
-						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container) final;
+						DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+
+						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
 
 					private:
 						Handle(AIS_Circle) m_circle = nullptr;

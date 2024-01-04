@@ -22,6 +22,9 @@ namespace cad
 
 					///\brief Adds a new shape to show on screen
 					virtual void AddShape(Handle(AIS_InteractiveObject) shape) = 0;
+
+					///\brief Removes an existing shape from a screen
+					//virtual void RemoveShape(Handle(AIS_InteractiveObject) shape) = 0;
 			};
 		}
 	}

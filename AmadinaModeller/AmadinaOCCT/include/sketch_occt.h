@@ -3,9 +3,8 @@
 
 #include "sketch.h"
 #include "direction_vector.h"
-#include <string>
-#include <memory>
 #include <vector>
+#include<string>
 
 #ifdef _WINDLL
 	#define DLL_EXPORT __declspec(dllexport)
@@ -30,13 +29,9 @@ namespace cad
 
 					DLL_EXPORT ~SketchOcct() override = default;
 
-					DLL_EXPORT void AppendObject(AbstractShape *shape) final;
-
 					DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
 
 					DLL_EXPORT void SetDirectionVector(DirectionVector vector);
-
-					void GetShapes(std::vector<AbstractShape*> &receiver) const;
 
 					DLL_EXPORT DirectionVector GetDirectionVector() const;
 
@@ -44,7 +39,6 @@ namespace cad
 				private:
 					std::string m_name;
 					DirectionVector m_vector;
-					std::vector<std::unique_ptr<AbstractShape>> m_shapes;
 			};
 		}
 	}

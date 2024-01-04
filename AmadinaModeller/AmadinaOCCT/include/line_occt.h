@@ -2,7 +2,7 @@
 #define OCCT_LINE_H
 
 #include "line.h"
-#include "sketch_object.h"
+#include "occt_object_container.h"
 #include <AIS_Line.hxx>
 
 #ifdef _WINDLL
@@ -21,7 +21,7 @@ namespace cad
 			{
 				using cad::modeller::shapes2D::Line;
 
-				class LineOcct : public Line, public SketchObject
+				class LineOcct : public Line, public OcctObjectContainer
 				{
 					public:
 						using Line::Line;
@@ -30,8 +30,10 @@ namespace cad
 
 						DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
 
-						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container) final;
+						DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
 
+						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
+					
 					private:
 						Handle(AIS_Line) m_line = nullptr;
 				};

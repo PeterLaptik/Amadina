@@ -2,6 +2,7 @@
 #define ABSTRACT_SKETCH_H
 
 #include "abstract_shape.h"
+#include <vector>
 
 #ifdef _WINDLL
 	#define DLL_EXPORT __declspec(dllexport)
@@ -16,14 +17,21 @@ namespace cad
 		namespace shapes2D
 		{
 			///\brief Represents sketch: object wich contains a flat set of 2D shapes
-			class DLL_EXPORT Sketch: public AbstractShape
+			class Sketch: public AbstractShape
 			{
 				public:
-				Sketch() = default;
+					DLL_EXPORT Sketch() = default;
 
-				~Sketch() override = default;
+					DLL_EXPORT ~Sketch() override;
 
-				virtual void AppendObject(AbstractShape *shape) = 0;
+					DLL_EXPORT void AppendObject(AbstractShape *shape);
+
+					DLL_EXPORT void RemoveObject(AbstractShape *shape);
+
+					DLL_EXPORT void GetShapes(std::vector<AbstractShape *> &receiver) const;
+
+				private:
+					std::vector<AbstractShape *> m_shapes;
 			};
 		}
 	}

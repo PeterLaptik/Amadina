@@ -2,7 +2,7 @@
 #include "occt_canvas.h"
 #include <Geom_CartesianPoint.hxx>
 
-using AbstractCanvas = cad::modeller::AbstractCanvas;
+using cad::modeller::AbstractCanvas;
 
 void cad::modeller::occt::shapes2D::PointOcct::Draw(AbstractCanvas &cnv)
 {
@@ -12,7 +12,12 @@ void cad::modeller::occt::shapes2D::PointOcct::Draw(AbstractCanvas &cnv)
 	canvas.AddShape(m_point);
 }
 
-void cad::modeller::occt::shapes2D::PointOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container)
+void cad::modeller::occt::shapes2D::PointOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
 {
 	// empty implementation
+}
+
+void cad::modeller::occt::shapes2D::PointOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
+{
+	
 }

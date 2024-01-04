@@ -31,7 +31,7 @@ namespace cad
 
 						DLL_EXPORT bool IsValid() override;
 
-						DLL_EXPORT void Purge(const std::vector<AbstractShape*> &container) override;
+						DLL_EXPORT void Purge(std::vector<AbstractShape*> &container) override;
 				};
 			}
 		}

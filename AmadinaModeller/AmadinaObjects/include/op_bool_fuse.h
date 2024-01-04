@@ -16,17 +16,19 @@ namespace cad
 		namespace operations
 		{
 
-			class DLL_EXPORT OpBoolFuse : public AbstractOperation
+			class OpBoolFuse : public AbstractOperation
 			{
 				public:
-					explicit OpBoolFuse(std::vector<AbstractShape*> &&shapes);
+					DLL_EXPORT explicit OpBoolFuse() = default;
 
-					~OpBoolFuse() override = default;
+					DLL_EXPORT ~OpBoolFuse() override = default;
 
-					const std::vector<AbstractShape *>& GetShapes() const;
+					DLL_EXPORT void AddShape(AbstractShape *shape);
+
+					//DLL_EXPORT ShapeIterator GetShapes() const;
 
 				private:
-					std::vector<AbstractShape *> m_initial_shapes;
+					std::vector<AbstractShape*> m_initial_shapes;
 			};
 		}
 	}

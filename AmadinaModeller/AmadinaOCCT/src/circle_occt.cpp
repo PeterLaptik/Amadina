@@ -1,5 +1,5 @@
+
 #include "circle_occt.h"
-#include "point.h"
 #include "occt_canvas.h"
 #include <gp_Pnt.hxx>
 #include <gp_Circ.hxx>
@@ -7,9 +7,9 @@
 #include <Geom_CartesianPoint.hxx>
 #include <GC_MakeCircle.hxx>
 
-using Point = cad::modeller::shapes2D::Point;
-using Point = cad::modeller::shapes2D::Point;
-using Direction = cad::modeller::shapes2D::Direction;
+using cad::modeller::shapes2D::Point;
+using cad::modeller::shapes2D::Point;
+using cad::modeller::shapes2D::Direction;
 
 void cad::modeller::occt::shapes2D::CircleOcct::Draw(AbstractCanvas &cnv)
 {
@@ -24,11 +24,11 @@ void cad::modeller::occt::shapes2D::CircleOcct::Draw(AbstractCanvas &cnv)
 	gp_Ax2 gp_ax(gp_center, gp_dir);
 
 	Handle(Geom_Circle) circle = new Geom_Circle(gp_ax, radius);
-	m_circle = new AIS_Circle(circle);
+	m_circle.reset(new AIS_Circle(circle));
 	canvas.AddShape(m_circle);
 }
 
-void cad::modeller::occt::shapes2D::CircleOcct::GetAisInteractiveObjects(std::vector<Handle(Geom_Curve)> &container)
+void cad::modeller::occt::shapes2D::CircleOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
 {
 	double radius = GetRadius();
 
@@ -41,4 +41,10 @@ void cad::modeller::occt::shapes2D::CircleOcct::GetAisInteractiveObjects(std::ve
 
 	Handle(Geom_Circle) segment = GC_MakeCircle(gp_axis, radius);
 	container.push_back(segment);
+}
+
+DLL_EXPORT void cad::modeller::occt::shapes2D::CircleOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
+{
+	if (!m_circle.IsNull())
+		container.push_back(m_circle);
 }

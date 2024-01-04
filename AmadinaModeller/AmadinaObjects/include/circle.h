@@ -32,9 +32,6 @@ namespace cad
 					const Point& GetCenter() const;
 					double GetRadius() const;
 
-					/// Empty implementation for an undefined canvas
-					void Draw(AbstractCanvas &cnv) override;
-
 				private:
 					Direction m_direction;
 					Point m_center;

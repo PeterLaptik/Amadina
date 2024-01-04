@@ -1,6 +1,7 @@
+#include "abstract_shape.h"
 #include "op_extrude_occt.h"
 #include "sketch_occt.h"
-#include "sketch_object.h"
+#include "occt_object_container.h"
 #include "direction.h"
 #include "occt_canvas.h"
 #include <BRepBuilderAPI_MakeEdge.hxx>
@@ -11,8 +12,9 @@
 #include <AIS_Shape.hxx>
 #include<Geom_TrimmedCurve.hxx>
 
+using cad::modeller::AbstractShape;
 using cad::modeller::geometry::Direction;
-using cad::modeller::occt::shapes2D::SketchObject;
+using cad::modeller::occt::shapes2D::OcctObjectContainer;
 
 void cad::modeller::occt::operations::OpExtrudeOcct::Draw(AbstractCanvas &cnv)
 {
@@ -32,13 +34,13 @@ void cad::modeller::occt::operations::OpExtrudeOcct::Draw(AbstractCanvas &cnv)
 
 	// Get objects to extract
 	sketch->GetShapes(shapes_container);
-	for (const auto &i : shapes_container)
+	for (const auto &shape : shapes_container)
 	{
-		auto *obj = dynamic_cast<SketchObject*>(i);
+		auto *obj = dynamic_cast<OcctObjectContainer*>(shape);
 		if (obj == nullptr)
 			continue;
 
-		obj->GetAisInteractiveObjects(curves_container);
+		obj->ExtractGeomCurves(curves_container);
 	}
 
 	if (shapes_container.empty())
@@ -46,9 +48,9 @@ void cad::modeller::occt::operations::OpExtrudeOcct::Draw(AbstractCanvas &cnv)
 
 	// Get edges
 	std::vector<TopoDS_Edge> edges_container;
-	for (const auto &i : curves_container)
+	for (Handle(Geom_Curve) geom_obj: curves_container)
 	{
-		edges_container.push_back(BRepBuilderAPI_MakeEdge(i));
+		edges_container.push_back(BRepBuilderAPI_MakeEdge(geom_obj));
 	}
 
 	// Create wire from edges
@@ -66,12 +68,13 @@ void cad::modeller::occt::operations::OpExtrudeOcct::Draw(AbstractCanvas &cnv)
 	double extrude_length = GetLength();
 	const DirectionVector dir_vector = sketch->GetDirectionVector();
 	Direction dir = dir_vector.GetDirection();
-	gp_Vec prism_vec(dir.GetX()* extrude_length, dir.GetY()* extrude_length, dir.GetZ()* extrude_length);
+	gp_Vec prism_vec(dir.GetX() * extrude_length, dir.GetY() * extrude_length, dir.GetZ() * extrude_length);
 	TopoDS_Shape myBody = BRepPrimAPI_MakePrism(face, prism_vec);
 
+	
 	Handle(AIS_Shape) ais_shape = new AIS_Shape(myBody);
-	OcctCanvas &c = static_cast<OcctCanvas &>(cnv);
-	c.AddShape(ais_shape);
+	OcctCanvas &canvas = static_cast<OcctCanvas &>(cnv);
+	canvas.AddShape(ais_shape);
 }
 
 bool cad::modeller::occt::operations::OpExtrudeOcct::IsValid()
@@ -79,7 +82,7 @@ bool cad::modeller::occt::operations::OpExtrudeOcct::IsValid()
 	return GetSketch() != nullptr;
 }
 
-void cad::modeller::occt::operations::OpExtrudeOcct::Purge(const std::vector<AbstractShape*> &container)
+void cad::modeller::occt::operations::OpExtrudeOcct::Purge(std::vector<AbstractShape*> &container)
 {
 	const AbstractShape *sketch = GetSketch();
 	for (auto obj : container)

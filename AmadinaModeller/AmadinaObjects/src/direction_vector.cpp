@@ -1,7 +1,7 @@
 #include "direction_vector.h"
 
-using Direction = cad::modeller::geometry::Direction;
-using Point = cad::modeller::shapes2D::Point;
+using cad::modeller::geometry::Direction;
+using cad::modeller::shapes2D::Point;
 
 cad::modeller::geometry::DirectionVector::DirectionVector(const Point &p, const Direction &dir)
     : m_center(p), m_direction(dir)

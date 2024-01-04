@@ -27,9 +27,6 @@ namespace cad
 					const Point& GetFirstPoint() const;
 					const Point& GetSecondPoint() const;
 
-					/// Empty implementation for an undefined canvas
-					void Draw(AbstractCanvas &cnv) override;
-
 				private:
 					Point m_first;
 					Point m_second;

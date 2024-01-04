@@ -5,9 +5,9 @@
 #include <vector>
 
 #ifdef _WINDLL
-#define DLL_EXPORT __declspec(dllexport)
+	#define DLL_EXPORT __declspec(dllexport)
 #else
-#define DLL_EXPORT
+	#define DLL_EXPORT
 #endif
 
 namespace cad
@@ -19,14 +19,14 @@ namespace cad
 			///\brief Represents basic operation and its result
 			class DLL_EXPORT AbstractOperation : public AbstractShape
 			{
-			public:
-				AbstractOperation() = default;
+				public:
+					AbstractOperation() = default;
 
-				~AbstractOperation() override = default;
+					~AbstractOperation() override = default;
 
-				virtual bool IsValid(void) = 0;
+					virtual bool IsValid(void) = 0;
 
-				virtual void Purge(const std::vector<AbstractShape*>&) = 0;
+					virtual void Purge(std::vector<AbstractShape*> &container) = 0;
 			};
 		}
 	}
