@@ -32,3 +32,17 @@
 /AmadinaModeller/AmadinaModeller/AmadinaModeller.vcxproj.filters
 /AmadinaModeller/AmadinaModeller/AmadinaModeller.vcxproj.user
 /projects/Amadina3D/bin/Debug
+/AmadinaModeller/Tests/Tests.vcxproj
+/AmadinaModeller/Tests/Tests.vcxproj.filters
+/AmadinaModeller/Tests/Tests.vcxproj.user
+/ConsoleInterpreter/obj/Debug
+*.aps
+/projects/amadina/amadina.cbp
+/projects/amadina/amadina.depend
+/projects/amadina/amadina.layout
+/projects/Amadina3D/Amadina3D.cbp
+/projects/Amadina3D/Amadina3D.depend
+/projects/Amadina3D/Amadina3D.layout
+/projects/kernel/kernel.cbp
+/projects/kernel/kernel.depend
+/projects/kernel/kernel.layout

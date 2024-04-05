@@ -5,36 +5,35 @@
 #include "direction.h"
 
 #ifdef _WINDLL
-#define DLL_EXPORT __declspec(dllexport)
+	#define DLL_EXPORT __declspec(dllexport)
 #else
-#define DLL_EXPORT
+	#define DLL_EXPORT
 #endif
 
-namespace cad
+namespace cad::modeller::operations
 {
-	namespace modeller
+	/// Extrusion operation (extrudes from sketch)
+	class DLL_EXPORT OpExtrude : public AbstractOperation
 	{
-		namespace operations
-		{
-			class DLL_EXPORT OpExtrude : public AbstractOperation
-			{
-				public:
-					OpExtrude(AbstractShape* sketch, double length);
+		public:
+			OpExtrude(AbstractShape *sketch, double length);
 
-					~OpExtrude() override = default;
+			~OpExtrude() override;
 
-					void SetLength(double length);
-					void SetSketch(AbstractShape* sketch);
+			void Purge(AbstractShape *removed_shape) override;
 
-					double GetLength() const;
-					const AbstractShape* GetSketch() const;
+			void Update(AbstractShape *updated_shape) override;
 
-				private:
-					AbstractShape *m_sketch;
-					double m_length;
-			};
-		}
-	}
+			void SetLength(double length);
+			void SetSketch(AbstractShape *sketch);
+
+			double GetLength() const;
+			AbstractShape *GetSketch() const;
+
+		private:
+			AbstractShape *m_sketch;
+			double m_length;
+	};
 }
 
 #endif

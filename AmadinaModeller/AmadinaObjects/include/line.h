@@ -9,30 +9,24 @@
 	#define DLL_EXPORT
 #endif
 
-namespace cad
+namespace cad::modeller::shapes2D
 {
-	namespace modeller
+	class DLL_EXPORT Line : public AbstractShape
 	{
-		namespace shapes2D
-		{
-			class DLL_EXPORT Line: public AbstractShape
-			{
-				public:
-					Line(const Point &p1, const Point &p2);
-					~Line() override = default;
+		public:
+			Line(const Point &p1, const Point &p2);
+			~Line() override = default;
 
-					void SetPoints(const Point &p1, const Point &p2);
-					void SetFirstPoint(const Point &p);
-					void SetSecondPoint(const Point &p);
-					const Point& GetFirstPoint() const;
-					const Point& GetSecondPoint() const;
+			void SetPoints(const Point &p1, const Point &p2);
+			void SetFirstPoint(const Point &p);
+			void SetSecondPoint(const Point &p);
+			const Point& GetFirstPoint() const;
+			const Point& GetSecondPoint() const;
 
-				private:
-					Point m_first;
-					Point m_second;
-			};
-		}
-	}
+		private:
+			Point m_first;
+			Point m_second;
+	};
 }
 
 #endif

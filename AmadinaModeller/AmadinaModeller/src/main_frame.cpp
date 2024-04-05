@@ -27,7 +27,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
           const wxPoint& pos, const wxSize& size, long style)
           : wxFrame(parent, id, title, pos, size, style)
 {
-    SetSizeHints(1300, 850);
+    SetSizeHints(800, 600);
     SetPosition(wxPoint(0,0));
     m_mgr.SetManagedWindow(this);
 	m_mgr.SetFlags(wxAUI_MGR_DEFAULT);
@@ -69,9 +69,9 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
 	m_modeller = get_abstract_modeller(this);//new wxModeller3D(this);
 	m_notebook->AddPage(m_modeller, "test");
+
+    m_modeller->Test();
 }
-
-
 
 MainFrame::~MainFrame()
 {

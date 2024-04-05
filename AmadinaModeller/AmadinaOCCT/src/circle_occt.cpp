@@ -1,6 +1,4 @@
-
 #include "circle_occt.h"
-#include "occt_canvas.h"
 #include <gp_Pnt.hxx>
 #include <gp_Circ.hxx>
 #include <Geom_Circle.hxx>
@@ -11,9 +9,14 @@ using cad::modeller::shapes2D::Point;
 using cad::modeller::shapes2D::Point;
 using cad::modeller::shapes2D::Direction;
 
-void cad::modeller::occt::shapes2D::CircleOcct::Draw(AbstractCanvas &cnv)
+
+void cad::modeller::occt::shapes2D::CircleOcct::AssignCanvas(AbstractCanvas *cnv)
 {
-	OcctCanvas &canvas = static_cast<OcctCanvas &>(cnv);
+	AssignOcctCanvas(cnv);
+}
+
+void cad::modeller::occt::shapes2D::CircleOcct::Draw()
+{
 	Point center = GetCenter();
 	double radius = GetRadius();
 	Direction direction = GetDirection();
@@ -25,7 +28,34 @@ void cad::modeller::occt::shapes2D::CircleOcct::Draw(AbstractCanvas &cnv)
 
 	Handle(Geom_Circle) circle = new Geom_Circle(gp_ax, radius);
 	m_circle.reset(new AIS_Circle(circle));
-	canvas.AddShape(m_circle);
+	
+	// Output
+	if (GetIsVisible())
+		Show();
+}
+
+void cad::modeller::occt::shapes2D::CircleOcct::Hide()
+{
+	auto cnv = GetOcctCanvas();
+	if (!cnv)
+		return;
+
+	cnv->RemoveShape(m_circle);
+}
+
+void cad::modeller::occt::shapes2D::CircleOcct::Show()
+{
+	auto cnv = GetOcctCanvas();
+	if (!cnv)
+		return;
+
+	cnv->AddShape(m_circle);
+}
+
+void cad::modeller::occt::shapes2D::CircleOcct::Refresh()
+{
+	Hide();
+	Draw();
 }
 
 void cad::modeller::occt::shapes2D::CircleOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
@@ -43,7 +73,7 @@ void cad::modeller::occt::shapes2D::CircleOcct::ExtractGeomCurves(std::vector<Ha
 	container.push_back(segment);
 }
 
-DLL_EXPORT void cad::modeller::occt::shapes2D::CircleOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
+void cad::modeller::occt::shapes2D::CircleOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
 {
 	if (!m_circle.IsNull())
 		container.push_back(m_circle);

@@ -2,7 +2,7 @@
 #define OCCT_CIRCLE_H
 
 #include "circle.h"
-#include "occt_object_container.h"
+#include "occt_object.h"
 #include <AIS_Circle.hxx>
 
 #ifdef _WINDLL
@@ -11,35 +11,34 @@
 	#define DLL_EXPORT
 #endif
 
-namespace cad
+namespace cad::modeller::occt::shapes2D
 {
-	namespace modeller
+	using cad::modeller::shapes2D::Circle;
+
+	class CircleOcct : public Circle, public OcctObject
 	{
-		namespace occt
-		{
-			namespace shapes2D
-			{
-				using cad::modeller::shapes2D::Circle;
+		public:
+			using Circle::Circle;
 
-				class CircleOcct : public Circle, public OcctObjectContainer
-				{
-					public:
-						using Circle::Circle;
+			DLL_EXPORT ~CircleOcct() override = default;
 
-						DLL_EXPORT ~CircleOcct() override = default;
+			DLL_EXPORT void AssignCanvas(AbstractCanvas *cnv) final;
 
-						DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
+			DLL_EXPORT void Draw() final;
 
-						DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+			DLL_EXPORT void Hide() final;
 
-						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
+			DLL_EXPORT void Show() final;
 
-					private:
-						Handle(AIS_Circle) m_circle = nullptr;
-				};
-			}
-		}
-	}
+			DLL_EXPORT void Refresh() final;
+
+			DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+
+			DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
+
+		private:
+			Handle(AIS_Circle) m_circle = nullptr;
+	};
 }
 
 #endif

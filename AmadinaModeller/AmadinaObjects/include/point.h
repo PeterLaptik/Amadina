@@ -10,36 +10,34 @@
 #endif
 
 
-namespace cad
+namespace cad::modeller::shapes2D
 {
-	namespace modeller
+	class DLL_EXPORT Point : public AbstractShape
 	{
-		namespace shapes2D
-		{
-			class DLL_EXPORT Point: public AbstractShape
-			{
-				public:
-					Point(double x, double y, double z = 0.0);
-					~Point() override = default;
+		public:
+			Point(double x, double y, double z = 0.0);
+			~Point() override = default;
 
-					void SetCoordinates(double x, double y, double z);
-					void SetX(double x);
-					void SetY(double y);
-					void SetZ(double z);
-					double GetX() const;
-					double GetY() const;
-					double GetZ() const;
+			void AssignCanvas(AbstractCanvas *cnv) override;
+			void Draw() override;
+			void Hide() override;
+			void Show() override;
+			void Refresh() override;
 
-					/// Empty implementation for an undefined canvas
-					void Draw(AbstractCanvas &cnv) override;
+			void SetCoordinates(double x, double y, double z);
+			void SetX(double x);
+			void SetY(double y);
+			void SetZ(double z);
 
-				private:
-					double m_x;
-					double m_y;
-					double m_z;
-			};
-		}
-	}
+			double GetX() const;
+			double GetY() const;
+			double GetZ() const;
+
+		private:
+			double m_x;
+			double m_y;
+			double m_z;
+	};
 }
 
 #endif

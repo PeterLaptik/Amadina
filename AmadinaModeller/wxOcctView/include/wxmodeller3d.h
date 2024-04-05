@@ -3,12 +3,13 @@
 
 #include "abstract_modeller.h"
 #include "context.h"
+#include "wxoccpanel_styles.h"
 
 class wxTreeCtrl;
 class wxOccPanel;
 class wxBoxSizer;
 class wxSplitterWindow;
-class wxCadHistoryTree;
+class wxModelTree;
 
 using cad::modeller::Context;
 
@@ -33,10 +34,11 @@ class wxModeller3D:  public wxAbstractModeller
 
     private:
         Context *m_context;
-        wxCadHistoryTree *m_model_tree;
+        wxModelTree *m_model_tree;
         wxOccPanel *m_occpanel;
         wxBoxSizer *m_sizer;
         wxSplitterWindow *m_splitter;
+        wxOcctStylesContainer m_styles_container;
 
 };
 

@@ -1,5 +1,5 @@
-#ifndef OP_BOOL_FUSE_OCCT_H
-#define OP_BOOL_FUSE_OCCT_H
+#ifndef OP_BOOL_COMMON_OCCT_H
+#define OP_BOOL_COMMON_OCCT_H
 
 #include "op_bool_occt.h"
 #include "occt_object.h"
@@ -13,15 +13,19 @@
 
 namespace cad::modeller::occt::operations
 {
-	class OpBoolFuseOcct : public OpBoolOcct
+
+	using cad::modeller::operations::OpBoolean;
+
+	class OpBoolCommonOcct : public OpBoolOcct
 	{
 		public:
 			OpBoolOcct::OpBoolOcct;
 
-			DLL_EXPORT ~OpBoolFuseOcct() final = default;
+			DLL_EXPORT ~OpBoolCommonOcct() final = default;
 
 			DLL_EXPORT void Draw() final;
 	};
 }
 
 #endif
+

@@ -10,31 +10,25 @@
 	#define DLL_EXPORT
 #endif
 
-namespace cad
+namespace cad::modeller::shapes2D
 {
-	namespace modeller
+	///\brief Represents a flat sketch: object which contains a set of 2D shapes
+	class Sketch : public AbstractShape
 	{
-		namespace shapes2D
-		{
-			///\brief Represents sketch: object wich contains a flat set of 2D shapes
-			class Sketch: public AbstractShape
-			{
-				public:
-					DLL_EXPORT Sketch() = default;
+	public:
+		DLL_EXPORT Sketch() = default;
 
-					DLL_EXPORT ~Sketch() override;
+		DLL_EXPORT ~Sketch() override;
 
-					DLL_EXPORT void AppendObject(AbstractShape *shape);
+		DLL_EXPORT virtual void AppendObject(AbstractShape *shape);
 
-					DLL_EXPORT void RemoveObject(AbstractShape *shape);
+		DLL_EXPORT virtual void RemoveObject(AbstractShape *shape);
 
-					DLL_EXPORT void GetShapes(std::vector<AbstractShape *> &receiver) const;
+		DLL_EXPORT void GetSubObjects(std::vector<AbstractShape *> &container) override;
 
-				private:
-					std::vector<AbstractShape *> m_shapes;
-			};
-		}
-	}
+	protected:
+		std::vector<AbstractShape *> m_shapes;
+	};
 }
 
 #endif

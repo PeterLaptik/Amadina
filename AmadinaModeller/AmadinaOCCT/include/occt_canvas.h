@@ -4,30 +4,24 @@
 #include "abstract_canvas.h"
 #include <AIS_InteractiveObject.hxx>
 
-namespace cad
+namespace cad::modeller::occt
 {
-	namespace modeller
+	using cad::modeller::AbstractCanvas;
+
+	///\brief A canvas interface for OCCT-implementation
+	class OcctCanvas : public AbstractCanvas
 	{
-		namespace occt
-		{
-			using cad::modeller::AbstractCanvas;
+		public:
+			OcctCanvas() = default;
 
-			///\brief A canvas interface for OCCT-implementation
-			class OcctCanvas: public AbstractCanvas
-			{
-				public:
-					OcctCanvas() = default;
+			~OcctCanvas() override = default;
 
-					~OcctCanvas() override = default;
+			virtual void AddShape(Handle(AIS_InteractiveObject) shape) = 0;
 
-					///\brief Adds a new shape to show on screen
-					virtual void AddShape(Handle(AIS_InteractiveObject) shape) = 0;
+			virtual void RemoveShape(Handle(AIS_InteractiveObject) shape) = 0;
 
-					///\brief Removes an existing shape from a screen
-					//virtual void RemoveShape(Handle(AIS_InteractiveObject) shape) = 0;
-			};
-		}
-	}
+			virtual bool ContainsShapes(const std::vector<Handle(AIS_InteractiveObject)> &objects) = 0;
+	};
 }
 
 #endif

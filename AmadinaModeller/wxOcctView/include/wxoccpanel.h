@@ -1,26 +1,26 @@
 #ifndef WXOCCPANEL_H
 #define WXOCCPANEL_H
 
-#include "../include/objectpool.h"
+#include "objectpool.h"
+#include "abstract_shape.h"
 #include "occt_canvas.h"
-//#include "floating_inputbox.h"
 #include "screen_modes.h"
 #include <wx/panel.h>
 #include <AIS_ViewController.hxx>
-//#include <BRepPrimAPI_MakeBox.hxx>
-//#include <BRepPrimAPI_MakeCylinder.hxx>
 #include <V3d_Viewer.hxx>
 #include <WNT_Window.hxx>
 #include <AIS_InteractiveContext.hxx>
-//#include <Aspect_DisplayConnection.hxx>
 #include <OpenGl_GraphicDriver.hxx>
 #include <V3d_View.hxx>
 #include <AIS_Shape.hxx>
 #include <AIS_ViewCube.hxx>
 #include <AIS_Line.hxx>
 
+using cad::modeller::AbstractShape;
 using cad::modeller::ScreenMode;
 using cad::modeller::occt::OcctCanvas;
+
+class wxOcctPanelStyle;
 
 class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
 {
@@ -40,8 +40,13 @@ class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
 
         ~wxOccPanel() override;
 
+        void SetStyle(const wxOcctPanelStyle &style);
 
-        void AddShape(Handle(AIS_InteractiveObject) shape) override;
+
+        void ClearAll() final;
+        void AddShape(Handle(AIS_InteractiveObject) shape) final;
+        void RemoveShape(Handle(AIS_InteractiveObject) shape) final;
+        bool ContainsShapes(const std::vector<Handle(AIS_InteractiveObject)> &objects) final;
 
         void ShowGrid(bool show = true);
         bool IsGridShown(void) const;
@@ -50,23 +55,6 @@ class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
 
         void SetScreenMode(ScreenMode mode);
         ScreenMode GetScreenMode(void) const;
-
-        /*void SetInterractor(FloatingInputBox *floating_input)
-        {
-            if(m_floating_input!=nullptr)
-                RemoveInterractor();
-
-            m_floating_input = floating_input;
-        }
-
-        void RemoveInterractor(void)
-        {
-            if(m_floating_input==nullptr)
-                return;
-
-            delete m_floating_input;
-            m_floating_input = nullptr;
-        }*/
 
         Handle(V3d_View) GetView(void)
         {
@@ -117,7 +105,6 @@ class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
         Handle(AIS_Shape) aisthing;
 
         ScreenMode m_mode;
-        //FloatingInputBox *m_floating_input;
 
     DECLARE_EVENT_TABLE()
 };

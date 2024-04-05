@@ -1,31 +1,41 @@
 #include "abstract_shape.h"
 #include "op_extrude_occt.h"
 #include "sketch_occt.h"
-#include "occt_object_container.h"
+#include "occt_object.h"
 #include "direction.h"
 #include "occt_canvas.h"
+#include <algorithm>
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <BRepBuilderAPI_MakeWire.hxx>
 #include <TopoDS_Edge.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <AIS_Shape.hxx>
-#include<Geom_TrimmedCurve.hxx>
+#include <Geom_Curve.hxx>
+#include <Geom_TrimmedCurve.hxx>
+
 
 using cad::modeller::AbstractShape;
 using cad::modeller::geometry::Direction;
-using cad::modeller::occt::shapes2D::OcctObjectContainer;
+using cad::modeller::occt::OcctObject;
 
-void cad::modeller::occt::operations::OpExtrudeOcct::Draw(AbstractCanvas &cnv)
+
+void cad::modeller::occt::operations::OpExtrudeOcct::AssignCanvas(AbstractCanvas *cnv)
+{
+	AssignOcctCanvas(cnv);
+}
+
+void cad::modeller::occt::operations::OpExtrudeOcct::Draw()
 {
 	// Has no sketch
 	if (!IsValid())
 		return;
 
-	const AbstractShape* shape = GetSketch();
-	const SketchOcct *sketch = dynamic_cast<const SketchOcct*>(shape);
+	// TODO remove dynamic cast?
+	AbstractShape* shape_sketch = GetSketch();
+	auto *sketch = dynamic_cast<SketchOcct*>(shape_sketch);
 
-	// Object is impossible to draw
+	// Object is impossible to extrude. Only sketch is allowed
 	if (sketch == nullptr)
 		return;
 	
@@ -33,10 +43,10 @@ void cad::modeller::occt::operations::OpExtrudeOcct::Draw(AbstractCanvas &cnv)
 	std::vector<Handle(Geom_Curve)> curves_container;
 
 	// Get objects to extract
-	sketch->GetShapes(shapes_container);
-	for (const auto &shape : shapes_container)
+	sketch->GetSubObjects(shapes_container);
+	for (const auto &element : shapes_container)
 	{
-		auto *obj = dynamic_cast<OcctObjectContainer*>(shape);
+		auto *obj = dynamic_cast<OcctObject*>(element);
 		if (obj == nullptr)
 			continue;
 
@@ -69,28 +79,55 @@ void cad::modeller::occt::operations::OpExtrudeOcct::Draw(AbstractCanvas &cnv)
 	const DirectionVector dir_vector = sketch->GetDirectionVector();
 	Direction dir = dir_vector.GetDirection();
 	gp_Vec prism_vec(dir.GetX() * extrude_length, dir.GetY() * extrude_length, dir.GetZ() * extrude_length);
-	TopoDS_Shape myBody = BRepPrimAPI_MakePrism(face, prism_vec);
+	TopoDS_Shape body_new = BRepPrimAPI_MakePrism(face, prism_vec);
 
-	
-	Handle(AIS_Shape) ais_shape = new AIS_Shape(myBody);
-	OcctCanvas &canvas = static_cast<OcctCanvas &>(cnv);
-	canvas.AddShape(ais_shape);
+	// Result
+	m_body.reset(new AIS_Shape(body_new));
+
+	// Output
+	if (GetIsVisible())
+		Show();
 }
+
+void cad::modeller::occt::operations::OpExtrudeOcct::Hide()
+{
+	auto cnv = GetOcctCanvas();
+	if (!cnv)
+		return;
+
+	cnv->RemoveShape(m_body);
+}
+
+void cad::modeller::occt::operations::OpExtrudeOcct::Show()
+{
+	auto cnv = GetOcctCanvas();
+	if (!cnv)
+		return;
+
+	cnv->AddShape(m_body);
+}
+
 
 bool cad::modeller::occt::operations::OpExtrudeOcct::IsValid()
 {
 	return GetSketch() != nullptr;
 }
 
-void cad::modeller::occt::operations::OpExtrudeOcct::Purge(std::vector<AbstractShape*> &container)
+ void cad::modeller::occt::operations::OpExtrudeOcct::Refresh()
 {
-	const AbstractShape *sketch = GetSketch();
-	for (auto obj : container)
-	{
-		if (obj == sketch)
-		{
-			SetSketch(nullptr);
-			return;
-		}
-	}
+	Hide();
+	Draw();
 }
+
+void cad::modeller::occt::operations::OpExtrudeOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
+{
+	if (m_body)
+		container.push_back(m_body);
+}
+
+void cad::modeller::occt::operations::OpExtrudeOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
+{
+	// not used
+}
+
+

@@ -1,4 +1,5 @@
-#include "../include/wxoccpanel.h"
+#include "wxoccpanel.h"
+#include "wxoccpanel_styles.h"
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <AIS_Line.hxx>
 #include <AIS_Point.hxx>
@@ -55,13 +56,14 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
     // makes everything come alive
     m_viewer->SetLightOn();
 
-    m_view->SetBgGradientColors(Quantity_NOC_GRAY70, Quantity_NOC_GRAY40,
+    m_view->SetBgGradientColors(Quantity_NOC_BLUE4, Quantity_NOC_GRAY80,
                                 Aspect_GradientFillMethod_Vertical);
     m_view->MustBeResized();
     //m_view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.1, V3d_ZBUFFER);
     m_context->DisplayAll(true);
     m_view->Redraw();
 
+    //m_context->SetDisplayMode(AIS_WireFrame, true);
     gp_Pnt point(0, 0, 0);
     gp_Dir direction(0, 0, 1);
     gp_Ax1 axis(point, direction);
@@ -78,15 +80,48 @@ wxOccPanel::~wxOccPanel()
     //delete m_floating_input;
 }
 
+void wxOccPanel::SetStyle(const wxOcctPanelStyle &style)
+{
+    m_context->DefaultDrawer()->SetFaceBoundaryDraw(true);
+    m_context->DefaultDrawer()->ShadingAspect()->SetColor(style.GetShadingColour());
+    m_context->DefaultDrawer()->LineAspect()->SetColor(style.GetLineColour());
+    m_context->DefaultDrawer()->LineAspect()->SetWidth(style.GetLineWidth());
+    m_context->DefaultDrawer()->FaceBoundaryAspect()->SetColor(style.GetBoundaryColour());
+    m_context->DefaultDrawer()->FaceBoundaryAspect()->SetWidth(style.GetBoundaryWidth());
+}
+
+void wxOccPanel::ClearAll()
+{
+    m_context->RemoveAll(true);
+}
+
 void wxOccPanel::AddShape(Handle(AIS_InteractiveObject) shape)
 {
+    std::string shape_type = typeid(*(shape.get())).name();
     m_object_pool.AppendObject(shape);
     m_context->Display(shape, AIS_Shaded, 0, true);
+    //m_context->SetColor(shape, Quantity_NOC_GRAY70, false);
     m_context->DisplayAll(true);
     m_view->Redraw();
 }
 
-#include<wx/msgdlg.h>
+void wxOccPanel::RemoveShape(Handle(AIS_InteractiveObject) shape)
+{
+    m_context->Remove(shape, true);
+    m_view->Redraw();
+}
+
+bool wxOccPanel::ContainsShapes(const std::vector<Handle(AIS_InteractiveObject)> &objects)
+{
+    int count_displayed = 0;
+    for (auto object : objects)
+    {
+        if(m_context->IsDisplayed(object))
+            ++count_displayed;
+    }
+    return count_displayed == objects.size();
+}
+
 void wxOccPanel::DeleteSelected()
 {
 
@@ -207,7 +242,7 @@ void wxOccPanel::OnRightMouseButtonDown(wxMouseEvent &event)
     Handle(Geom_Point) cpoint2 = new Geom_CartesianPoint(0,0,0);
     Handle(AIS_Point) point2 = new AIS_Point(cpoint2);
     Handle(AIS_Line) line = new AIS_Line(cpoint1, cpoint2);
-    AddShape(line);
+    //AddShape(line);
 
 
 

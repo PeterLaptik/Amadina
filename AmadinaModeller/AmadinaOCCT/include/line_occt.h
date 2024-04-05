@@ -2,8 +2,9 @@
 #define OCCT_LINE_H
 
 #include "line.h"
-#include "occt_object_container.h"
+#include "occt_object.h"
 #include <AIS_Line.hxx>
+#include <Geom_CartesianPoint.hxx>
 
 #ifdef _WINDLL
 	#define DLL_EXPORT __declspec(dllexport)
@@ -11,35 +12,36 @@
 	#define DLL_EXPORT
 #endif
 
-namespace cad
+namespace cad::modeller::occt::shapes2D
 {
-	namespace modeller
+	using cad::modeller::shapes2D::Line;
+
+	class LineOcct : public Line, public OcctObject
 	{
-		namespace occt
-		{
-			namespace shapes2D
-			{
-				using cad::modeller::shapes2D::Line;
+		public:
+			using Line::Line;
 
-				class LineOcct : public Line, public OcctObjectContainer
-				{
-					public:
-						using Line::Line;
+			DLL_EXPORT ~LineOcct() override = default;
 
-						DLL_EXPORT ~LineOcct() override = default;
+			DLL_EXPORT void AssignCanvas(AbstractCanvas *cnv) final;
 
-						DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
+			DLL_EXPORT void Draw() final;
 
-						DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+			DLL_EXPORT void Hide() final;
 
-						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
-					
-					private:
-						Handle(AIS_Line) m_line = nullptr;
-				};
-			}
-		}
-	}
+			DLL_EXPORT void Show() final;
+
+			DLL_EXPORT void Refresh() final;
+
+			DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+
+			DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
+
+		private:
+			Handle(Geom_CartesianPoint) c_point_1 = new Geom_CartesianPoint(0, 0, 0);
+			Handle(Geom_CartesianPoint) c_point_2 = new Geom_CartesianPoint(0, 0, 0);
+			Handle(AIS_Line) m_line = nullptr;
+	};
 }
 
 #endif

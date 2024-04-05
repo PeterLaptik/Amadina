@@ -10,34 +10,28 @@
     #define DLL_EXPORT
 #endif
 
-namespace cad
+namespace cad::modeller::geometry
 {
-    namespace modeller
-    {
-        namespace geometry
-        {
-            using cad::modeller::shapes2D::Point;
+	using cad::modeller::shapes2D::Point;
 
-            ///\brief Represents a vector in 3D space
-            class DLL_EXPORT DirectionVector
-            {
-                public:
-                    DirectionVector();
-                    explicit DirectionVector(const Point &p);
-                    DirectionVector(const Point &p, const Direction &dir);
-                    ~DirectionVector() = default;
+	///\brief Represents a vector in 3D space
+	class DLL_EXPORT DirectionVector
+	{
+		public:
+			DirectionVector();
+			explicit DirectionVector(const Point &p);
+			DirectionVector(const Point &p, const Direction &dir);
+			~DirectionVector() = default;
 
-                    void SetStartPoint(const Point &p);
-                    void SetDirection(const Direction &dir);
-                    const Point& GetStartPoint() const;
-                    const Direction& GetDirection() const;
+			void SetStartPoint(const Point &p);
+			void SetDirection(const Direction &dir);
+			const Point& GetStartPoint() const;
+			const Direction& GetDirection() const;
 
-                private:
-                    Point m_center;
-                    Direction m_direction;
-            };
-        }
-    }
+		private:
+			Point m_center;
+			Direction m_direction;
+	};
 }
 
 #endif

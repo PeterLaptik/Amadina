@@ -2,7 +2,7 @@
 #define OCCT_POINT_H
 
 #include "point.h"
-#include "occt_object_container.h"
+#include "occt_object.h"
 #include <AIS_Point.hxx>
 
 #ifdef _WINDLL
@@ -11,35 +11,32 @@
 	#define DLL_EXPORT
 #endif
 
-namespace cad
+namespace cad::modeller::occt::shapes2D
 {
-	namespace modeller
+	using cad::modeller::shapes2D::Point;
+
+	class PointOcct : public Point, public OcctObject
 	{
-		namespace occt
-		{
-			namespace shapes2D
-			{
-				using cad::modeller::shapes2D::Point;
+		public:
+			using Point::Point;
 
-				class PointOcct : public Point, public OcctObjectContainer
-				{
-					public:
-						using Point::Point;
+			DLL_EXPORT ~PointOcct() override = default;
 
-						DLL_EXPORT ~PointOcct() override = default;
+			DLL_EXPORT void AssignCanvas(AbstractCanvas *cnv) override;
 
-						DLL_EXPORT void Draw(AbstractCanvas &cnv) final;
+			DLL_EXPORT void Draw() override;
 
-						DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+			DLL_EXPORT void Hide() override;
 
-						DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
+			DLL_EXPORT void Refresh() override;
 
-					private:
-						Handle(AIS_Point) m_point = nullptr;
-				};
-			}
-		}
-	}
+			DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
+
+			DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
+
+		private:
+			Handle(AIS_Point) m_point = nullptr;
+	};
 }
 
 #endif

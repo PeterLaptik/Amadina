@@ -41,7 +41,27 @@ double cad::modeller::shapes2D::Point::GetZ() const
 	return m_z;
 }
 
-void cad::modeller::shapes2D::Point::Draw(AbstractCanvas &cnv)
+void cad::modeller::shapes2D::Point::AssignCanvas(AbstractCanvas *cnv)
 {
-	// no concrete canvas defined
+	// empty implementation for 'AbstractCanvas'
+}
+
+void cad::modeller::shapes2D::Point::Draw()
+{
+	// empty implementation for 'AbstractCanvas'
+}
+
+void cad::modeller::shapes2D::Point::Hide()
+{
+	// empty implementation for 'AbstractCanvas'
+}
+
+void cad::modeller::shapes2D::Point::Show()
+{
+	// empty implementation for 'AbstractCanvas'
+}
+
+void cad::modeller::shapes2D::Point::Refresh()
+{
+	// empty implementation for 'AbstractCanvas'
 }

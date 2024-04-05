@@ -1,10 +1,8 @@
-#include "op_bool_fuse_occt.h"
+#include "op_bool_common_occt.h"
 #include "occt_canvas.h"
-#include <BRepBuilderAPI_Sewing.hxx>
-#include <TopoDS_Shape.hxx>
-#include <BRepAlgoAPI_Fuse.hxx>
+#include <BRepAlgoAPI_Common.hxx>
 
-void cad::modeller::occt::operations::OpBoolFuseOcct::Draw()
+void cad::modeller::occt::operations::OpBoolCommonOcct::Draw()
 {
 	if (!IsValid())
 		return;
@@ -34,7 +32,7 @@ void cad::modeller::occt::operations::OpBoolFuseOcct::Draw()
 	auto object_1 = dynamic_cast<AIS_Shape *>(ais_objects[0].get());
 	auto object_2 = dynamic_cast<AIS_Shape *>(ais_objects[1].get());
 
-	BRepAlgoAPI_Fuse fuse(object_1->Shape(), object_2->Shape());
+	BRepAlgoAPI_Common fuse(object_1->Shape(), object_2->Shape());
 	fuse.Build();
 
 	// Result
@@ -53,3 +51,5 @@ void cad::modeller::occt::operations::OpBoolFuseOcct::Draw()
 		}
 	}
 }
+
+

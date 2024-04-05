@@ -11,3 +11,5 @@ bool AmadinaApp::OnInit()
     SetTopWindow(frame);
     return true;
 }
+
+
