@@ -5,7 +5,10 @@
 void cad::modeller::occt::operations::OpBoolCommonOcct::Draw()
 {
 	if (!IsValid())
+	{
+		m_body.Nullify();
 		return;
+	}
 
 	// List of shapes for the union
 	std::vector<AbstractShape *> shapes;
@@ -38,6 +41,7 @@ void cad::modeller::occt::operations::OpBoolCommonOcct::Draw()
 	// Result
 	TopoDS_Shape result = fuse.Shape();
 	m_body.reset(new AIS_Shape(result));
+	Show();
 
 	// Output
 	if (GetIsVisible())

@@ -29,7 +29,10 @@ void cad::modeller::occt::operations::OpExtrudeOcct::Draw()
 {
 	// Has no sketch
 	if (!IsValid())
+	{
+		m_body.Nullify();
 		return;
+	}
 
 	// TODO remove dynamic cast?
 	AbstractShape* shape_sketch = GetSketch();
@@ -91,20 +94,14 @@ void cad::modeller::occt::operations::OpExtrudeOcct::Draw()
 
 void cad::modeller::occt::operations::OpExtrudeOcct::Hide()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->RemoveShape(m_body);
+	HideOcctObject(m_body);
+	SetVisible(false);
 }
 
 void cad::modeller::occt::operations::OpExtrudeOcct::Show()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->AddShape(m_body);
+	ShowOcctObject(m_body);
+	SetVisible(true);
 }
 
 

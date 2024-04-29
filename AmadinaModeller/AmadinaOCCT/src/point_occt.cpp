@@ -1,6 +1,9 @@
 #include "point_occt.h"
 #include "occt_canvas.h"
 #include <Geom_CartesianPoint.hxx>
+#include <TopoDS_Vertex.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
+#include <Prs3d_PointAspect.hxx>
 
 
 using cad::modeller::AbstractCanvas;
@@ -13,13 +16,9 @@ void cad::modeller::occt::shapes2D::PointOcct::AssignCanvas(AbstractCanvas *cnv)
 
 void cad::modeller::occt::shapes2D::PointOcct::Draw()
 {
-	auto cnv = GetOcctCanvas();
-
-	if (!cnv)
-		return;
-
-	Handle(Geom_Point) c_point = new Geom_CartesianPoint(GetX(), GetY(), GetZ());
-	m_point.reset(new AIS_Point(c_point));
+	gp_Pnt pnt(GetX(), GetY(), GetZ());
+	TopoDS_Vertex v = BRepBuilderAPI_MakeVertex(pnt);
+	m_point.reset(new AIS_Shape(v));
 
 	// Output
 	if (GetIsVisible())
@@ -28,12 +27,15 @@ void cad::modeller::occt::shapes2D::PointOcct::Draw()
 
 void cad::modeller::occt::shapes2D::PointOcct::Hide()
 {
-	auto cnv = GetOcctCanvas();
+	
+	HideOcctObject(m_point);
+	SetVisible(false);
+}
 
-	if (!cnv)
-		return;
-
-	cnv->RemoveShape(m_point);
+void cad::modeller::occt::shapes2D::PointOcct::Show()
+{
+	ShowOcctObject(m_point);
+	SetVisible(false);
 }
 
 void cad::modeller::occt::shapes2D::PointOcct::Refresh()

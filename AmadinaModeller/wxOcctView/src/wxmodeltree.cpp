@@ -91,6 +91,7 @@ void wxModelTree::OnPopupMenuClick(wxCommandEvent &evt)
 	if (menu_id == MenuHTree::REFRESH_ALL)
 	{
 		RedrawTree();
+		UpdateIcons();
 		return;
 	}
 

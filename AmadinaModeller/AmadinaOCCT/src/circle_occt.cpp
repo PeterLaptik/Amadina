@@ -36,20 +36,15 @@ void cad::modeller::occt::shapes2D::CircleOcct::Draw()
 
 void cad::modeller::occt::shapes2D::CircleOcct::Hide()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->RemoveShape(m_circle);
+	HideOcctObject(m_circle);
+	SetVisible(false);
+	
 }
 
 void cad::modeller::occt::shapes2D::CircleOcct::Show()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->AddShape(m_circle);
+	ShowOcctObject(m_circle);
+	SetVisible(true);
 }
 
 void cad::modeller::occt::shapes2D::CircleOcct::Refresh()

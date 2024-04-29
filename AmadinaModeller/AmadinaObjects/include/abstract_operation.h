@@ -36,15 +36,15 @@ namespace cad::modeller::operations
 			virtual void Update(AbstractShape *updated_shape) = 0;
 
 			/// Utility method: checks whether an operation depends on a shape.
-			///\param shape -- shape to check for dependency
-			///\param dep_shapes -- list of shapes, used by the operation
+			///\param shape shape   to check for dependency
+			///\param dep_shapes    list of shapes, used by the operation
 			///\return true if the opertion uses the shape, otherwise false
 			static bool DoesOperationDependOnShape(AbstractShape *shape, const std::vector<AbstractShape*> &dep_shapes);
 			
 			/// Utility method: checks whether an operation depends on a shape sub-shapes.
-			///\param shape -- shape to check subshapes for dependencies
-			///\param dep_shapes -- list of shapes, used by the operation
-			///\return true if the opertion uses the shape sub-shapes, otherwise false
+			///\param    shape shape to check subshapes for dependencies
+			///\param    dep_shapes -- list of shapes, used by the operation
+			///\return   true if the opertion uses the shape sub-shapes, otherwise false
 			static bool DoesOperationDependOnSubShapes(AbstractShape *shape, const std::vector<AbstractShape*> &dep_shapes);
 	};
 }

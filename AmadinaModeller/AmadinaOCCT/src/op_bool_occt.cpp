@@ -4,20 +4,14 @@
 
 void cad::modeller::occt::operations::OpBoolOcct::Show()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->AddShape(m_body);
+	ShowOcctObject(m_body);
+	SetVisible(true);
 }
 
 void cad::modeller::occt::operations::OpBoolOcct::Hide()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->RemoveShape(m_body);
+	HideOcctObject(m_body);
+	SetVisible(false);
 }
 
 void cad::modeller::occt::operations::OpBoolOcct::AssignCanvas(AbstractCanvas *cnv)
@@ -54,4 +48,5 @@ void cad::modeller::occt::operations::OpBoolOcct::GetAisInteractiveObjects(std::
 
 void cad::modeller::occt::operations::OpBoolOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
 {
+	//
 }

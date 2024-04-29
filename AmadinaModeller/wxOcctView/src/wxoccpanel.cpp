@@ -93,11 +93,14 @@ void wxOccPanel::SetStyle(const wxOcctPanelStyle &style)
 void wxOccPanel::ClearAll()
 {
     m_context->RemoveAll(true);
+    m_context->Display(m_view_cube, true);
 }
 
 void wxOccPanel::AddShape(Handle(AIS_InteractiveObject) shape)
 {
-    std::string shape_type = typeid(*(shape.get())).name();
+    if (!shape)
+        return;
+
     m_object_pool.AppendObject(shape);
     m_context->Display(shape, AIS_Shaded, 0, true);
     //m_context->SetColor(shape, Quantity_NOC_GRAY70, false);

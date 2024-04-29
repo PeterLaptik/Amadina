@@ -17,15 +17,11 @@ void cad::modeller::occt::shapes2D::LineOcct::AssignCanvas(AbstractCanvas *cnv)
 void cad::modeller::occt::shapes2D::LineOcct::Draw()
 {
 	Point pt1 = GetFirstPoint();
-	//Handle(Geom_Point) c_point_1 = new Geom_CartesianPoint(pt1.GetX(), pt1.GetY(), pt1.GetZ());
-	//Geom_CartesianPoint c_point_1(pt1.GetX(), pt1.GetY(), pt1.GetZ());
 	c_point_1->SetX(pt1.GetX());
 	c_point_1->SetY(pt1.GetY());
 	c_point_1->SetZ(pt1.GetZ());
 
 	Point pt2 = GetSecondPoint();
-	//Handle(Geom_Point) c_point_2 = new Geom_CartesianPoint(pt2.GetX(), pt2.GetY(), pt2.GetZ());
-	//Geom_CartesianPoint c_point_2(pt2.GetX(), pt2.GetY(), pt2.GetZ());
 	c_point_2->SetX(pt2.GetX());
 	c_point_2->SetY(pt2.GetY());
 	c_point_2->SetZ(pt2.GetZ());
@@ -38,20 +34,14 @@ void cad::modeller::occt::shapes2D::LineOcct::Draw()
 
 void cad::modeller::occt::shapes2D::LineOcct::Hide()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->RemoveShape(m_line);
+	HideOcctObject(m_line);
+	SetVisible(false);
 }
 
 void cad::modeller::occt::shapes2D::LineOcct::Show()
 {
-	auto cnv = GetOcctCanvas();
-	if (!cnv)
-		return;
-
-	cnv->AddShape(m_line);
+	ShowOcctObject(m_line);
+	SetVisible(true);
 }
 
 void cad::modeller::occt::shapes2D::LineOcct::Refresh()

@@ -13,6 +13,7 @@
 
 namespace cad::modeller::occt
 {
+
 	///\breaf Common interface for all objects which can be drawn via OCCT-lirary.
 	/// Each object (like line, circle, cube, etc.) appears a container for an OCCT-object / objects, and should implement this interface.
 	///\see LineOcct as an example
@@ -21,6 +22,29 @@ namespace cad::modeller::occt
 		public:
 			virtual ~OcctObject() = default;
 
+			/// Sets canvas for OCCT-objects visualization.
+			///\see OcctCanvas
+			void AssignOcctCanvas(AbstractCanvas *cnv)
+			{
+				m_canvas = dynamic_cast<OcctCanvas *>(cnv);
+			}
+
+			void HideOcctObject(Handle(AIS_InteractiveObject) shape)
+			{
+				if (!m_canvas)
+					return;
+
+				m_canvas->RemoveShape(shape);
+			}
+
+			void ShowOcctObject(Handle(AIS_InteractiveObject) shape)
+			{
+				if (!m_canvas)
+					return;
+
+				m_canvas->AddShape(shape);
+			}
+
 			/// Returns list of 'AIS_InteractiveObject' contained in the object
 			virtual void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) = 0;
 
@@ -28,19 +52,13 @@ namespace cad::modeller::occt
 			/// Implementation can be empty, if necessary
 			virtual void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) = 0;
 
-			/// Sets canvas for OCCT-objects visualization.
-			void AssignOcctCanvas(AbstractCanvas *cnv)
-			{
-				m_canvas = dynamic_cast<OcctCanvas *>(cnv);
-			}
-
-			OcctCanvas* GetOcctCanvas()
+			OcctCanvas *GetOcctCanvas() const
 			{
 				return m_canvas;
 			}
 
 		private:
-			OcctCanvas *m_canvas;
+			OcctCanvas *m_canvas = nullptr;
 	};
 }
 

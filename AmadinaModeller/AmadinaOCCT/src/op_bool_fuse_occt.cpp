@@ -7,7 +7,10 @@
 void cad::modeller::occt::operations::OpBoolFuseOcct::Draw()
 {
 	if (!IsValid())
+	{
+		m_body.Nullify();
 		return;
+	}
 
 	// List of shapes for the union
 	std::vector<AbstractShape *> shapes;

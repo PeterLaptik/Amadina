@@ -21,6 +21,12 @@ void cad::modeller::occt::SketchOcct::AssignCanvas(AbstractCanvas *cnv)
 		shape->AssignCanvas(cnv);
 }
 
+void cad::modeller::occt::SketchOcct::AppendObject(AbstractShape *shape)
+{
+	Sketch::AppendObject(shape);
+	shape->AssignCanvas(GetOcctCanvas());
+}
+
 
 void cad::modeller::occt::SketchOcct::Draw()
 {
@@ -36,22 +42,22 @@ void cad::modeller::occt::SketchOcct::Hide()
 {
 	for (auto shape : m_shapes)
 		shape->Hide();
+
+	SetVisible(false);
 }
 
 void cad::modeller::occt::SketchOcct::Show()
 {
-	std::for_each(m_shapes.begin(), m_shapes.end(),
-		[this](auto object) {
-			object->Show();
-		});
+	for (auto shape : m_shapes)
+		shape->Show();
+
+	SetVisible(true);
 }
 
 void cad::modeller::occt::SketchOcct::Refresh()
 {
 	Hide();
-	//Draw();
-	if (GetIsVisible())
-		Show();
+	Draw();
 }
 
 void cad::modeller::occt::SketchOcct::SetDirectionVector(const DirectionVector &vector)

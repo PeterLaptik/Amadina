@@ -83,7 +83,7 @@ void wxModeller3D::Test()
     sketch->AppendObject(new LineOcct(PointOcct(200, 0), PointOcct(0, 0)));
 
     // Points
-    sketch->AppendObject(new PointOcct(5,5));
+    sketch->AppendObject(new PointOcct(8, 8));
     sketch->AppendObject(new PointOcct(4, 4));
     sketch->AppendObject(new PointOcct(3, 3));
     
@@ -95,19 +95,15 @@ void wxModeller3D::Test()
     circle_obj->SetDirection(angles);
     sketch_2->SetDirectionVector(DirectionVector(c_c, angles));
     sketch_2->AppendObject(circle_obj);
-    
-
 
     OpExtrudeOcct *op_extrude = new OpExtrudeOcct(sketch, 50);
     OpExtrudeOcct *op_extrude2 = new OpExtrudeOcct(sketch_2, 50);
 
     m_model_tree->AddItem(sketch);
     m_model_tree->AddItem(sketch_2);
-    
 
     m_model_tree->AddItem(op_extrude);
     m_model_tree->AddItem(op_extrude2);
-    
 
     OpBoolOcct *fuse = new OpBoolCommonOcct();
     fuse->AddShape(op_extrude);

@@ -33,7 +33,6 @@ void cad::modeller::ModelTree::RemoveItem(AbstractShape *item)
 
 void cad::modeller::ModelTree::RedrawItem(AbstractShape *item)
 {
-	item->SetVisible(true);
 	item->Hide();
 	item->Draw();
 	UpdateDependentOperations(item);
@@ -42,13 +41,11 @@ void cad::modeller::ModelTree::RedrawItem(AbstractShape *item)
 void cad::modeller::ModelTree::HideItem(AbstractShape *item)
 {
 	item->Hide();
-	item->SetVisible(false);
 }
 
 void cad::modeller::ModelTree::ShowItem(AbstractShape *item)
 {
 	item->Show();
-	item->SetVisible(true);
 }
 
 

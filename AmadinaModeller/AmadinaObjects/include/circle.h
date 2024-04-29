@@ -24,8 +24,8 @@ namespace cad::modeller::shapes2D
 			void SetCenter(const Point &p);
 			void SetRadius(double rad);
 			void SetDirection(const Direction &dir);
-			const Direction &GetDirection()const;
-			const Point &GetCenter() const;
+			const Direction& GetDirection()const;
+			const Point& GetCenter() const;
 			double GetRadius() const;
 
 		private:

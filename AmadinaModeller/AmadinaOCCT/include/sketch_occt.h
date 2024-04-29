@@ -28,6 +28,8 @@ namespace cad::modeller::occt
 
 			DLL_EXPORT void AssignCanvas(AbstractCanvas *cnv) final;
 
+			DLL_EXPORT void AppendObject(AbstractShape *shape) override;
+
 			DLL_EXPORT void Draw() final;
 
 			DLL_EXPORT void Hide() final;

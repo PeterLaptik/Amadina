@@ -21,6 +21,7 @@ bool cad::modeller::operations::AbstractOperation::DoesOperationDependOnSubShape
 			[sub_shape](auto obj) {
 				return obj == sub_shape;
 			});
+
 		if (its != dep_shapes.end())
 			return true;
 	}

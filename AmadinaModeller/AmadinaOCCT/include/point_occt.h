@@ -4,6 +4,7 @@
 #include "point.h"
 #include "occt_object.h"
 #include <AIS_Point.hxx>
+#include <AIS_Shape.hxx>
 
 #ifdef _WINDLL
 	#define DLL_EXPORT __declspec(dllexport)
@@ -22,20 +23,22 @@ namespace cad::modeller::occt::shapes2D
 
 			DLL_EXPORT ~PointOcct() override = default;
 
-			DLL_EXPORT void AssignCanvas(AbstractCanvas *cnv) override;
+			DLL_EXPORT void AssignCanvas(AbstractCanvas *cnv) final;
 
-			DLL_EXPORT void Draw() override;
+			DLL_EXPORT void Draw() final;
 
-			DLL_EXPORT void Hide() override;
+			DLL_EXPORT void Hide() final;
 
-			DLL_EXPORT void Refresh() override;
+			DLL_EXPORT void Show() final;
+
+			DLL_EXPORT void Refresh() final;
 
 			DLL_EXPORT void ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container) final;
 
 			DLL_EXPORT void GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container) final;
 
 		private:
-			Handle(AIS_Point) m_point = nullptr;
+			Handle(AIS_Shape) m_point = nullptr;
 	};
 }
 

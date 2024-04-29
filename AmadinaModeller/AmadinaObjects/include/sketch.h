@@ -27,7 +27,7 @@ namespace cad::modeller::shapes2D
 		DLL_EXPORT void GetSubObjects(std::vector<AbstractShape *> &container) override;
 
 	protected:
-		std::vector<AbstractShape *> m_shapes;
+		std::vector<AbstractShape*> m_shapes;
 	};
 }
 
