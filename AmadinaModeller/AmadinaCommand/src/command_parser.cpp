@@ -8,19 +8,20 @@
 #include <iostream>
 
 const char *MSG_EXECUTED = "OK";
-const char *MSG_BAD_VARIABLE_NAME = "Bad variable name";
+const char *MSG_BAD_VARIABLE_NAME = "Bad variable name. Only letters and underscores are allowed";
 const char *MSG_BAD_MATH_EXPRESSION = "Cannot evaluate expression";
 
-void cad::command::interpreter::CommandParser::ParseCommand(std::string command)
+bool cad::command::interpreter::CommandParser::ParseCommand(std::string command)
 {
     m_result_message.clear();
     if(IsAssignValueExpression(command))
     {
         AssignValue(command);
-        return;
+        return false;
     }
 
     EvaluateMathExpression(command);
+    return true;
 }
 
 
@@ -34,7 +35,7 @@ bool cad::command::interpreter::CommandParser::AssignValue(std::string command)
     boost::spirit::x3::ascii::space_type space;
     using cad::command::interpreter::grammar::variables::ExpressionAssign;
 
-    auto &assign_parser = cad::command::interpreter::grammar::variables::expression_assign;
+    auto assign_parser = cad::command::interpreter::grammar::variables::expression_assign;
     auto string_start = command.begin();
     auto string_end = command.end();
     ExpressionAssign expr_result;

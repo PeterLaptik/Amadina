@@ -14,7 +14,7 @@ namespace cad::command::interpreter
 
             ~CommandParser() = default;
 
-            void ParseCommand(std::string command);
+            bool ParseCommand(std::string command);
 
             std::string GetResultMessage() const;
 

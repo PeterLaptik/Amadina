@@ -1,5 +1,8 @@
 #include "calculator/calc_functions.h"
 #include <math.h>
+#include <map>
+
+std::map<std::string, double> constants = { {"PI", 3.14} };
 
 void cad::command::interpreter::grammar::calc::init_default_unary_functions(unary_function_t *b_func)
 {

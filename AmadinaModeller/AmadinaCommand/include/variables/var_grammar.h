@@ -38,8 +38,6 @@ namespace cad::command::interpreter::grammar::variables
             return boost::spirit::x3::error_handler_result::fail;
         }
     };
-
-    auto assign_expr = expression_assign;
 }
 
 #endif // VAR_GRAMMAR_H_INCLUDED
