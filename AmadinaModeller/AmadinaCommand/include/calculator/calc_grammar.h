@@ -1,10 +1,14 @@
-#ifndef INTERPRETER_GRAMMAR_H_INCLUDED
-#define INTERPRETER_GRAMMAR_H_INCLUDED
+#ifndef CALC_GRAMMAR_H_INCLUDED
+#define CALC_GRAMMAR_H_INCLUDED
 
 #include "calc_ast.h"
 #include "calc_functions.h"
-#include <boost/spirit/home/x3.hpp>
 
+/// Grammar description for calculator expressions.
+/// Describes math expressions.
+/// Following operations are allowed: +, -, /, *, brackets, unary and binary functions, variables and constants.
+/// Variables and constants should be placed in curly brackets.
+/// Example: 1 + cos({PI})*2
 namespace cad::command::interpreter::grammar::calc
 {
     using boost::spirit::x3::double_;
@@ -14,23 +18,25 @@ namespace cad::command::interpreter::grammar::calc
     using boost::spirit::x3::raw;
     using boost::spirit::x3::alpha;
 
-    unary_function_t u_func;
-    binary_function_t b_func;
+    static unary_function_t u_func;
+    static binary_function_t b_func;
 
     struct MathExpressionClass;
-    struct term_class;
-    struct factor_class;
-    struct variable_class;
-    struct function_unary_class;
-    struct function_binary_class;
+    struct TermClass;
+    struct FactorClass;
+    struct VariableClass;
+    struct FunctionUnaryClass;
+    struct FunctionBinaryClass;
 
-    boost::spirit::x3::rule<MathExpressionClass, ast::math_expression> const expression("expression");
-    boost::spirit::x3::rule<term_class, ast::math_expression> const term("term");
-    boost::spirit::x3::rule<factor_class, ast::operand> const factor("factor");
-    boost::spirit::x3::rule<variable_class, ast::variable> const variable("variable");
-    boost::spirit::x3::rule<function_binary_class, ast::function_binary> const function_binary("function_binary");
-    boost::spirit::x3::rule<function_unary_class, ast::function_unary> const function_unary("function_unary");
+    const boost::spirit::x3::rule<MathExpressionClass, ast::MathExpression> expression("expression");
+    const boost::spirit::x3::rule<TermClass, ast::MathExpression> term("term");
+    const boost::spirit::x3::rule<FactorClass, ast::Operand> factor("factor");
+    const boost::spirit::x3::rule<VariableClass, ast::Variable> variable("variable");
+    const boost::spirit::x3::rule<FunctionBinaryClass, ast::FunctionBinary> function_binary("function_binary");
+    const boost::spirit::x3::rule<FunctionUnaryClass, ast::FunctionUnary> function_unary("function_unary");
 
+
+    // Grammar rules
     auto const expression_def =
         term >> *(
             (char_('+') > term)
@@ -65,27 +71,20 @@ namespace cad::command::interpreter::grammar::calc
         b_func > '(' > expression > ',' > expression > ')'
         ;
 
+
     BOOST_SPIRIT_DEFINE(expression, term, factor, variable, function_unary, function_binary);
+
 
     struct MathExpressionClass
     {
-        //  Our error handler
         template <typename Iterator, typename Exception, typename Context>
         boost::spirit::x3::error_handler_result
         on_error(Iterator&, Iterator const& last, Exception const& x, Context const& context)
         {
-            std::cout
-                    << "Error! Expecting: "
-                    << x.which()
-                    << " here: \""
-                    << std::string(x.where(), last)
-                    << "\""
-                    << std::endl;
-            return boost::spirit::x3::error_handler_result::fail;
+            throw ParserException("Error! Expecting: " + x.which() +
+                " here: \"" + std::string(x.where(), last) + "\"");
         }
     };
-
-    //auto calculator = expression;
 }
 
-#endif // INTERPRETER_GRAMMAR_H_INCLUDED
+#endif // CALC_GRAMMAR_H_INCLUDED

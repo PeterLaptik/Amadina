@@ -2,6 +2,7 @@
 #define VAR_GRAMMAR_H_INCLUDED
 
 #include "variables/var_ast.h"
+#include "parser_exception.h"
 #include <boost/spirit/home/x3.hpp>
 
 /// Grammar description for variable assignment expressions.
@@ -11,10 +12,10 @@ namespace cad::command::interpreter::grammar::variables
 {
     using boost::spirit::x3::alnum;
     using boost::spirit::x3::char_;
-    using cad::command::interpreter::grammar::variables::ast::ExpressionAssign;
+    using cad::command::interpreter::grammar::variables::ast::AssignExpression;
 
     struct ExprVariableAssignment;
-    const boost::spirit::x3::rule<ExprVariableAssignment, ExpressionAssign> expression_assign("expression_assign");
+    const boost::spirit::x3::rule<ExprVariableAssignment, AssignExpression> expression_assign("expression_assign");
 
     // Grammar rules
     const auto expression_assign_def = (+(alnum | char_('_')) > '=' > +char_);
@@ -23,19 +24,11 @@ namespace cad::command::interpreter::grammar::variables
 
     struct ExprVariableAssignment
     {
-        //  Error handler
         template <typename Iterator, typename Exception, typename Context>
         boost::spirit::x3::error_handler_result
-        on_error(Iterator&, Iterator const& last, Exception const& x, Context const& context)
+        on_error(Iterator&, const Iterator &last, const Exception &x, const Context &context)
         {
-            std::cout
-                    << "Error! Expecting: "
-                    << x.which()
-                    << " here: \""
-                    << std::string(x.where(), last)
-                    << "\""
-                    << std::endl;
-            return boost::spirit::x3::error_handler_result::fail;
+            throw cad::command::interpreter::ParserException("Bad variable name. Only letters and underscores are allowed.");
         }
     };
 }

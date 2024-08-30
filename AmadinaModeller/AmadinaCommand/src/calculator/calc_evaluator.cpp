@@ -1,0 +1,80 @@
+#include "calculator/calc_evaluator.h"
+#include "parser_exception.h"
+#include <numeric>
+
+
+cad::command::interpreter::grammar::calc::exec::Evaluator::Evaluator(std::map<std::string, double> &vars_list,
+    std::map<std::string, double> &const_list)
+    : m_variables(vars_list), m_constants(const_list)
+{ }
+
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(double n) const
+{
+    return n;
+}
+
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(double lhs, Operation const &x) const
+{
+    double rhs = boost::apply_visitor(*this, x.operand);
+    switch (x.operator_ch)
+    {
+    case '+':
+        return lhs + rhs;
+    case '-':
+        return lhs - rhs;
+    case '*':
+        return lhs * rhs;
+    case '/':
+        return lhs / rhs;
+    }
+    BOOST_ASSERT(0);
+    return 0;
+}
+
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(const Variable &var) const
+{
+    double result = 0;
+    auto var_value = m_variables.find(var.name);
+    if (var_value != m_variables.end())
+        return var_value->second;
+
+    auto const_value = m_constants.find(var.name);
+        if (const_value != m_constants.end())
+            return const_value->second;
+
+    throw ParserException("Unknown variable: {" + var.name + "}.");
+}
+
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(const FunctionUnary &fn) const
+{
+    double rhs = boost::apply_visitor(*this, fn.arg);
+    return fn.pointer(rhs);
+}
+
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(const FunctionBinary &fn) const
+{
+    double lhs = boost::apply_visitor(*this, fn.arg_1);
+    double rhs = boost::apply_visitor(*this, fn.arg_2);
+    return fn.pointer(lhs, rhs);
+}
+
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(Signed const &x) const
+{
+    double rhs = boost::apply_visitor(*this, x.operand);
+    switch (x.sign)
+    {
+    case '-':
+        return -rhs;
+    case '+':
+        return +rhs;
+    }
+    BOOST_ASSERT(0);
+    return 0;
+}
+
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(MathExpression const &x) const
+{
+    return std::accumulate(x.rest.begin(), x.rest.end(),
+        boost::apply_visitor(*this, x.first),
+        *this);
+}

@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.23)
 
 set(CMAKE_CXX_STANDARD 17)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #TODO REMOVE
 set(SUB_PROJECT_AMADINA_COMMAND_NAME AmadinaCommand)
-set(BOOST_PATH C:/CPP/libs/boost_1_79_0)
+set(BOOST_PATH C:/CPP/boost_1_85_0)
 set(EXEC_NAME parser)
 
 project(${SUB_PROJECT_AMADINA_COMMAND_NAME})

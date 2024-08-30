@@ -1,7 +1,7 @@
 #ifndef CALC_FUNCTIONS_H_INCLUDED
 #define CALC_FUNCTIONS_H_INCLUDED
 
-#include "calculator/calc_ast.h"
+#include "command_functions_def.h"
 #include <boost/spirit/home/x3.hpp>
 
 namespace cad::command::interpreter::grammar::calc
@@ -25,7 +25,7 @@ namespace cad::command::interpreter::grammar::calc
                 init();
             }
 
-            void add_function(std::string name, lexer_function_unary_pt_t p)
+            void add_function(const std::string &name, lexer_function_unary_pt_t p)
             {
                 add(name, p);
             }
@@ -50,7 +50,7 @@ namespace cad::command::interpreter::grammar::calc
                 init();
             }
 
-            void add_function(std::string name, lexer_function_binary_pt_t p)
+            void add_function(const std::string &name, lexer_function_binary_pt_t p)
             {
                 add(name, p);
             }

@@ -8,7 +8,7 @@ namespace cad::command::interpreter::grammar::calc::exec
     class Executor
     {
         public:
-            Executor(unsigned stackSize = 4096);
+            explicit Executor(unsigned stackSize = 4096);
             ~Executor() = default;
 
             double top() const;

@@ -2,85 +2,74 @@
 #define INTERPRETER_AST_H_INCLUDED
 
 #include "command_functions_def.h"
-#include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/x3.hpp>
 #include <boost/spirit/home/x3/support/ast/variant.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <list>
-#include <iostream>
 
 namespace cad::command::interpreter::grammar::calc::ast
 {
     namespace x3 = boost::spirit::x3;
 
-    struct nil {};
-    struct signed_;
-    struct math_expression;
-    struct variable;
-    struct function_unary;
-    struct function_binary;
+    struct Signed;
+    struct MathExpression;
+    struct Variable;
+    struct FunctionUnary;
+    struct FunctionBinary;
 
-    struct operand : x3::variant<nil,
-        double,
-        x3::forward_ast<signed_>,
-        x3::forward_ast<math_expression>,
-        x3::forward_ast<variable>,
-        x3::forward_ast<function_unary>,
-        x3::forward_ast<function_binary>>
+    struct Operand : x3::variant<double,
+        x3::forward_ast<Signed>,
+        x3::forward_ast<MathExpression>,
+        x3::forward_ast<Variable>,
+        x3::forward_ast<FunctionUnary>,
+        x3::forward_ast<FunctionBinary>>
     {
         using base_type::base_type;
         using base_type::operator=;
     };
 
-    struct signed_
+    struct Signed
     {
         char sign;
-        operand operand_;
+        Operand operand;
     };
 
-    struct operation
+    struct Operation
     {
-        char operator_;
-        operand operand_;
+        char operator_ch;
+        Operand operand;
     };
 
-    struct math_expression
+    struct MathExpression
     {
-        operand first;
-        std::list<operation> rest;
+        Operand first;
+        std::list<Operation> rest;
     };
 
-    struct variable
+    struct Variable
     {
         std::string name;
     };
 
-    struct function_unary
+    struct FunctionUnary
     {
         lexer_function_unary_pt_t pointer;
-        operand arg;
+        Operand arg;
     };
 
-    struct function_binary
+    struct FunctionBinary
     {
         lexer_function_binary_pt_t pointer;
-        operand arg_1;
-        operand arg_2;
+        Operand arg_1;
+        Operand arg_2;
     };
-
-    // TODO REMOVE
-    inline std::ostream& operator<<(std::ostream& out, nil)
-    {
-        out << "nil";
-        return out;
-    }
 }
 
-    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::signed_, sign, operand_)
-    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::operation, operator_, operand_)
-    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::math_expression, first, rest)
-    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::variable, name)
-    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::function_unary, pointer, arg)
-    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::function_binary, pointer, arg_1, arg_2)
+    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::Signed, sign, operand)
+    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::Operation, operator_ch, operand)
+    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::MathExpression, first, rest)
+    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::Variable, name)
+    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::FunctionUnary, pointer, arg)
+    BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::calc::ast::FunctionBinary, pointer, arg_1, arg_2)
 
 #endif // INTERPRETER_AST_H_INCLUDED

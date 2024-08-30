@@ -4,10 +4,11 @@
 
 #Clean CMake data
 $DIR_PROJECTS_PATHS = -join((Get-Item .).FullName, "/"), # Current root directory
-                    "./AmadinaModeller/",
-                    "./wxOcctView/", 
+                    "./AmadinaObjects/",
                     "./AmadinaOCCT/", 
-                    "./AmadinaObjects/"
+                    "./AmadinaCommand/",
+                    "./wxOcctView/",
+                    "./AmadinaModeller/"
                     
 $DIR_CMAKEFILES_DIR = "CMakeFiles"
 

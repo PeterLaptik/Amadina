@@ -11,8 +11,8 @@ namespace cad::command::interpreter::grammar::calc
         op_mul,     //  multiply top two stack entries
         op_div,     //  divide top two stack entries
         op_num,     //  push number into the stack
-        op_fnu,     //  unary function
-        op_fnb      //  binary function
+        op_fnu,     //  unary function call
+        op_fnb      //  binary function call
     };
 }
 
