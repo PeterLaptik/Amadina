@@ -2,6 +2,7 @@
 #define COMMAND_PARSER_H_INCLUDED
 
 #include "command_functions_def.h"
+#include "command_token.h"
 #include <string>
 #include <map>
 
@@ -16,19 +17,21 @@ namespace cad::command::interpreter
 
             bool ParseCommand(const std::string &command);
 
+            bool IsEmpty() const;
+            size_t GetTokensNumber() const;
+            const CommandToken& GetToken(int i) const;
+
             std::string GetResultMessage() const;
 
         private:
-            bool IsAssignValueExpression(const std::string &command) const;
+            bool TokenizeCommandLine(const std::string &command);
             bool AssignValue(const std::string &command);
-            void EvaluateAssignmentExpression(const std::string &math_expression);
-            double EvaluateMathExpression(const std::string &math_expression);
-            void PutVariable(const std::string &var_name, double var_value);
-            void PutConstant(const std::string &const_name, double const_value);
-            bool DoesConstantExist(const std::string &constant_name) const;
+            bool IsAssignValueExpression(const std::string &command) const;
+            std::string Normalize(const std::string &command) const;
 
             std::map<std::string, double> m_variables;
             std::map<std::string, double> m_constants;
+            std::vector<CommandToken> m_tokens;
             std::string m_result_message;
     };
 }

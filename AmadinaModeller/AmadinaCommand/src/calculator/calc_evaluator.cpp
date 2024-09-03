@@ -2,6 +2,11 @@
 #include "parser_exception.h"
 #include <numeric>
 
+const char *const MSG_DIVIDING_BY_ZERO = "Dividing by zero. ";
+const char *const MSG_UNKNOWN_VARIABLE = "Unknown variable. ";
+const char *const MSG_BAD_PTR = "Bad pointer for function. ";
+const char *const MSG_BAD_OPER_BINARY = "Unknown binary operation. ";
+const char *const MSG_BAD_OPER_UNARY = "Unknown unary operation. ";
 
 cad::command::interpreter::grammar::calc::exec::Evaluator::Evaluator(std::map<std::string, double> &vars_list,
     std::map<std::string, double> &const_list)
@@ -18,16 +23,20 @@ double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(dou
     double rhs = boost::apply_visitor(*this, x.operand);
     switch (x.operator_ch)
     {
-    case '+':
-        return lhs + rhs;
-    case '-':
-        return lhs - rhs;
-    case '*':
-        return lhs * rhs;
-    case '/':
-        return lhs / rhs;
+        case '+':
+            return lhs + rhs;
+        case '-':
+            return lhs - rhs;
+        case '*':
+            return lhs * rhs;
+        case '/':
+            if(fabs(rhs) < (std::numeric_limits<double>::epsilon()))
+                throw ParserException(MSG_DIVIDING_BY_ZERO + std::to_string(lhs)
+                    + " / " + std::to_string(rhs));
+            return lhs / rhs;
     }
-    BOOST_ASSERT(0);
+
+    throw ParserException(MSG_BAD_OPER_BINARY + '(' + x.operator_ch + ')');
     return 0;
 }
 
@@ -42,12 +51,15 @@ double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(con
         if (const_value != m_constants.end())
             return const_value->second;
 
-    throw ParserException("Unknown variable: {" + var.name + "}.");
+        throw ParserException(MSG_UNKNOWN_VARIABLE + '{' + var.name + '}');
 }
 
 double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(const FunctionUnary &fn) const
 {
     double rhs = boost::apply_visitor(*this, fn.arg);
+    if(!fn.pointer)
+        throw ParserException(MSG_BAD_PTR);
+
     return fn.pointer(rhs);
 }
 
@@ -55,24 +67,27 @@ double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(con
 {
     double lhs = boost::apply_visitor(*this, fn.arg_1);
     double rhs = boost::apply_visitor(*this, fn.arg_2);
+    if (!fn.pointer)
+        throw ParserException(MSG_BAD_PTR);
+
     return fn.pointer(lhs, rhs);
 }
 
-double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(Signed const &x) const
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(const Signed &x) const
 {
     double rhs = boost::apply_visitor(*this, x.operand);
     switch (x.sign)
     {
-    case '-':
-        return -rhs;
-    case '+':
-        return +rhs;
-    }
-    BOOST_ASSERT(0);
+        case '-':
+            return -rhs;
+        case '+':
+            return +rhs;
+        }
+    throw ParserException(MSG_BAD_OPER_BINARY + '(' + x.sign + ')');
     return 0;
 }
 
-double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(MathExpression const &x) const
+double cad::command::interpreter::grammar::calc::exec::Evaluator::operator()(const MathExpression &x) const
 {
     return std::accumulate(x.rest.begin(), x.rest.end(),
         boost::apply_visitor(*this, x.first),

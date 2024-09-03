@@ -1,6 +1,9 @@
 #ifndef COMMAND_AST_H_INCLUDED
 #define COMMAND_AST_H_INCLUDED
 
+#include "command_token.h"
+#include <boost/spirit/home/x3.hpp>
+#include <boost/spirit/home/x3/support/ast/variant.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <string>
 
@@ -8,52 +11,67 @@ namespace cad::command::interpreter::grammar::commands::ast
 {
     namespace x3 = boost::spirit::x3;
 
-    struct CommandTokenExpr
+    struct Text
     {
         std::string token;
     };
 
-    struct CommandString
+    struct String
     {
         std::string value;
     };
 
-    struct ListElement
+    struct ListItem
     {
         std::string value;
     };
 
     struct List
     {
-        std::vector<ListElement> values;
+        std::vector<ListItem> values;
     };
 
-    struct Token : x3::variant<CommandTokenExpr, CommandString, List>
+    struct Token : x3::variant<Text, String, List>
     {
         using base_type::base_type;
         using base_type::operator=;
     };
 
-    struct CommandTokenListExpr
+    struct TokenList
     {
-        std::vector<Token> values;
+        std::vector<Token> tokens;
     };
 
-    class Visitor
+    class VisitorTransformer
     {
         public:
-
-            std::string operator()(const std::string &str) const
+            TokenType operator()(const Text &token) const
             {
-                return str;
+                return TOKEN_CMD_TEXT;
             }
 
-            std::string operator()(const CommandTokenExpr &token) const
+            TokenType operator()(const String &str) const
+            {
+                return TOKEN_CMD_STRING;
+            }
+
+            TokenType operator()(const List &list) const
+            {
+                return TOKEN_CMD_LIST;
+            }
+
+        
+    };
+
+    class VisitorDebug
+    {
+        public:
+            std::string operator()(const Text &token) const
             {
                 return "Token:" + token.token;
             }
 
-            std::string operator()(const CommandString &str) const
+            std::string operator()(const String &str) const
             {
                 return "String:" + str.value;
             }
@@ -67,16 +85,17 @@ namespace cad::command::interpreter::grammar::commands::ast
                     result += ',';
                 }
                 result += "]";
+                result += "(size " + std::to_string(list.values.size()) + ')';
                 return result;
             }
     };
 }
 
-BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::CommandTokenExpr, token)
-BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::CommandTokenListExpr, values)
-BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::CommandString, value)
+BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::Text, token)
+BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::TokenList, tokens)
+BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::String, value)
 BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::List, values)
-BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::ListElement, value)
+BOOST_FUSION_ADAPT_STRUCT(cad::command::interpreter::grammar::commands::ast::ListItem, value)
 
 #endif // !COMMAND_AST_H_INCLUDED
 

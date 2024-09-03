@@ -1,9 +1,7 @@
-//#define BOOST_TEST_MODULE test module name
-//#include <boost/test/included/unit_test.hpp>
-
-//#include "command_parser.h"
+#include "command_parser.h"
+#include "variables/var_assigner.h"
+#include "calculator/base_calculator.h"
 #include "parser_exception.h"
-//#include "command_functions_def.h"
 #include "variables/var_grammar.h"
 #include "calculator/calc_grammar.h"
 #include "calculator/calc_evaluator.h"
@@ -12,23 +10,32 @@
 #include <boost/spirit/home/x3.hpp>
 #include <iostream>
 
+using cad::command::interpreter::grammar::variables::VarAssigner;
+using cad::command::interpreter::grammar::calc::BaseCalculator;
+
 void check_math_calcultions(void);
+void check_math_bad_expressions(void);
 void check_command_line_expressions(void);
+std::string token_to_string(const cad::command::interpreter::CommandToken &tk);
 bool equal(double first, double second);
+
 
 const double ALLOWABLE_MARGIN_IN_PERCENT = 1;
 
 
-
 int main()
 {
+    std::cout << std::endl << "Start testing..." << std::endl;
+
     try {
-        //check_math_calcultions();
+        check_math_calcultions();
     } catch (const std::exception &e) {
         std::cout << std::endl << "Error: " << e.what() << std::endl;
         return 1;
     }
     
+    check_math_bad_expressions();
+
     try {
         check_command_line_expressions();
     }
@@ -41,45 +48,91 @@ int main()
     return 0;
 }
 
+std::vector<std::string> test_line_commands = {
+    "LINE [0,0] [10, 10.5, 15.1] \"Sketch_1\" xFlag",
+    "   Circle [10,10+5, 15.4]  \"Sketch_2\" r15   ",
+    "bOx (1.5*2/3+cos(rad(0)))",
+    "command x (15+4)",
+    " command x (15+4) ",
+    "  command x (15+4)  ",
+};
+
 void check_command_line_expressions(void)
 {
-    using boost::spirit::x3::ascii::space_type;
-    using boost::spirit::x3::ascii::blank_type;
-    //using cad::command::interpreter::grammar::commands::command_token;
-    using cad::command::interpreter::grammar::commands::command_token_list;
-   //using cad::command::interpreter::grammar::commands::ast::CommandTokenExpr;
-    using cad::command::interpreter::grammar::commands::ast::CommandTokenListExpr;
-    using cad::command::interpreter::grammar::commands::ast::Visitor;
+    using cad::command::interpreter::CommandToken;
+    cad::command::interpreter::CommandParser parser;
 
-    //CommandTokenExpr command_token_expr;
-    CommandTokenListExpr command_token_expr;
+    std::cout << "\n\nMain parser test: " << std::endl;
 
-    space_type space;
-    blank_type blank;
-    std::string expr = "123 aaa \"test\" xx \"z\" xxx [abc, 101, 1c + 5] ccc";
-
-    auto cmd_parser = command_token_list;
-    //auto cmd_parser = command_token;
-
-    auto string_start = expr.begin();
-    auto string_end = expr.end();
-
-    bool ares = phrase_parse(string_start, string_end, cmd_parser, "\t", command_token_expr);
-    if(!ares)
-        std::cout << "Error!!!" << std::endl;
-
-    Visitor vis;
-    std::cout << "Values:" << std::endl;
-    for (auto &val : command_token_expr.values)
+    for (auto &expr : test_line_commands)
     {
-        std::cout << boost::apply_visitor(vis, val) << std::endl;
+
+        std::cout << "Command line: '" << expr << "'\t";
+        bool res = parser.ParseCommand(expr);
+        if (!res)
+            throw std::exception(parser.GetResultMessage().c_str());
+
+        // Has tokens?
+        bool is_empty = parser.IsEmpty();
+        assert(!is_empty);
+
+        size_t tokens_number = parser.GetTokensNumber();
+        for (int i = 0; i < tokens_number; i++)
+        {
+            const CommandToken &tk = parser.GetToken(i);
+            std::cout << token_to_string(tk) << "\t";
+
+            // List size check
+            if (tk.IsList())
+                assert(tk.GetListSize());
+
+            // Text forced lowercase characters check
+            if (tk.IsText())
+            {
+               std::string lower_txt;
+                std::transform(tk.GetStringValue().begin(), tk.GetStringValue().end(), std::back_inserter(lower_txt),
+                    [](auto ch) {
+                        return std::tolower(ch);
+                    });
+
+                assert(lower_txt == tk.GetStringValue());
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+std::string token_to_string(const cad::command::interpreter::CommandToken &tk)
+{
+    std::string result;
+    if (tk.IsText())
+    {
+        result += ("txt: " + tk.GetStringValue());
     }
 
-    if (string_start != string_end)
+    if (tk.IsString())
     {
-        std::cout << "Tail: " << std::string(string_start, string_end) << " -> " << ares << std::endl;
+        result += ("str: " + tk.GetStringValue());
     }
-    //std::cout << "Result: " << command_token_expr.values << " -> " << std::endl;
+
+    if (tk.IsNumeric())
+    {
+        result += ("num: " + std::to_string(tk.GetNumericValue()));
+    }
+
+    if (tk.IsList())
+    {
+        result += "[";
+        size_t list_size = tk.GetListSize();
+        for (int i = 0; i < list_size; i++)
+        {
+            result += std::to_string(tk.Get(i));
+            result += (i != list_size - 1 ? ", " : "");
+        }
+        result += "]";
+    }
+
+    return result;
 }
 
 const std::vector<std::pair<std::string, double>> math_expressions = {
@@ -105,67 +158,88 @@ const std::vector<std::pair<std::string, double>> math_expressions = {
 
 void check_math_calcultions()
 {
-    using boost::spirit::x3::ascii::space_type;
-    using cad::command::interpreter::grammar::variables::expression_assign;
-    using cad::command::interpreter::grammar::variables::AssignExpression;
-    using cad::command::interpreter::grammar::calc::exec::Evaluator;
-    using cad::command::interpreter::grammar::calc::ast::MathExpression;
-    using cad::command::interpreter::grammar::calc::expression;
-
     std::map<std::string, double> local_variables;
     std::map<std::string, double> constants = {
         {"PI", 3.14}
     };
 
-    space_type space;
-    auto assign_parser = expression_assign;
-
-    auto calc = expression;
-    Evaluator eval(local_variables, constants);
-
-    std::cout << "Math expressions test: " << std::endl;
+    std::cout << "\n\nMath expressions test: " << std::endl;
     for (auto &[expr, value] : math_expressions)
     {
-        AssignExpression expr_result;
-        MathExpression result_ast;
+        VarAssigner var_assigner(local_variables, constants);
+        BaseCalculator base_calc(local_variables, constants);
 
-        std::cout << "Parsing: '" << expr << "'\tExpected value: ";
+        std::cout << "Parsing: '" << expr << "'";
+
         if (expr.find('=') != std::string::npos) // Assignment, if the expression contains '=' character
         {
-            std::cout << "assignment";
-
-            auto string_start = expr.begin();
-            auto string_end = expr.end();
-
-            bool ares = phrase_parse(string_start, string_end, assign_parser, space, expr_result);
-            if (!ares)
-                assert(0);
-
-            auto math_expr_start = expr_result.variable_expression.begin();
-            auto math_expr_end = expr_result.variable_expression.end();
-
-            phrase_parse(math_expr_start, math_expr_end, calc, space, result_ast);
-
-            double result = eval(result_ast);
-            local_variables[expr_result.variable] = result;
-
-            std::cout << "\tassigned: " << result << " to '" << expr_result.variable << "'\tOK" << std::endl;
+            std::cout << "\tassignment";
+            var_assigner.AssignVar(expr);
+            std::cout << "\tassigned: " << "OK" << std::endl;
         }
         else // Direct calculation
         {
+            double result = base_calc.EvaluateMathExpression(expr);
+            bool check_result = equal(result, value);
+            std::cout << "\t Expected value: " << value << "\tComputed value: " << result << "\t" << (check_result ? "OK" : "NOT PASSED") << std::endl;
+            assert(check_result);
+        }
+    }
+}
+
+std::vector <std::string> math_bad_expressions = {
+    "a == 10",
+    "a_1! = 10",
+    "_a1! = 5",
+    "deg(3.14/4",
+    "sinha(3.5)*2",
+    "5/(1-1)",
+    "2*4.5-4,9",
+    "{PI} = 10",
+    "1/++2,2+4",
+    "(((10+11*2)*((2+1)*3)+8)"
+};
+
+void check_math_bad_expressions(void)
+{
+    std::map<std::string, double> local_variables;
+    std::map<std::string, double> constants = {
+        {"PI", 3.14}
+    };
+
+    std::cout << "\n\nBad math expressions test: " << std::endl;
+    for (auto &expr : math_bad_expressions)
+    {
+        VarAssigner var_assigner(local_variables, constants);
+        BaseCalculator base_calc(local_variables, constants);
+
+        std::cout << "Parsing: '" << expr << "'";
+
+        if (expr.find('=') != std::string::npos) // Assignment, if the expression contains '=' character
+        {
             auto string_start = expr.begin();
             auto string_end = expr.end();
 
-            bool ares = phrase_parse(string_start, string_end, calc, space, result_ast);
-            if (!ares)
-                assert(0);
-
-            double result = eval(result_ast);
-            bool check_result = equal(result, value);
-
-            std::cout << value << "\t\tComputed value: " << result << "\t" << (check_result ? "OK" : "NOT PASSED") << std::endl;
-            assert(check_result);
+            try {
+                var_assigner.AssignVar(expr);
+            } catch (const std::exception &e) {
+                std::cout << "\tcaught: '" << e.what() << "'\tOK" << std::endl;
+                continue;
+            }
         }
+        else // Direct calculation
+        {
+            try {
+                double result = base_calc.EvaluateMathExpression(expr);
+                std::cout << "\tResult = " << result;
+            } catch (const std::exception &e) {
+                std::cout << "\tcaught: '" << e.what() << "'\tOK" << std::endl;
+                continue;
+            }
+        }
+        
+        std::cout << "\n\n\nNo error found for: '" << expr << "'!!!" << std::endl;
+        assert(0); // Error wasn't caught
     }
 }
 

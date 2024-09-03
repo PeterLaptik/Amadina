@@ -11,8 +11,8 @@ namespace cad::command::interpreter::grammar::calc::exec
             explicit Executor(unsigned stackSize = 4096);
             ~Executor() = default;
 
-            double top() const;
-            void execute(std::vector<double> const& code);
+            double Top() const;
+            void Execute(const std::vector<double> &code);
 
         private:
             std::vector<double> stack;

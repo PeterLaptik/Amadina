@@ -2,16 +2,19 @@
 #include "calculator/calc_operations.h"
 #include "parser_exception.h"
 
+const char *const MSG_BAD_OPERATION = "Unknown operation. ";
+
+
 cad::command::interpreter::grammar::calc::exec::Executor::Executor(unsigned stackSize)
               : stack(stackSize), stack_ptr(stack.begin())
 { }
 
-double cad::command::interpreter::grammar::calc::exec::Executor::top() const
+double cad::command::interpreter::grammar::calc::exec::Executor::Top() const
 {
     return stack_ptr[-1];
 }
 
-void cad::command::interpreter::grammar::calc::exec::Executor::execute(std::vector<double> const& code)
+void cad::command::interpreter::grammar::calc::exec::Executor::Execute(const std::vector<double> &code)
 {
     auto pc = code.begin();
     stack_ptr = stack.begin();
@@ -49,7 +52,7 @@ void cad::command::interpreter::grammar::calc::exec::Executor::execute(std::vect
                 break;
 
             default:
-                throw ParserException("Unknown operation.");
+                throw ParserException(MSG_BAD_OPERATION + '(' + static_cast<int>(*pc++) + ')');
         }
     }
 }

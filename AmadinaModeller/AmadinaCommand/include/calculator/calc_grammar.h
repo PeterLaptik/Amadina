@@ -37,19 +37,19 @@ namespace cad::command::interpreter::grammar::calc
 
 
     // Grammar rules
-    auto const expression_def =
+    const auto expression_def =
         term >> *(
             (char_('+') > term)
         |   (char_('-') > term)
             );
 
-    auto const term_def =
+    const auto term_def =
         factor >> *(
             (char_('*') > factor)
         |   (char_('/') > factor)
             );
 
-    auto const factor_def =
+    const auto factor_def =
         double_
         | function_unary
         | function_binary
@@ -59,15 +59,15 @@ namespace cad::command::interpreter::grammar::calc
         |   (char_('+') > factor)
         ;
 
-    auto const variable_def =
+    const auto variable_def =
         '{' > raw[lexeme[alpha >> *(alnum | '_')]] > '}'
         ;
 
-    auto const function_unary_def =
+    const auto function_unary_def =
         u_func > '(' > expression > ')'
         ;
 
-    auto const function_binary_def =
+    const auto function_binary_def =
         b_func > '(' > expression > ',' > expression > ')'
         ;
 
@@ -81,7 +81,7 @@ namespace cad::command::interpreter::grammar::calc
         boost::spirit::x3::error_handler_result
         on_error(Iterator&, Iterator const& last, Exception const& x, Context const& context)
         {
-            throw ParserException("Error! Expecting: " + x.which() +
+            throw ParserException("Expecting: " + x.which() +
                 " here: \"" + std::string(x.where(), last) + "\"");
         }
     };

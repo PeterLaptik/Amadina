@@ -2,10 +2,9 @@
 #define INTERPRETER_AST_H_INCLUDED
 
 #include "command_functions_def.h"
-#include <boost/spirit/home/x3.hpp>
 #include <boost/spirit/home/x3/support/ast/variant.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-#include <list>
+#include <vector>
 
 namespace cad::command::interpreter::grammar::calc::ast
 {
@@ -43,7 +42,7 @@ namespace cad::command::interpreter::grammar::calc::ast
     struct MathExpression
     {
         Operand first;
-        std::list<Operation> rest;
+        std::vector<Operation> rest;
     };
 
     struct Variable

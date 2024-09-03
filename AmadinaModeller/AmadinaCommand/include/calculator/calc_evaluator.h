@@ -16,16 +16,16 @@ namespace cad::command::interpreter::grammar::calc::exec
     class Evaluator
     {
         public:
-            explicit Evaluator(std::map<std::string, double> &vars_list, 
+            Evaluator(std::map<std::string, double> &vars_list, 
                             std::map<std::string, double> &const_list);
 
             double operator()(double n) const;
-            double operator()(double lhs, Operation const &x) const;
+            double operator()(double lhs, const Operation &x) const;
             double operator()(const Variable &var) const;
             double operator()(const FunctionUnary &fn) const;
             double operator()(const FunctionBinary &fn) const;
-            double operator()(Signed const &x) const;
-            double operator()(MathExpression const &x) const;
+            double operator()(const Signed &x) const;
+            double operator()(const MathExpression &x) const;
 
         private:
             std::map<std::string, double> &m_variables;
