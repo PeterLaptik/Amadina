@@ -1,8 +1,8 @@
 #ifndef VAR_ASSIGNER_H_INCLUDED
 #define VAR_ASSIGNER_H_INCLUDED
 
-#include "variables/var_ast.h"
-#include "calculator/base_calculator.h"
+#include "grammars/variables/var_ast.h"
+#include "grammars/calculator/base_calculator.h"
 #include <string>
 #include <map>
 

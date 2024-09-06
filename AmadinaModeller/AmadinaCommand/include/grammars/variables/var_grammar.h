@@ -1,7 +1,7 @@
 #ifndef VAR_GRAMMAR_H_INCLUDED
 #define VAR_GRAMMAR_H_INCLUDED
 
-#include "variables/var_ast.h"
+#include "grammars/variables/var_ast.h"
 #include "parser_exception.h"
 #include <boost/spirit/home/x3.hpp>
 

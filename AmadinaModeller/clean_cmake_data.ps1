@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------
-# Quick clean all CMake data files and MS VS projects (optionally)
+# Full clean all CMake data files and MS VS projects (optionally)
 # ----------------------------------------------------------------
 
 #Clean CMake data
@@ -12,7 +12,7 @@ $DIR_PROJECTS_PATHS = -join((Get-Item .).FullName, "/"), # Current root director
                     
 $DIR_CMAKEFILES_DIR = "CMakeFiles"
 
-$FILE_CMAKE_FILES = "CMakeCache.txt","cmake_install.cmake"
+$FILE_CMAKE_FILES = "CMakeCache.txt", "cmake_install.cmake", "Build"
 
 # Remove dirs CMakeFiles
 Write-Host "CMake files and directories clean..."
@@ -20,7 +20,7 @@ for ($i = 0; $i -lt $DIR_PROJECTS_PATHS.Count; $i++) {
     $dirToRemove = -join($DIR_PROJECTS_PATHS[$i], $DIR_CMAKEFILES_DIR)
     if(Test-Path -LiteralPath $dirToRemove) {
         Write-Host "Removing directory: " $dirToRemove
-        rm $dirToRemove -r -force
+        rm $dirToRemove -r -Force
     }
 }
 
@@ -43,11 +43,24 @@ Write-Host "CMake files and directories have been cleaned."
 $REMOVE_VS_PROJECTS = Read-Host -Prompt "Remove Visual Studio projects files? [y/n]"
 if($REMOVE_VS_PROJECTS -eq 'y') {
     for ($i = 0; $i -lt $DIR_PROJECTS_PATHS.Length; $i++) {
-        $files = Get-ChildItem $DIR_PROJECTS_PATHS[$i] | where {$_.extension -in ".vcxproj",".filters", ".sln"}
-        for ($j = 0; $j -lt $files.Count; $j++) {
-            $fileToRemove = $files[$j].fullname
-            Write-Host "Removing file: " $fileToRemove
-            rm $fileToRemove
+        if(Test-Path -LiteralPath $DIR_PROJECTS_PATHS[$i]) {
+            $files = Get-ChildItem $DIR_PROJECTS_PATHS[$i] | where {$_.extension -in ".vcxproj",".user",".filters", ".sln",".dir"}
+            for ($j = 0; $j -lt $files.Count; $j++) {
+                $fileToRemove = $files[$j].fullname
+                Write-Host "Removing file: " $fileToRemove
+                rm -r -Force $fileToRemove
+            }
+        }
+        
+        $VS_DIRS = ".vs", "Debug", "Release", "x64", "x86"
+        for ($i = 0; $i -lt $DIR_PROJECTS_PATHS.Length; $i++) {
+            for($j = 0; $j -lt $VS_DIRS.Length; $j++) {
+                $VS_DIR = -join($DIR_PROJECTS_PATHS[$i], $VS_DIRS[$j])
+                if(Test-Path -LiteralPath $VS_DIR) {
+                    Write-Host "Removing directory: " $VS_DIR
+                    rm -r -Force $VS_DIR
+                }
+            }
         }
     }
     Write-Host "Visual Studio projects files have been cleaned."

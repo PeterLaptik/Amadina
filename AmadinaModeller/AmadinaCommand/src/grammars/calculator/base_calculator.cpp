@@ -1,6 +1,6 @@
-#include "calculator/base_calculator.h"
-#include "calculator/calc_grammar.h"
-#include "calculator/calc_evaluator.h"
+#include "grammars/calculator/base_calculator.h"
+#include "grammars/calculator/calc_grammar.h"
+#include "grammars/calculator/calc_evaluator.h"
 #include "parser_exception.h"
 
 using cad::command::interpreter::grammar::calc::exec::Evaluator;

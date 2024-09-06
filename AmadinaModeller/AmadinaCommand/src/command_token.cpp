@@ -21,15 +21,11 @@ cad::command::interpreter::CommandToken::CommandToken(double value)
 
 cad::command::interpreter::CommandToken::CommandToken(const std::vector<double> &list)
     : m_list(list), m_type(TOKEN_CMD_LIST)
-{
-    m_list_size = m_list.size();
-}
+{ }
 
 cad::command::interpreter::CommandToken::CommandToken(std::vector<double> &&list)
     : m_list(std::move(list)), m_type(TOKEN_CMD_LIST)
-{
-    m_list_size = m_list.size();
-}
+{ }
 
 bool cad::command::interpreter::CommandToken::IsText() const
 {
@@ -67,7 +63,7 @@ double cad::command::interpreter::CommandToken::Get(int i) const
 
 bool cad::command::interpreter::CommandToken::IsListEmpty() const
 {
-    return m_list_size == 0;
+    return m_list.empty();
 }
 
 size_t cad::command::interpreter::CommandToken::GetListSize() const

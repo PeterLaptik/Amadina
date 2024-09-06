@@ -46,9 +46,6 @@ namespace cad::command::interpreter
             std::vector<double> m_list;
 
             TokenType m_type;
-
-            mutable size_t m_list_cursor = 0;
-            size_t m_list_size = 0;
     };
 }
 

@@ -3,7 +3,7 @@
 
 #include "command_ast.h"
 #include "command_token.h"
-#include "calculator/base_calculator.h"
+#include "grammars/calculator/base_calculator.h"
 #include <map>
 
 namespace cad::command::interpreter::grammar::commands::ast

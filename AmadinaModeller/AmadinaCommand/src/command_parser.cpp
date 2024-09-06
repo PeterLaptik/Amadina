@@ -1,11 +1,11 @@
 #include "command_parser.h"
 #include "parser_exception.h"
-#include "variables/var_assigner.h"
-#include "command_line/command_grammar.h"
-#include "command_line/command_transformer.h"
-#include "variables/var_grammar.h"
-#include "calculator/calc_grammar.h"
-#include "calculator/calc_evaluator.h"
+#include "grammars/variables/var_assigner.h"
+#include "grammars/command_line/command_grammar.h"
+#include "grammars/command_line/command_transformer.h"
+#include "grammars/variables/var_grammar.h"
+#include "grammars/calculator/calc_grammar.h"
+#include "grammars/calculator/calc_evaluator.h"
 #include <boost/spirit/home/x3/support/ast/variant.hpp>
 
 using boost::spirit::x3::ascii::space_type;

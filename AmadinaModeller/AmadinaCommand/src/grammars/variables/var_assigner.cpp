@@ -1,5 +1,5 @@
-#include "variables/var_assigner.h"
-#include "variables/var_grammar.h"
+#include "grammars/variables/var_assigner.h"
+#include "grammars/variables/var_grammar.h"
 #include "parser_exception.h"
 #include <boost/spirit/home/x3.hpp>
 

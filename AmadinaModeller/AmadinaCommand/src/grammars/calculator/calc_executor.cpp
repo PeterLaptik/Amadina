@@ -1,5 +1,5 @@
-#include "calculator/calc_executor.h"
-#include "calculator/calc_operations.h"
+#include "grammars/calculator/calc_executor.h"
+#include "grammars/calculator/calc_operations.h"
 #include "parser_exception.h"
 
 const char *const MSG_BAD_OPERATION = "Unknown operation. ";
