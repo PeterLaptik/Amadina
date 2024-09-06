@@ -1,11 +1,11 @@
 #include "command_parser.h"
-#include "variables/var_assigner.h"
-#include "calculator/base_calculator.h"
+#include "grammars/variables/var_assigner.h"
+#include "grammars/calculator/base_calculator.h"
 #include "parser_exception.h"
-#include "variables/var_grammar.h"
-#include "calculator/calc_grammar.h"
-#include "calculator/calc_evaluator.h"
-#include "command_line/command_grammar.h"
+#include "grammars/variables/var_grammar.h"
+#include "grammars/calculator/calc_grammar.h"
+#include "grammars/calculator/calc_evaluator.h"
+#include "grammars/command_line/command_grammar.h"
 #include "assert.h"
 #include <boost/spirit/home/x3.hpp>
 #include <iostream>
