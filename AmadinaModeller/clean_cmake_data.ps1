@@ -12,7 +12,7 @@ $DIR_PROJECTS_PATHS = -join((Get-Item .).FullName, "/"), # Current root director
                     
 $DIR_CMAKEFILES_DIR = "CMakeFiles"
 
-$FILE_CMAKE_FILES = "CMakeCache.txt", "cmake_install.cmake", "Build"
+$FILE_CMAKE_FILES = "CMakeCache.txt", "cmake_install.cmake", "Build", "Makefile"
 
 # Remove dirs CMakeFiles
 Write-Host "CMake files and directories clean..."
@@ -51,15 +51,15 @@ if($REMOVE_VS_PROJECTS -eq 'y') {
                 rm -r -Force $fileToRemove
             }
         }
+    }
         
-        $VS_DIRS = ".vs", "Debug", "Release", "x64", "x86"
-        for ($i = 0; $i -lt $DIR_PROJECTS_PATHS.Length; $i++) {
-            for($j = 0; $j -lt $VS_DIRS.Length; $j++) {
-                $VS_DIR = -join($DIR_PROJECTS_PATHS[$i], $VS_DIRS[$j])
-                if(Test-Path -LiteralPath $VS_DIR) {
-                    Write-Host "Removing directory: " $VS_DIR
-                    rm -r -Force $VS_DIR
-                }
+    $VS_DIRS = ".vs", "Debug", "Release", "x64", "x86"
+    for ($i = 0; $i -lt $DIR_PROJECTS_PATHS.Length; $i++) {
+        for($j = 0; $j -lt $VS_DIRS.Length; $j++) {
+            $VS_DIR = -join($DIR_PROJECTS_PATHS[$i], $VS_DIRS[$j])
+            if(Test-Path -LiteralPath $VS_DIR) {
+                Write-Host "Removing directory: " $VS_DIR
+                rm -r -Force $VS_DIR
             }
         }
     }

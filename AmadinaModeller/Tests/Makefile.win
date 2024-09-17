@@ -1,0 +1,15 @@
+# Set correct paths before start
+BOOST_PATH=C:\CPP\boost_1_85_0
+
+TEST_NAME_CMD=command_test
+
+all:
+    cd .\..\AmadinaCommand\test
+    nmake /F Makefile.win BOOST_PATH="$(BOOST_PATH)" TEST_NAME="$(TEST_NAME_CMD)"
+    
+clean:
+    cd .\..\AmadinaCommand\test
+    nmake /F Makefile.win clean
+    
+test:
+    .\bin\command_test.exe

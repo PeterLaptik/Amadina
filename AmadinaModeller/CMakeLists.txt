@@ -2,170 +2,95 @@ cmake_minimum_required(VERSION 3.23)
 
 project(AmadinaModeller)
 
+# Dependencies
+# Following dependencies paths variables are used (example: see CMake.win.paths.txt):
+# - BOOST_PATH - boost library root directory                   
+# - OPENCASCADE_PATH - OpenCASCADE library root directory  
+# - OPENCASCADE_INCLUDE_PATH - OPENCASCADE_PATH/inc
+# - OPENCASCADE_LIB_PATH - Path to OpenCASCADE *.lib files directory
+# - WX_WIDGETS_PATH - wxWidgets library root directory 
+# - WX_WIDGETS_INCLUDE_PATH = WX_WIDGETS_PATH/include 
+# - WX_WIDGETS_LIBS_PATH - Path to wxWidgets-library *.lib files directory
+# - WX_WIDGETS_SETUP_PATH - Path to wxWidgets-library includes setup directory, contains setup.h
+
+
+# File containing list of dependency path variables (in the form of KEY=VALUE). 
+# Only for Windows OS: all dependencies paths should be written into the file
+set(WINDOWS_DEPENDENCIES_FILENAME CMake.win.paths.txt)
+
+# Setting up dependency environment.
+if(WIN32)
+    # Read and assign dependency path variables from external file
+    file(STRINGS ./${WINDOWS_DEPENDENCIES_FILENAME} WIN_PATHS)
+    message(STATUS "Setting up path values from the file: '${WINDOWS_DEPENDENCIES_FILENAME}'")
+    foreach(LINE ${WIN_PATHS})
+        string(REGEX MATCH "(.*)=(.*)" _ ${LINE})
+        set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
+        message(STATUS "\t ${CMAKE_MATCH_1} = ${CMAKE_MATCH_2}")
+    endforeach()
+
+    # Check directory existence for the paths
+    function (check_win_path ARG_PATH ARG_LIB_TXT_NAME)
+        if(EXISTS ${ARG_PATH})
+            message(STATUS "Checking ${ARG_LIB_TXT_NAME} path: (${ARG_PATH})\t OK")
+        else()
+            message(FATAL_ERROR "\nThe ${ARG_LIB_TXT_NAME} has not been found on the machine. Expecting path: ${ARG_PATH} Input correct path into the file ${WINDOWS_DEPENDENCIES_FILENAME}!")
+        endif()
+    endfunction()
+
+    check_win_path(${BOOST_PATH} "Boost library")
+    check_win_path(${OPENCASCADE_PATH} "OpenCASCADE library")
+    check_win_path(${OPENCASCADE_LIB_PATH} "OpenCASCADE library lib dir")
+    check_win_path(${WX_WIDGETS_PATH} "wxWidgets library")
+    check_win_path(${WX_WIDGETS_LIBS_PATH} "wxWidgets library lib dir")
+    check_win_path(${WX_WIDGETS_SETUP_PATH} "wxWidgets library setup dir")
+    
+    set(WX_WIDGETS_INCLUDE_PATH ${WX_WIDGETS_PATH}/include)
+    set(OPENCASCADE_INCLUDE_PATH ${OPENCASCADE_PATH}/inc)
+    check_win_path(${WX_WIDGETS_INCLUDE_PATH} "wxWidgets include path")
+    check_win_path(${OPENCASCADE_INCLUDE_PATH} "OpenCASCADE include path")
+    
+    # Find dependencies lib-files
+    function (find_lib_files OUT_NAME ARG_PATH)
+        message(STATUS "Searching libs: ${ARG_PATH}")
+        set(FN_RESULT)
+        file(GLOB LIB_FILES_LIST ${ARG_PATH}/*.lib)
+        
+        list(LENGTH LIB_FILES_LIST RES_LEN)
+        if(RES_LEN EQUAL 0)
+            message(FATAL_ERROR "Could not find lib files in ${ARG_PATH}")
+        endif()
+        
+        foreach(LINE ${LIB_FILES_LIST})
+            string(REGEX MATCH "([^\/]+$)" _ ${LINE})
+            string(CONCAT FN_RESULT ${FN_RESULT} " " ${CMAKE_MATCH_1})
+        endforeach()
+        set(${OUT_NAME} ${FN_RESULT} PARENT_SCOPE)
+    endfunction()
+    
+    set(OPENCASCADE_LIBS_FILES)
+    find_lib_files(OPENCASCADE_LIBS_FILES ${OPENCASCADE_LIB_PATH})
+    message(STATUS "OpenCASCADE lib files: ${OPENCASCADE_LIBS_FILES}")
+    
+    set(WX_WIDGETS_LIBS_FILES)
+    find_lib_files(WX_WIDGETS_LIBS_FILES ${WX_WIDGETS_LIBS_PATH})
+    message(STATUS "wxWidgets lib files: ${WX_WIDGETS_LIBS_FILES}")
+
+endif()
+
 # Sub-projects names
-set(SUB_PROJECT_AMADINA_OBJECTS_NAME AmadinaObjects)
-set(SUB_PROJECT_AMADINA_OCCT_NAME AmadinaOCCT)
-set(SUB_PROJECT_wxOCCT_VIEW_NAME wxOcctView)
-set(SUB_PROJECT_AMADINA_MAIN AmadinaModeller)
+#set(SUB_PROJECT_AMADINA_OBJECTS_NAME AmadinaObjects)
+#set(SUB_PROJECT_AMADINA_OCCT_NAME AmadinaOCCT)
+#set(SUB_PROJECT_wxOCCT_VIEW_NAME wxOcctView)
+set(SUB_PROJECT_AMADINA_COMMAND AmadinaCommand)
+#set(SUB_PROJECT_AMADINA_MAIN AmadinaModeller)
 
 # Output file names
-set(AMADINA_OBJECTS_LIB_NAME amadina_objects)
-set(AMADINA_OCCT_LIB_NAME amadina_occt)
-set(AMADINA_wxOCCT_LIB_NAME wxocctview)
-set(AMADINA_EXECUTABLE_NAME Amadina3D)
+#set(AMADINA_OBJECTS_LIB_NAME amadina_objects)
+#set(AMADINA_OCCT_LIB_NAME amadina_occt)
+#set(AMADINA_wxOCCT_LIB_NAME amadina_wxocct)
+set(SUB_PROJECT_AMADINA_OUT_NAME amadina_command)
+#set(AMADINA_EXECUTABLE_NAME Amadina3D)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-	
-# Paths to OpenCasCade library
-# OPENCASCADE_PATH - path to root folder of OCCT-library destination
-# OPENCASCADE_PLATFORM / OPENCASCADE_COMPILLER are used for building full path to OCCT-binaries
-if(WIN32)
-	SET(OPENCASCADE_PATH 
-		"C:/CPP/OpenCASCADE-7.6.0-vc14-64/opencascade-7.6.0" 
-		CACHE PATH "Path to OCCT-library directory")
-
-	SET(OPENCASCADE_PLATFORM 
-		"win64" 
-		CACHE STRING "OCCT-library platform tag(in path %occt_root%/win64/vc14/lib/ 'win64'-value)")
-		
-	SET(OPENCASCADE_COMPILLER 
-		"vc14" 
-		CACHE STRING "OCCT-library compiller tag (in path %occt_root%/win64/vc14/lib/ 'vc14'-value)")
-		
-	SET(OPENCASCADE_PATH_INCLUDE ${OPENCASCADE_PATH}/inc)
-	SET(OPENCASCADE_PATH_LIBS ${OPENCASCADE_PATH}/${OPENCASCADE_PLATFORM}/${OPENCASCADE_COMPILLER}/lib/)
-endif(WIN32)
-
-
-# Paths to wxWidgets-library
-if(WIN32)
-	SET(WX_WIDGETS_INCLUDES_PATH 
-		"C:/Users/pyotr/Documents/c_projects/wxWidgets-3.0.5/include" 
-		CACHE PATH "Path to wxWidgets-library includes directory")
-
-	SET(WX_WIDGETS_LIBS_PATH 
-		"C:/Users/pyotr/Documents/c_projects/wxWidgets-3.0.5/lib/vc_dll" 
-		CACHE PATH "Path to wxWidgets-library *.lib files directory")
-		
-	SET(WX_WIDGETS_SETUP_PATH 
-		"C:/Users/pyotr/Documents/c_projects/wxWidgets-3.0.5/lib/vc_dll/mswu" 
-		CACHE PATH "Path to wxWidgets-library includes setup directory (contains setup.h)")
-endif(WIN32)
-
-# Compiller flags and options
-set(CPP_STANDARD cxx_std_17)
-
-
-SET(OCCT_LIBS_FILE_LIST
-	TKBin.lib
-	TKBinL.lib
-	TKBinTObj.lib
-	TKBinXCAF.lib
-	TKBO.lib
-	TKBool.lib
-	TKBRep.lib
-	TKCAF.lib
-	TKCDF.lib
-	TKD3DHost.lib
-	TKD3DHostTest.lib
-	TKDCAF.lib
-	TKDFBrowser.lib
-	TKDraw.lib
-	TKernel.lib
-	TKFeat.lib
-	TKFillet.lib
-	TKG2d.lib
-	TKG3d.lib
-	TKGeomAlgo.lib
-	TKGeomBase.lib
-	TKHLR.lib
-	TKIGES.lib
-	TKIVtk.lib
-	TKIVtkDraw.lib
-	TKLCAF.lib
-	TKMath.lib
-	TKMesh.lib
-	TKMeshVS.lib
-	TKMessageModel.lib
-	TKMessageView.lib
-	TKOffset.lib
-	TKOpenGl.lib
-	TKOpenGles.lib
-	TKOpenGlesTest.lib
-	TKOpenGlTest.lib
-	TKPrim.lib
-	TKQADraw.lib
-	TKRWMesh.lib
-	TKService.lib
-	TKShapeView.lib
-	TKShHealing.lib
-	TKStd.lib
-	TKStdL.lib
-	TKSTEP.lib
-	TKSTEP209.lib
-	TKSTEPAttr.lib
-	TKSTEPBase.lib
-	TKSTL.lib
-	TKTInspector.lib
-	TKTInspectorAPI.lib
-	TKTObj.lib
-	TKTObjDRAW.lib
-	TKToolsDraw.lib
-	TKTopAlgo.lib
-	TKTopTest.lib
-	TKTreeModel.lib
-	TKV3d.lib
-	TKVCAF.lib
-	TKView.lib
-	TKViewerTest.lib
-	TKVInspector.lib
-	TKVRML.lib
-	TKXCAF.lib
-	TKXDEDRAW.lib
-	TKXDEIGES.lib
-	TKXDESTEP.lib
-	TKXMesh.lib
-	TKXml.lib
-	TKXmlL.lib
-	TKXmlTObj.lib
-	TKXmlXCAF.lib
-	TKXSBase.lib
-	TKXSDRAW.lib)
-	
-SET(WX_WIDGETS_LIBS_FILE_LIST
-	wxbase30u.lib
-	wxbase30u_net.lib
-	wxbase30u_xml.lib
-	wxexpat.lib
-	wxjpeg.lib
-	wxmsw30u_adv.lib
-	wxmsw30u_aui.lib
-	wxmsw30u_core.lib
-	wxmsw30u_gl.lib
-	wxmsw30u_html.lib
-	wxmsw30u_media.lib
-	wxmsw30u_qa.lib
-	wxmsw30u_ribbon.lib
-	wxmsw30u_richtext.lib
-	wxmsw30u_stc.lib
-	wxmsw30u_webview.lib
-	wxmsw30u_xrc.lib
-	wxpng.lib
-	wxregexu.lib
-	wxscintilla.lib
-	wxtiff.lib
-	wxzlib.lib)
-	
-	
-add_subdirectory(${SUB_PROJECT_AMADINA_OBJECTS_NAME})
-add_subdirectory(${SUB_PROJECT_AMADINA_OCCT_NAME})
-add_subdirectory(${SUB_PROJECT_wxOCCT_VIEW_NAME})
-add_subdirectory(${SUB_PROJECT_AMADINA_MAIN})
-
-target_compile_features(${AMADINA_OBJECTS_LIB_NAME} PUBLIC ${CPP_STANDARD})
-target_compile_features(${AMADINA_OCCT_LIB_NAME} PUBLIC ${CPP_STANDARD})
-target_compile_features(${AMADINA_wxOCCT_LIB_NAME} PUBLIC ${CPP_STANDARD})
-target_compile_features(${AMADINA_EXECUTABLE_NAME} PUBLIC ${CPP_STANDARD})
-
-
-
+add_subdirectory(${SUB_PROJECT_AMADINA_COMMAND})
+    
