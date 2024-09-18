@@ -2,10 +2,14 @@ cmake_minimum_required(VERSION 3.23)
 
 project(${SUB_PROJECT_AMADINA_OBJECTS_NAME})
 
+set(CMAKE_CXX_STANDARD 17)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 set(SRC_PATH src/)
 set(INCLUDE_PATH include/)
 
-add_library(${AMADINA_OBJECTS_LIB_NAME} SHARED 
+set(SOURCE_FILE_LIST 
 	${INCLUDE_PATH}abstract_canvas.h
 	${INCLUDE_PATH}abstract_operation.h
 	${INCLUDE_PATH}abstract_shape.h
@@ -28,16 +32,14 @@ add_library(${AMADINA_OBJECTS_LIB_NAME} SHARED
 	${SRC_PATH}model_tree.cpp
 	${SRC_PATH}op_boolean.cpp
 	${SRC_PATH}op_extrude.cpp)
-	
-target_include_directories(amadina_objects PRIVATE ${INCLUDE_PATH})
 
-add_compile_definitions(WIN32
-	WINVER=0x0400
-	__WXMSW__
-	_WINDOWS
-	WXUSINGDLL
-	wxUSE_GUI=1
-	_UNICODE
-	_DEBUG
-	_CRT_SECURE_NO_DEPRECATE
-	_CRT_NONSTDC_NO_DEPRECATE)
+add_library(${AMADINA_OBJECTS_OUT_NAME} SHARED ${SOURCE_FILE_LIST})
+
+set_target_properties(${AMADINA_OBJECTS_OUT_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_ARCH_PATH}
+    LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_LIB_PATH}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_RUNTIME_PATH}
+)
+
+target_include_directories(${AMADINA_OBJECTS_OUT_NAME} PRIVATE ${INCLUDE_PATH})

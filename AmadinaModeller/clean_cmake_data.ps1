@@ -7,12 +7,12 @@ $DIR_PROJECTS_PATHS = -join((Get-Item .).FullName, "/"), # Current root director
                     "./AmadinaObjects/",
                     "./AmadinaOCCT/", 
                     "./AmadinaCommand/",
-                    "./wxOcctView/",
+                    "./AmadinaWxOcct/",
                     "./AmadinaModeller/"
                     
 $DIR_CMAKEFILES_DIR = "CMakeFiles"
 
-$FILE_CMAKE_FILES = "CMakeCache.txt", "cmake_install.cmake", "Build", "Makefile"
+$ROOT_FILES = "CMakeCache.txt", "cmake_install.cmake", "Build", "Makefile", "CppProperties.json"
 
 # Remove dirs CMakeFiles
 Write-Host "CMake files and directories clean..."
@@ -26,8 +26,8 @@ for ($i = 0; $i -lt $DIR_PROJECTS_PATHS.Count; $i++) {
 
 # Remove files
 for ($i = 0; $i -lt $DIR_PROJECTS_PATHS.Count; $i++) {
-    for($j = 0; $j -lt $FILE_CMAKE_FILES.Count; $j++) {
-        $fileToRemove = -join($DIR_PROJECTS_PATHS[$i], $FILE_CMAKE_FILES[$j])
+    for($j = 0; $j -lt $ROOT_FILES.Count; $j++) {
+        $fileToRemove = -join($DIR_PROJECTS_PATHS[$i], $ROOT_FILES[$j])
         if(Test-Path -LiteralPath $fileToRemove) {
             Write-Host "Removing file: " $fileToRemove
             rm $fileToRemove

@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.23)
 
 project(AmadinaModeller)
 
+# Output paths for sub-projects: %root_project_dir%/Build
+set(OUTPUT_PATH ../Build) 
+set(OUTPUT_RUNTIME_PATH ${OUTPUT_PATH}/bin)
+set(OUTPUT_ARCH_PATH ${OUTPUT_PATH}/lib)
+set(OUTPUT_LIB_PATH ${OUTPUT_PATH}/lib)
+
 # Dependencies
 # Following dependencies paths variables are used (example: see CMake.win.paths.txt):
 # - BOOST_PATH - boost library root directory                   
@@ -10,9 +16,8 @@ project(AmadinaModeller)
 # - OPENCASCADE_LIB_PATH - Path to OpenCASCADE *.lib files directory
 # - WX_WIDGETS_PATH - wxWidgets library root directory 
 # - WX_WIDGETS_INCLUDE_PATH = WX_WIDGETS_PATH/include 
-# - WX_WIDGETS_LIBS_PATH - Path to wxWidgets-library *.lib files directory
 # - WX_WIDGETS_SETUP_PATH - Path to wxWidgets-library includes setup directory, contains setup.h
-
+# - WX_WIDGETS_LIBS_PATH - Path to wxWidgets-library *.lib files directory
 
 # File containing list of dependency path variables (in the form of KEY=VALUE). 
 # Only for Windows OS: all dependencies paths should be written into the file
@@ -22,7 +27,7 @@ set(WINDOWS_DEPENDENCIES_FILENAME CMake.win.paths.txt)
 if(WIN32)
     # Read and assign dependency path variables from external file
     file(STRINGS ./${WINDOWS_DEPENDENCIES_FILENAME} WIN_PATHS)
-    message(STATUS "Setting up path values from the file: '${WINDOWS_DEPENDENCIES_FILENAME}'")
+    message(STATUS "Setting up paths values from the file: '${WINDOWS_DEPENDENCIES_FILENAME}'")
     foreach(LINE ${WIN_PATHS})
         string(REGEX MATCH "(.*)=(.*)" _ ${LINE})
         set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
@@ -40,7 +45,7 @@ if(WIN32)
 
     check_win_path(${BOOST_PATH} "Boost library")
     check_win_path(${OPENCASCADE_PATH} "OpenCASCADE library")
-    check_win_path(${OPENCASCADE_LIB_PATH} "OpenCASCADE library lib dir")
+    check_win_path(${OPENCASCADE_LIBS_PATH} "OpenCASCADE library lib dir")
     check_win_path(${WX_WIDGETS_PATH} "wxWidgets library")
     check_win_path(${WX_WIDGETS_LIBS_PATH} "wxWidgets library lib dir")
     check_win_path(${WX_WIDGETS_SETUP_PATH} "wxWidgets library setup dir")
@@ -65,11 +70,12 @@ if(WIN32)
             string(REGEX MATCH "([^\/]+$)" _ ${LINE})
             string(CONCAT FN_RESULT ${FN_RESULT} " " ${CMAKE_MATCH_1})
         endforeach()
+        string(STRIP ${FN_RESULT} FN_RESULT)
         set(${OUT_NAME} ${FN_RESULT} PARENT_SCOPE)
     endfunction()
     
     set(OPENCASCADE_LIBS_FILES)
-    find_lib_files(OPENCASCADE_LIBS_FILES ${OPENCASCADE_LIB_PATH})
+    find_lib_files(OPENCASCADE_LIBS_FILES ${OPENCASCADE_LIBS_PATH})
     message(STATUS "OpenCASCADE lib files: ${OPENCASCADE_LIBS_FILES}")
     
     set(WX_WIDGETS_LIBS_FILES)
@@ -78,19 +84,36 @@ if(WIN32)
 
 endif()
 
+# wxWidgets compile flags
+if(WIN32)
+    set(FLAGS_WX_WIDGETS
+        WINVER=0x0400
+        __WXMSW__
+        _WINDOWS
+        WXUSINGDLL
+        wxUSE_GUI=1
+        _UNICODE
+        _DEBUG
+        _CRT_SECURE_NO_DEPRECATE
+        _CRT_NONSTDC_NO_DEPRECATE)
+endif()
+
 # Sub-projects names
-#set(SUB_PROJECT_AMADINA_OBJECTS_NAME AmadinaObjects)
-#set(SUB_PROJECT_AMADINA_OCCT_NAME AmadinaOCCT)
-#set(SUB_PROJECT_wxOCCT_VIEW_NAME wxOcctView)
+set(SUB_PROJECT_AMADINA_OBJECTS_NAME AmadinaObjects)
+set(SUB_PROJECT_AMADINA_OCCT_NAME AmadinaOCCT)
+set(SUB_PROJECT_AMADINA_WX_OCCT_NAME AmadinaWxOcct)
 set(SUB_PROJECT_AMADINA_COMMAND AmadinaCommand)
-#set(SUB_PROJECT_AMADINA_MAIN AmadinaModeller)
+set(SUB_PROJECT_AMADINA_MAIN AmadinaModeller)
 
 # Output file names
-#set(AMADINA_OBJECTS_LIB_NAME amadina_objects)
-#set(AMADINA_OCCT_LIB_NAME amadina_occt)
-#set(AMADINA_wxOCCT_LIB_NAME amadina_wxocct)
-set(SUB_PROJECT_AMADINA_OUT_NAME amadina_command)
-#set(AMADINA_EXECUTABLE_NAME Amadina3D)
+set(AMADINA_OBJECTS_OUT_NAME amadina_objects)
+set(AMADINA_OCCT_OUT_NAME amadina_occt)
+set(AMADINA_WX_OCCT_OUT_NAME amadina_wx_occt)
+set(AMADINA_COMMAND_OUT_NAME amadina_command)
+set(AMADINA_EXECUTABLE_OUT_NAME Amadina3D)
 
 add_subdirectory(${SUB_PROJECT_AMADINA_COMMAND})
-    
+add_subdirectory(${SUB_PROJECT_AMADINA_OBJECTS_NAME})
+add_subdirectory(${SUB_PROJECT_AMADINA_OCCT_NAME})
+add_subdirectory(${SUB_PROJECT_AMADINA_WX_OCCT_NAME})
+add_subdirectory(${SUB_PROJECT_AMADINA_MAIN})  

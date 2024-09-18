@@ -6,14 +6,13 @@ TEST_OBJ_SUB_DIR=$(TEST_OBJ_DIR)\$(TEST_NAME)
 INCL=.\..\include
 SRC_TEST=.
 SRC=.\..\src
-SRC_CALC=$(SRC)\calculator
-SRC_CMD=$(SRC)\command_line
-SRC_VAR=$(SRC)\variables
+SRC_CALC=$(SRC)\grammars\calculator
+SRC_CMD=$(SRC)\grammars\command_line
+SRC_VAR=$(SRC)\grammars\variables
 
 FLAGS = /I $(INCL) /I $(BOOST_PATH) /std:c++17 /EHsc
 
-OBJECT_FILES = $(TEST_OBJ_SUB_DIR)\command_interpreter.obj \
-                $(TEST_OBJ_SUB_DIR)\command_parser.obj \
+OBJECT_FILES = $(TEST_OBJ_SUB_DIR)\command_parser.obj \
                 $(TEST_OBJ_SUB_DIR)\command_token.obj \
                 $(TEST_OBJ_SUB_DIR)\base_calculator.obj \
                 $(TEST_OBJ_SUB_DIR)\calc_evaluator.obj \

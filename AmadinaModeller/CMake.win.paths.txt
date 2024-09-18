@@ -1,6 +1,6 @@
 BOOST_PATH=C:\CPP\boost_1_85_0
 OPENCASCADE_PATH=C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0
-OPENCASCADE_LIB_PATH=C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0\win64\vc14\lib
+OPENCASCADE_LIBS_PATH=C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0\win64\vc14\lib
 WX_WIDGETS_PATH=C:\CPP\wxWidgets\wxWidgets-3.2.2.1
 WX_WIDGETS_LIBS_PATH=C:\CPP\wxWidgets\wxWidgets-3.2.2.1\lib\143_dll
 WX_WIDGETS_SETUP_PATH=C:\CPP\wxWidgets\wxWidgets-3.2.2.1\lib\143_dll\mswu
