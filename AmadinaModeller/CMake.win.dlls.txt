@@ -1,0 +1,7 @@
+C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0\win64\vc14\bin
+C:\Users\pyotr\Documents\c_projects\wxWidgets-3.0.5\lib\vc_dll
+C:\CPP\OpenCASCADE-7.6.0-vc14-64\freetype-2.5.5-vc14-64\bin
+C:\CPP\OpenCASCADE-7.6.0-vc14-64\openvr-1.14.15-64\bin\win64
+C:\CPP\OpenCASCADE-7.6.0-vc14-64\freeimage-3.17.0-vc14-64\bin
+C:\CPP\OpenCASCADE-7.6.0-vc14-64\tbb_2017.0.100\bin\intel64\vc14
+C:\CPP\OpenCASCADE-7.6.0-vc14-64\ffmpeg-3.3.4-64\bin

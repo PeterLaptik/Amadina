@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.23)
 project(AmadinaModeller)
 
 # Output paths for sub-projects: %root_project_dir%/Build
-set(OUTPUT_PATH ../Build) 
+set(OUTPUT_DIR_NAME Build)
+set(OUTPUT_PATH ../${OUTPUT_DIR_NAME}) 
 set(OUTPUT_RUNTIME_PATH ${OUTPUT_PATH}/bin)
 set(OUTPUT_ARCH_PATH ${OUTPUT_PATH}/lib)
 set(OUTPUT_LIB_PATH ${OUTPUT_PATH}/lib)
@@ -15,15 +16,18 @@ set(OUTPUT_LIB_PATH ${OUTPUT_PATH}/lib)
 # - OPENCASCADE_INCLUDE_PATH - OPENCASCADE_PATH/inc
 # - OPENCASCADE_LIB_PATH - Path to OpenCASCADE *.lib files directory
 # - WX_WIDGETS_PATH - wxWidgets library root directory 
-# - WX_WIDGETS_INCLUDE_PATH = WX_WIDGETS_PATH/include 
+# - WX_WIDGETS_INCLUDE_PATH - WX_WIDGETS_PATH/include 
 # - WX_WIDGETS_SETUP_PATH - Path to wxWidgets-library includes setup directory, contains setup.h
 # - WX_WIDGETS_LIBS_PATH - Path to wxWidgets-library *.lib files directory
 
 # File containing list of dependency path variables (in the form of KEY=VALUE). 
-# Only for Windows OS: all dependencies paths should be written into the file
+# Only for Windows OS
 set(WINDOWS_DEPENDENCIES_FILENAME CMake.win.paths.txt)
 
-# Setting up dependency environment.
+# Project variables
+set(PROJECT_VARIABLES_FILENAME CMake.vars.txt)
+
+# Setting up dependencies.
 if(WIN32)
     # Read and assign dependency path variables from external file
     file(STRINGS ./${WINDOWS_DEPENDENCIES_FILENAME} WIN_PATHS)
@@ -68,9 +72,8 @@ if(WIN32)
         
         foreach(LINE ${LIB_FILES_LIST})
             string(REGEX MATCH "([^\/]+$)" _ ${LINE})
-            string(CONCAT FN_RESULT ${FN_RESULT} " " ${CMAKE_MATCH_1})
+            list(APPEND FN_RESULT ${CMAKE_MATCH_1})
         endforeach()
-        string(STRIP ${FN_RESULT} FN_RESULT)
         set(${OUT_NAME} ${FN_RESULT} PARENT_SCOPE)
     endfunction()
     
@@ -98,6 +101,16 @@ if(WIN32)
         _CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
+file(STRINGS ./${PROJECT_VARIABLES_FILENAME} PROJECT_VARS)
+message(STATUS "Setting up project variables from the file: '${PROJECT_VARIABLES_FILENAME}'")
+foreach(LINE ${PROJECT_VARS})
+    string(REGEX MATCH "(.*)=(.*)" _ ${LINE})
+    set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
+    message(STATUS "\t ${CMAKE_MATCH_1} = ${CMAKE_MATCH_2}")
+endforeach()
+
+set(A_VERSION ${A_VERSION_MAJOR}.${A_VERSION_MINOR}.${A_VERSION_PATH})
+
 # Sub-projects names
 set(SUB_PROJECT_AMADINA_OBJECTS_NAME AmadinaObjects)
 set(SUB_PROJECT_AMADINA_OCCT_NAME AmadinaOCCT)
@@ -106,14 +119,19 @@ set(SUB_PROJECT_AMADINA_COMMAND AmadinaCommand)
 set(SUB_PROJECT_AMADINA_MAIN AmadinaModeller)
 
 # Output file names
-set(AMADINA_OBJECTS_OUT_NAME amadina_objects)
-set(AMADINA_OCCT_OUT_NAME amadina_occt)
-set(AMADINA_WX_OCCT_OUT_NAME amadina_wx_occt)
-set(AMADINA_COMMAND_OUT_NAME amadina_command)
-set(AMADINA_EXECUTABLE_OUT_NAME Amadina3D)
+set(AMADINA_OBJECTS_OUT_NAME amadina_objects_${A_VERSION})
+set(AMADINA_OCCT_OUT_NAME amadina_occt_${A_VERSION})
+set(AMADINA_WX_OCCT_OUT_NAME amadina_wx_occt_${A_VERSION})
+set(AMADINA_COMMAND_OUT_NAME amadina_command_${A_VERSION})
+set(AMADINA_EXECUTABLE_OUT_NAME Amadina3D_${A_VERSION})
 
 add_subdirectory(${SUB_PROJECT_AMADINA_COMMAND})
 add_subdirectory(${SUB_PROJECT_AMADINA_OBJECTS_NAME})
 add_subdirectory(${SUB_PROJECT_AMADINA_OCCT_NAME})
 add_subdirectory(${SUB_PROJECT_AMADINA_WX_OCCT_NAME})
-add_subdirectory(${SUB_PROJECT_AMADINA_MAIN})  
+add_subdirectory(${SUB_PROJECT_AMADINA_MAIN})
+
+add_custom_target(win_fetch_dlls
+    "Powershell" "./package_creator.cmd" 
+        "${OUTPUT_DIR_NAME}"
+) 

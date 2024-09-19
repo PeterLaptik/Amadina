@@ -39,7 +39,6 @@ class wxModelTree: public wxTreeCtrl, public ModelTree
         void RemoveUnusedName(const wxString &name);
 
         std::set<wxString> m_used_names;
-        std::unique_ptr<wxImageList> m_images_list;
 
      DECLARE_EVENT_TABLE()
 };

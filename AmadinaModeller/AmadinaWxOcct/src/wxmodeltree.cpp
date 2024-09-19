@@ -35,7 +35,6 @@ static const std::map<std::string, wxString> object_visible_names = {
 wxModelTree::wxModelTree(wxWindow *parent, AbstractCanvas *canvas)
 	: wxTreeCtrl(parent), ModelTree(canvas)
 {
-	// TODO: correct for test / release
 	ResourceProviderFS prv;
 	AssignImageList(prv.GetTreeMenuImageList());
 }
@@ -50,7 +49,8 @@ void wxModelTree::AddItem(AbstractShape *shape, const wxString &name)
 {
 	wxTreeItemId root_id = GetRootItem();
 
-	AppendItem(root_id, name, -1, -1, new wxCadTreeData(shape, name));
+	wxTreeItemId id = AppendItem(root_id, name, 
+		TreeMenuIcons::no_icon, TreeMenuIcons::no_icon, new wxCadTreeData(shape, name));
 	Expand(root_id);
 
 	ModelTree::AddItem(shape);
@@ -134,15 +134,15 @@ void wxModelTree::UpdateIcons()
 		auto obj = cad_data->GetShape();
 		if (obj->GetIsVisible())
 		{
-			SetItemImage(child, -1);
+			SetItemImage(child, TreeMenuIcons::no_icon);
 		}
 		else
 		{
-			SetItemImage(child, 0);
+			SetItemImage(child, TreeMenuIcons::ico_hidden);
 		}
 
 		if (auto occt_obj = dynamic_cast<AbstractOperation*>(obj); occt_obj && !occt_obj->IsValid())
-			SetItemImage(child, 1);
+			SetItemImage(child, TreeMenuIcons::ico_error);
 
 		child = GetNextChild(child, cookie);
 	}
