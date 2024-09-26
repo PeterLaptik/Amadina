@@ -1,4 +1,5 @@
 #include "command_panel.h"
+#include "command_autocompleter_vec.h"
 
 const int MAX_COMMAND_LINE_LENGTH = 255;
 const int MAX_COMMAND_LINE_VISIBLE_HISTORY = 15;
@@ -20,6 +21,7 @@ CommandPanel::CommandPanel(wxWindow *parent, wxWindowID id)
     SetSizer(m_main_sizer);
 
     m_txt_input->Bind(wxEVT_CHAR, &CommandPanel::OnChar, this);
+    m_autocompleter = std::make_unique<CommandAutocompliterVec>();
 }
 
 void CommandPanel::InputText(const wxString &txt)
@@ -36,9 +38,9 @@ void CommandPanel::InputText(const wxString &txt)
     m_txt_history->AppendText('\n');
 }
 
-void CommandPanel::SetAutocompleteList(const std::vector<std::string> *vec)
+void CommandPanel::SetAutocompleteList(const std::vector<std::string> *list)
 {
-    m_autocomplete_list = vec;
+    m_autocompleter->SetCommandList(list);
 }
 
 void CommandPanel::OnChar(wxKeyEvent &event)
@@ -53,7 +55,7 @@ void CommandPanel::OnChar(wxKeyEvent &event)
 
     if(code == WXK_TAB)
     {
-        SearchCommandByMask();
+        ProposeCommandByFirstChars();
         return;
     }
 
@@ -67,11 +69,16 @@ void CommandPanel::DeleteHistoryTopLine()
     m_txt_history->Remove(0, remove_pos);
 }
 
-void CommandPanel::SearchCommandByMask()
+void CommandPanel::ProposeCommandByFirstChars()
 {
     wxString &txt = m_txt_input->GetValue();
-    if (txt.Find(' ') == -1)
+    if (txt.Find(' ') != -1)
         return;
 
-
+    bool has_choise = m_autocompleter->SetNextChoiceFor(txt.ToStdString());
+    if (has_choise)
+    {
+        m_txt_input->SetValue(m_autocompleter->GetNextChoice());
+        m_txt_input->SetInsertionPoint(m_txt_input->GetLastPosition());
+    }
 }

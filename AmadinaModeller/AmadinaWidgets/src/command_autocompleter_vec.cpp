@@ -1,43 +1,86 @@
 #include "command_autocompleter_vec.h"
 #include <algorithm>
+#include <iterator>
 
-CommandAutocompliterVec::CommandAutocompliterVec(const std::vector<std::string> &list)
-    : m_list(list), m_current_size(list.size())
+// Autocomplete util shows ptopositions only if its quantity is not higher than this value
+const int MAX_CHOICE_NUMBER = 5;
+
+
+void CommandAutocompliterVec::SetCommandList(const std::vector<std::string> *list)
 {
-    m_match_range.cursor = m_list.end();
+    m_list = list;
 }
 
-bool CommandAutocompliterVec::SetNextChoiceFor(const std::string & prefix)
+bool CommandAutocompliterVec::SetNextChoiceFor(const std::string &prefix)
 {
-    if(m_list.empty())
+    if(m_list->empty())
         return false;
 
-    if (m_current_size != m_list.size() || m_current_prefix != prefix)
-        UpdateRange();
+    // List has been changed / invalidated, or a new prefix is retyped
+    if (m_current_size != m_list->size() || m_current_proposal != prefix)
+        UpdateRange(prefix);
 
-    return false;
+    // There are no choices / too many choices
+    if (m_match_range.cursor == -1 || (m_match_range.end - m_match_range.start > MAX_CHOICE_NUMBER))
+        return false;
+
+    // Last value was shown. Set up initial string as a proposition, and go to begin
+    if (m_match_range.cursor > m_match_range.end)
+    {
+        m_current_proposal = m_initial_prefix;
+        m_match_range.cursor = m_match_range.start;
+    }
+    // Get next proposition
+    else
+    {
+        m_current_proposal = (*m_list)[m_match_range.cursor];
+        m_match_range.cursor++;
+    }
+
+    return true;
 }
 
-void CommandAutocompliterVec::UpdateRange()
+std::string& CommandAutocompliterVec::GetNextChoice()
 {
-    auto str_starts_with_prefix = [&](const std::string &command) {
-        size_t pos = command.find(m_current_prefix);
-        if (pos != 0 && pos != std::string::npos)
+    return m_current_proposal;
+}
+
+void CommandAutocompliterVec::UpdateRange(const std::string &prefix)
+{
+    m_current_size = m_list->size();
+    m_initial_prefix = prefix;
+
+    // Lower case copy: lower case letters only are expected in a command list
+    std::string upper_case_prefix;
+    std::transform(m_initial_prefix.begin(), m_initial_prefix.end(), 
+        std::back_insert_iterator<std::string>(upper_case_prefix),
+        [](char ch) {
+            return std::tolower(ch);
+        });
+
+    // Is the command name begins with the prefix
+    auto str_starts_with_prefix = [&](const std::string_view &command) {
+        size_t pos = command.find(upper_case_prefix);
+        if (pos == 0 && pos != std::string::npos)
             return true;
 
         return false;
-     };
+        };
 
-    m_current_size = m_list.size();
-
-    auto range_start = find_if(m_list.begin(), m_list.end(), str_starts_with_prefix);
-    if (range_start == m_list.end())
+    // First matching command occurence
+    auto range_start = find_if(m_list->begin(), m_list->end(), str_starts_with_prefix);
+    if (range_start == m_list->end())
     {
         m_match_range.cursor = -1;
         return;
     }
 
-    auto range_end = find_if(range_start, m_list.end(), str_starts_with_prefix);
-    if (range_end == m_list.end())
-        range_end--;
+    // Last matching command occurence
+    auto range_end = find_if_not(range_start, m_list->end(), str_starts_with_prefix);
+    range_end--;
+
+    // Transorm found diapason to indeces
+    m_match_range.start = std::distance(m_list->begin(), range_start);
+    m_match_range.end = std::distance(m_list->begin(), range_end);
+    m_match_range.cursor = m_match_range.start;
 }

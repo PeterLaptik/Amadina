@@ -10,6 +10,7 @@
 #include "wxTestMain.h"
 #include "command_panel.h"
 #include <wx/msgdlg.h>
+#include <algorithm>
 
 //(*InternalHeaders(wxTestFrame)
 #include <wx/intl.h>
@@ -42,8 +43,8 @@ wxString wxbuildinfo(wxbuildinfoformat format)
     return wxbuild;
 }
 
-std::vector<std::string> auto_ist = {"abc", "abx", "aby", "ert", "erz", "ert", "erz", "ert", "erz", "ert", "erz", "ert", "erz", "ert", "erz", 
-    "LINE", "CIRCLE", "ARC", "CUBE"};
+std::vector<std::string> auto_list = {"abc", "abx", "aby", "ert", "erz", "ert", "erz", "ert", "erz", "ert", "erz", "ert", "erz", "ert", "erz", 
+    "LINE", "CIRCLE", "arc", "CUBE"};
 
 //(*IdInit(wxTestFrame)
 const long wxTestFrame::ID_BUTTON1 = wxNewId();
@@ -102,6 +103,16 @@ wxTestFrame::wxTestFrame(wxWindow* parent,wxWindowID id)
       Menu2->Append(MenuItem2);
       MenuBar1->Append(Menu2, _("Help"));
       SetMenuBar(MenuBar1);
+
+      for (std::string &str : auto_list)
+      {
+          std::transform(str.begin(), str.end(), str.begin(),
+              [](char ch) {
+                  return std::tolower(ch);
+              });
+      }
+
+      m_cmd->SetAutocompleteList(&auto_list);
 
       Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&wxTestFrame::OnButton1Click);
       Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&wxTestFrame::OnQuit);
