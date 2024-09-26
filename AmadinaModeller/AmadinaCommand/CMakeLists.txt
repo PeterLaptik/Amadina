@@ -47,4 +47,4 @@ set_target_properties(${AMADINA_COMMAND_OUT_NAME}
 )
 		
 target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${INCLUDE_PATH})
-target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${BOOST_PATH})
+target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${BOOST_ROOT_DIR})

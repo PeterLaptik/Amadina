@@ -12,13 +12,13 @@ set(AMADINA_WX_OCCT_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_WX_OCCT_NAME}/include)
 
 set(EXEC_TYPE)
 if(WIN32)
-    add_compile_definitions(${FLAGS_WX_WIDGETS})
+    add_compile_definitions(${FLAGS_WX_WIDGETS_WIN32})
     set(EXEC_TYPE WIN32)
 endif()
 
 link_directories(${OUTPUT_LIB_PATH}
-                ${WX_WIDGETS_LIBS_PATH}
-                ${OPENCASCADE_LIBS_PATH})
+                ${WX_WIDGETS_LIBRARIES}
+                ${OPENCASCADE_LIBRARIES})
 	
 add_executable(${AMADINA_EXECUTABLE_OUT_NAME} ${EXEC_TYPE} 
 	${INCLUDE_PATH}amadina_app.h
@@ -36,13 +36,15 @@ set_target_properties(${AMADINA_EXECUTABLE_OUT_NAME}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_RUNTIME_PATH}
 )
 
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE 
+	${INCLUDE_PATH}
+	${AMADINA_WX_OCCT_INCLUDE_PATH}
+	${WX_WIDGETS_INCLUDE_DIRS}
+	${WX_WIDGETS_INCLUDE_SETUP_H_DIR})
+    
 target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME}
 	${WX_WIDGETS_LIBS_FILES}
 	${AMADINA_WX_OCCT_OUT_NAME})
 	
-target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE 
-	${INCLUDE_PATH}
-	${AMADINA_WX_OCCT_INCLUDE_PATH}
-	${WX_WIDGETS_INCLUDE_PATH}
-	${WX_WIDGETS_SETUP_PATH})
+
 	
