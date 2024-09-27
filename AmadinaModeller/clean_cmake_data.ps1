@@ -8,6 +8,7 @@ $DIR_PROJECTS_PATHS = -join((Get-Item .).FullName, "/"), # Current root director
                     "./AmadinaOCCT/", 
                     "./AmadinaCommand/",
                     "./AmadinaWxOcct/",
+                    "./AmadinaWidgets/",
                     "./AmadinaModeller/"
                     
 $DIR_CMAKEFILES_DIR = "CMakeFiles"

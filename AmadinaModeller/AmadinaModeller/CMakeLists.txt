@@ -5,9 +5,9 @@ project(${SUB_PROJECT_AMADINA_MAIN})
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(SRC_PATH src/)
-set(INCLUDE_PATH include/)
-set(RES_PATH resources/)
+set(SRC_PATH src)
+set(INCLUDE_PATH include)
+set(RES_PATH resources)
 set(AMADINA_WX_OCCT_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_WX_OCCT_NAME}/include)
 
 set(EXEC_TYPE)
@@ -16,18 +16,18 @@ if(WIN32)
     set(EXEC_TYPE WIN32)
 endif()
 
-link_directories(${OUTPUT_LIB_PATH}
-                ${WX_WIDGETS_LIBRARIES}
-                ${OPENCASCADE_LIBRARIES})
+link_directories(${OUTPUT_LIB_PATH})
+link_directories(${WX_WIDGETS_LIBRARIES})
+link_directories(${OPENCASCADE_LIBRARIES})
 	
 add_executable(${AMADINA_EXECUTABLE_OUT_NAME} ${EXEC_TYPE} 
-	${INCLUDE_PATH}amadina_app.h
-	${INCLUDE_PATH}main_frame.h
-	${SRC_PATH}amadina_app.cpp
-	${SRC_PATH}main_frame.cpp
-	${RES_PATH}art.cpp
-	${RES_PATH}art.h
-	${RES_PATH}icons.h)
+	${INCLUDE_PATH}/amadina_app.h
+	${INCLUDE_PATH}/main_frame.h
+	${SRC_PATH}/amadina_app.cpp
+	${SRC_PATH}/main_frame.cpp
+	${RES_PATH}/art.cpp
+	${RES_PATH}/art.h
+	${RES_PATH}/icons.h)
     
 set_target_properties(${AMADINA_EXECUTABLE_OUT_NAME}
     PROPERTIES
@@ -36,15 +36,14 @@ set_target_properties(${AMADINA_EXECUTABLE_OUT_NAME}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_RUNTIME_PATH}
 )
 
-target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE 
-	${INCLUDE_PATH}
-	${AMADINA_WX_OCCT_INCLUDE_PATH}
-	${WX_WIDGETS_INCLUDE_DIRS}
-	${WX_WIDGETS_INCLUDE_SETUP_H_DIR})
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${INCLUDE_PATH})
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WX_OCCT_INCLUDE_PATH})
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_DIRS} PRIVATE)
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_SETUP_H_DIR})
     
-target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME}
-	${WX_WIDGETS_LIBS_FILES}
-	${AMADINA_WX_OCCT_OUT_NAME})
+target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_LIBS_FILES})
+target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WX_OCCT_OUT_NAME})
+target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${OPENCASCADE_LIBS_FILES})
 	
 
 	

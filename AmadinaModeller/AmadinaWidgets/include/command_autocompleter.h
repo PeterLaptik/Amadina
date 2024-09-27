@@ -9,11 +9,11 @@
 /// The command list has to satisfy following requirements:
 ///\li list has to be sorted
 ///\li all command names should contain lower case characters only
-class CommandAutocompliter
+class CommandAutocompleter
 {
     public:
-        CommandAutocompliter() = default;
-        virtual ~CommandAutocompliter() = default;
+        CommandAutocompleter() = default;
+        virtual ~CommandAutocompleter() = default;
 
         /// Assign pointer for a sorted command list
         virtual void SetCommandList(const std::vector<std::string> *list) = 0;

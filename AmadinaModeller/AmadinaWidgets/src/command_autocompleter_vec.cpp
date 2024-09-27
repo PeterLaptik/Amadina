@@ -6,18 +6,18 @@
 const int MAX_CHOICE_NUMBER = 5;
 
 
-void CommandAutocompliterVec::SetCommandList(const std::vector<std::string> *list)
+void CommandAutocompleterVec::SetCommandList(const std::vector<std::string> *list)
 {
     m_list = list;
 }
 
-bool CommandAutocompliterVec::SetNextChoiceFor(const std::string &prefix)
+bool CommandAutocompleterVec::SetNextChoiceFor(const std::string &prefix)
 {
     if(m_list->empty())
         return false;
 
     // List has been changed / invalidated, or a new prefix is retyped
-    if (m_current_size != m_list->size() || m_current_proposal != prefix)
+    if (m_current_list_size != m_list->size() || m_current_proposal != prefix)
         UpdateRange(prefix);
 
     // There are no choices / too many choices
@@ -40,14 +40,14 @@ bool CommandAutocompliterVec::SetNextChoiceFor(const std::string &prefix)
     return true;
 }
 
-std::string& CommandAutocompliterVec::GetNextChoice()
+std::string& CommandAutocompleterVec::GetNextChoice()
 {
     return m_current_proposal;
 }
 
-void CommandAutocompliterVec::UpdateRange(const std::string &prefix)
+void CommandAutocompleterVec::UpdateRange(const std::string &prefix)
 {
-    m_current_size = m_list->size();
+    m_current_list_size = m_list->size();
     m_initial_prefix = prefix;
 
     // Lower case copy: lower case letters only are expected in a command list

@@ -12,6 +12,10 @@ endif()
 set(SRC_PATH src)
 set(INCLUDE_PATH include)
 
+link_directories(../AmadinaObjects/)
+link_directories(${OPENCASCADE_LIBRARIES})
+link_directories(${OUTPUT_LIB_PATH})
+
 set(SOURCE_FILE_LIST
     ${INCLUDE_PATH}/command_functions_def.h    
 	${INCLUDE_PATH}/command_parser.h  

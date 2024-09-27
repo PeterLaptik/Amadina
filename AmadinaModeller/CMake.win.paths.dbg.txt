@@ -1,3 +1,4 @@
+# Main dependencies
 BOOST_ROOT_DIR=C:\CPP\boost_1_85_0
 OPENCASCADE_ROOT_DIR=C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0
 OPENCASCADE_EXECUTABLE=C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0\win64\vc14\bin
@@ -5,7 +6,7 @@ OPENCASCADE_INCLUDE_DIRS=C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0\inc
 OPENCASCADE_LIBRARIES=C:\CPP\OpenCASCADE-7.6.0-vc14-64\opencascade-7.6.0\win64\vc14\lib
 WX_WIDGETS_ROOT_DIR=D:\CPP-repository\wxWidgets-3.0.5
 WX_WIDGETS_INCLUDE_DIRS=D:\CPP-repository\wxWidgets-3.0.5\include
-WX_WIDGETS_INCLUDE_SETUP_H_DIR=D:\CPP-repository\wxWidgets-3.0.5\lib\vc_x64_dll\mswu
-WX_WIDGETS_LIBRARIES=D:\CPP-repository\wxWidgets-3.0.5\lib\vc_x64_dll
-WX_WIDGETS_EXECUTABLE=D:\CPP-repository\wxWidgets-3.0.5\lib\vc_x64_dll
+WX_WIDGETS_INCLUDE_SETUP_H_DIR=D:\CPP-repository\wxWidgets-3.0.5\lib\vc_x64d_dll\mswud
+WX_WIDGETS_LIBRARIES=D:\CPP-repository\wxWidgets-3.0.5\lib\vc_x64d_dll
+WX_WIDGETS_EXECUTABLE=D:\CPP-repository\wxWidgets-3.0.5\lib\vc_x64d_dll
 

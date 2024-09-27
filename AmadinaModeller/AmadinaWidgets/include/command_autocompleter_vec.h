@@ -8,11 +8,11 @@
 /// sequently called. GetNextChoice call without SetNextChoiceFor returns the same proposal.
 ///\see CommandAutocompleter
 ///\see CommandPanel how to use
-class CommandAutocompliterVec: public CommandAutocompliter
+class CommandAutocompleterVec: public CommandAutocompleter
 {
     public:
-        CommandAutocompliterVec() = default;
-        ~CommandAutocompliterVec() override  = default;
+        CommandAutocompleterVec() = default;
+        ~CommandAutocompleterVec() override  = default;
 
         void SetCommandList(const std::vector<std::string> *list) override;
 
@@ -42,7 +42,7 @@ class CommandAutocompliterVec: public CommandAutocompliter
         const std::vector<std::string> *m_list; // sorted list of command names
         std::string m_current_proposal;         // current proposal
         std::string m_initial_prefix;           // initial prefix
-        size_t m_current_size;                  // list size
+        size_t m_current_list_size;             // list size
 };
 
 #endif // !COMMAND_AUTOCOMPLETER_VEC_H_INCLUDED

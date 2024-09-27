@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 
 project(AmadinaModeller)
 
-# Output paths for sub-projects: %root_project_dir%/Build (upper level for each sub-project)
+# Output paths for sub-projects: %root_project_dir%/Build (upper level directory for each sub-project)
 set(OUTPUT_DIR_NAME Build)
 set(OUTPUT_PATH ../${OUTPUT_DIR_NAME}) 
 set(OUTPUT_RUNTIME_PATH ${OUTPUT_PATH}/bin)
@@ -18,14 +18,14 @@ include(FsUtilsWinPaths)
 set(PROJECT_VARIABLES_FILENAME CMake.vars.txt)
 set(PROJECT_VARIABLES_LISTS_FILENAME CMake.vars.lists.txt)
 
-# File containing list of dependency path variables.
+# File containing list of dependencies paths variables.
 # Only for Windows OS
 set(WINDOWS_DEPENDENCIES_FILENAME CMake.win.paths.txt) # in the form of KEY=VALUE
-set(WINDOWS_DEPENDENCIES_TP_DLLS CMake.win.dlls.txt)      # list of paths, see comment inside
+set(WINDOWS_DEPENDENCIES_TP_DLLS CMake.win.dlls.txt)   # list of paths to third party dlls, see comment inside
 
 # Setting up dependencies.
 if(WIN32)
-    # Full list of required dependencies see in CMake.win.paths.txt (WINDOWS_DEPENDENCIES_FILENAME)
+    # Full list of required dependencies see in CMake.win.paths.txt 
     read_dependencies_from_file(${WINDOWS_DEPENDENCIES_FILENAME})
 
     check_win_path(${BOOST_ROOT_DIR} "Boost library")
@@ -60,6 +60,7 @@ set(SUB_PROJECT_AMADINA_OBJECTS_NAME AmadinaObjects)
 set(SUB_PROJECT_AMADINA_OCCT_NAME AmadinaOCCT)
 set(SUB_PROJECT_AMADINA_WX_OCCT_NAME AmadinaWxOcct)
 set(SUB_PROJECT_AMADINA_COMMAND AmadinaCommand)
+set(SUB_PROJECT_AMADINA_WIDGETS AmadinaWidgets)
 set(SUB_PROJECT_AMADINA_MAIN AmadinaModeller)
 
 # Output file names
@@ -67,6 +68,7 @@ set(AMADINA_OBJECTS_OUT_NAME amadina_objects_${A_VERSION})
 set(AMADINA_OCCT_OUT_NAME amadina_occt_${A_VERSION})
 set(AMADINA_WX_OCCT_OUT_NAME amadina_wx_occt_${A_VERSION})
 set(AMADINA_COMMAND_OUT_NAME amadina_command_${A_VERSION})
+set(AMADINA_WIDGETS_OUT_NAME amadina_widgets_${A_VERSION})
 set(AMADINA_EXECUTABLE_OUT_NAME Amadina3D_${A_VERSION})
 
 # Sub projects
@@ -74,6 +76,7 @@ add_subdirectory(${SUB_PROJECT_AMADINA_COMMAND})
 add_subdirectory(${SUB_PROJECT_AMADINA_OBJECTS_NAME})
 add_subdirectory(${SUB_PROJECT_AMADINA_OCCT_NAME})
 add_subdirectory(${SUB_PROJECT_AMADINA_WX_OCCT_NAME})
+add_subdirectory(${SUB_PROJECT_AMADINA_WIDGETS})
 add_subdirectory(${SUB_PROJECT_AMADINA_MAIN})
 
 

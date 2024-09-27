@@ -1,45 +1,47 @@
 cmake_minimum_required(VERSION 3.23)
 
-project(AmadinaWidgets)
-
-set(THIS__NAME test)
+project(${SUB_PROJECT_AMADINA_WIDGETS})
 
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(WX_WIDGETS_PATH D:/CPP-repository/wxWidgets-3.0.5)
-set(WX_WIDGETS_LIBS_PATH D:/CPP-repository/wxWidgets-3.0.5/lib/vc_x64d_dll)
-set(WX_WIDGETS_SETUP_PATH D:/CPP-repository/wxWidgets-3.0.5/lib/vc_x64d_dll/mswud)
-set(WX_WIDGETS_INCLUDE_PATH ${WX_WIDGETS_PATH}/include)
+if(NOT (CMAKE_GENERATOR MATCHES "Visual Studio") )
+   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
+if(WIN32)
+    add_compile_definitions(${FLAGS_WX_WIDGETS_WIN32})
+endif()
 
 set(SRC_PATH src)
 set(INCLUDE_PATH include)
-set(FLAGS_WX_WIDGETS
-        WINVER=0x0400
-        __WXMSW__
-        _WINDOWS
-        WXUSINGDLL
-        wxUSE_GUI=1
-        _UNICODE
-        _DEBUG
-        _CRT_SECURE_NO_DEPRECATE
-        _CRT_NONSTDC_NO_DEPRECATE)
-        
-add_compile_definitions(${FLAGS_WX_WIDGETS})
-link_directories(${WX_WIDGETS_LIBS_PATH})
 
-add_executable(${THIS__NAME} WIN32
-	${INCLUDE_PATH}/command_panel.h
-	${INCLUDE_PATH}/wxTestApp.h
-	${SRC_PATH}/command_panel.cpp
-	${SRC_PATH}/wxTestApp.cpp
-    ${INCLUDE_PATH}/wxTestMain.h
-    ${SRC_PATH}/wxTestMain.cpp)
-
+link_directories(${OUTPUT_LIB_PATH})
+link_directories(${WX_WIDGETS_LIBRARIES})
                 
-target_link_libraries(${THIS__NAME}  wxbase30ud.lib;wxbase30ud_net.lib;wxbase30ud_xml.lib;wxexpatd.lib;wxjpegd.lib;wxmsw30ud_adv.lib;wxmsw30ud_aui.lib;wxmsw30ud_core.lib;wxmsw30ud_gl.lib;wxmsw30ud_html.lib;wxmsw30ud_media.lib;wxmsw30ud_propgrid.lib;wxmsw30ud_qa.lib;wxmsw30ud_ribbon.lib;wxmsw30ud_richtext.lib;wxmsw30ud_stc.lib;wxmsw30ud_webview.lib;wxmsw30ud_xrc.lib;wxpngd.lib;wxregexud.lib;wxscintillad.lib;wxtiffd.lib;wxzlibd.lib)
-	
-target_include_directories(${THIS__NAME} PRIVATE 
-	${INCLUDE_PATH}
-	${WX_WIDGETS_INCLUDE_PATH}
-	${WX_WIDGETS_SETUP_PATH})
+set(SOURCE_FILE_LIST
+	${INCLUDE_PATH}/command_panel.h
+	${INCLUDE_PATH}/command_autocompleter.h
+    ${INCLUDE_PATH}/command_autocompleter_vec.h
+	${SRC_PATH}/command_panel.cpp
+    ${SRC_PATH}/command_autocompleter_vec.cpp
+    ${INCLUDE_PATH}/wxTestApp.h
+    ${INCLUDE_PATH}/wxTestMain.h
+    ${SRC_PATH}/wxTestMain.cpp
+    ${SRC_PATH}/wxTestApp.cpp)
+
+add_library(${AMADINA_WIDGETS_OUT_NAME} SHARED ${SOURCE_FILE_LIST})
+
+set_target_properties(${AMADINA_WIDGETS_OUT_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_ARCH_PATH}
+    LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_LIB_PATH}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_RUNTIME_PATH}
+)
+     
+target_include_directories(${AMADINA_WIDGETS_OUT_NAME} PRIVATE ${INCLUDE_PATH})
+target_include_directories(${AMADINA_WIDGETS_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_DIRS})
+target_include_directories(${AMADINA_WIDGETS_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_SETUP_H_DIR})
+    
+target_link_libraries(${AMADINA_WIDGETS_OUT_NAME} PRIVATE ${WX_WIDGETS_LIBS_FILES})
+#target_link_libraries(${AMADINA_WIDGETS_OUT_NAME} PRIVATE ${AMADINA_WX_OCCT_OUT_NAME})
