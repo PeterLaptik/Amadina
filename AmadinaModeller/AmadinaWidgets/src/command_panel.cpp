@@ -93,7 +93,7 @@ void CommandPanel::DeleteHistoryTopLine()
 
 void CommandPanel::ProposeCommandByFirstChars()
 {
-    wxString &txt = m_txt_input->GetValue();
+    const wxString &txt = m_txt_input->GetValue();
     if (txt.Find(' ') != -1) // Only first word autocomplete is allowed
         return;
 

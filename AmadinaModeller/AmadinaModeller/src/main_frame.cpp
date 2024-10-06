@@ -17,7 +17,7 @@ using modeller::art::Icon;
 using modeller::art::get_icon;
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
-    EVT_PAINT(MainFrame::OnPaint)
+    //EVT_PAINT(MainFrame::OnPaint)
     EVT_RIBBONBUTTONBAR_CLICKED(wxID_ANY, MainFrame::OnButtonClicked)
     //EVT_RIBBONBAR_TAB_LEFT_DCLICK(wxID_ANY, MainFrame::OnButtonClicked)
 wxEND_EVENT_TABLE()
@@ -70,7 +70,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 	m_modeller = get_abstract_modeller(this);//new wxModeller3D(this);
 	m_notebook->AddPage(m_modeller, "test");
 
-    m_modeller->Test();
+    //m_modeller->Test();
 }
 
 MainFrame::~MainFrame()
@@ -166,6 +166,6 @@ void MainFrame::SketchModeHandler(wxEvent &event)
     //view_cube->HandleClick(click_emulator);
 
     //ctx->SetScreenMode(is_pushed ? ScreenMode::SCREEN_SKETCHING : ScreenMode::SCREEN_MODELLING);
-    //m_modeller->Test();
-    //wxMessageBox("OK");
+    m_modeller->Test();
+    wxMessageBox("OK");
 }

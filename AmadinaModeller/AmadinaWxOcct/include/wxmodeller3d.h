@@ -2,7 +2,6 @@
 #define WXMODELLER3D_H
 
 #include "abstract_modeller.h"
-#include "context.h"
 #include "wxoccpanel_styles.h"
 
 class wxTreeCtrl;
@@ -11,7 +10,7 @@ class wxBoxSizer;
 class wxSplitterWindow;
 class wxModelTree;
 
-using cad::modeller::Context;
+class Context;
 
 ///\brief Composite widget for interactive modelling
 class wxModeller3D:  public wxAbstractModeller

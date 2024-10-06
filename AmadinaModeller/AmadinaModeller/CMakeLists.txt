@@ -5,16 +5,20 @@ project(${SUB_PROJECT_AMADINA_MAIN})
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(SRC_PATH src)
-set(INCLUDE_PATH include)
-set(RES_PATH resources)
-set(AMADINA_WX_OCCT_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_WX_OCCT_NAME}/include)
-
 set(EXEC_TYPE)
 if(WIN32)
     add_compile_definitions(${FLAGS_WX_WIDGETS_WIN32})
     set(EXEC_TYPE WIN32)
 endif()
+if(BSD)
+    add_compile_options(${WX_WIDGETS_CXX_FLAGS})
+	add_link_options(${WX_WIDGETS_LIBS_FLAGS})
+endif()
+
+set(SRC_PATH src)
+set(INCLUDE_PATH include)
+set(RES_PATH resources)
+set(AMADINA_WX_OCCT_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_WX_OCCT_NAME}/include)
 
 link_directories(${OUTPUT_LIB_PATH})
 link_directories(${WX_WIDGETS_LIBRARIES})
@@ -38,12 +42,17 @@ set_target_properties(${AMADINA_EXECUTABLE_OUT_NAME}
 
 target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${INCLUDE_PATH})
 target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WX_OCCT_INCLUDE_PATH})
-target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_DIRS} PRIVATE)
-target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_SETUP_H_DIR})
-    
-target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_LIBS_FILES})
+if(WIN32)
+    target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_DIRS})
+    target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_SETUP_H_DIR})
+endif()
+
 target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WX_OCCT_OUT_NAME})
 target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${OPENCASCADE_LIBS_FILES})
+if(WIN32)
+    target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_LIBS_FILES})
+endif()
+
 	
 
 	

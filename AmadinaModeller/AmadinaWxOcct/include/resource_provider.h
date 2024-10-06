@@ -2,7 +2,7 @@
 #define RESOURCE_PROVIDER_WXVIEW_H
 
 #include<wx/imaglist.h>
-#include <wx/filefn.h> 
+#include <wx/filefn.h>
 
 const char *const relative_path_to_images = "/share/menu/";
 
@@ -20,7 +20,7 @@ class ResourceProvider
 
 };
 
-
+#include <iostream>
 class ResourceProviderFS: public ResourceProvider
 {
 	public:
@@ -38,7 +38,9 @@ class ResourceProviderFS: public ResourceProvider
 	private:
 		wxBitmap GetBitmapFromPath(const wxString &path) const
 		{
-			return wxBitmap(path, wxBITMAP_TYPE_ICO);
+		    bool res = wxFileExists(path);
+		    std::cout << path << " - > " << res << std::endl;
+ 			return wxBitmap(path, wxBITMAP_TYPE_ICO);
 		}
 };
 

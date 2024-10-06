@@ -12,7 +12,7 @@ namespace cad::command::interpreter
                 : m_msg(msg)
             { }
 
-            const char *what() const override
+            const char *what() const noexcept override
             {
                 return m_msg.c_str();
             }

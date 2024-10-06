@@ -18,7 +18,7 @@ namespace cad::modeller::occt::operations
 	class OpBoolOcct : public OpBoolean, public OcctObject
 	{
 		public:
-			OpBoolean::OpBoolean;
+			using OpBoolean::OpBoolean;
 
 			~OpBoolOcct() override = default;
 

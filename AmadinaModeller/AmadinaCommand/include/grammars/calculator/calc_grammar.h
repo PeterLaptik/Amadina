@@ -3,6 +3,7 @@
 
 #include "calc_ast.h"
 #include "calc_functions.h"
+#include "parser_exception.h"
 
 /// Grammar description for calculator expressions.
 /// Describes math expressions.
@@ -81,7 +82,7 @@ namespace cad::command::interpreter::grammar::calc
         boost::spirit::x3::error_handler_result
         on_error(Iterator&, Iterator const& last, Exception const& x, Context const& context)
         {
-            throw ParserException("Expecting: " + x.which() +
+            throw cad::command::interpreter::ParserException("Expecting: " + x.which() +
                 " here: \"" + std::string(x.where(), last) + "\"");
         }
     };

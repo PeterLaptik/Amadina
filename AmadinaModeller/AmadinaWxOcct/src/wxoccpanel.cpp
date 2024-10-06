@@ -1,9 +1,16 @@
 #include "wxoccpanel.h"
 #include "wxoccpanel_styles.h"
-#include <BRepPrimAPI_MakeCylinder.hxx>
-#include <AIS_Line.hxx>
-#include <AIS_Point.hxx>
-#include <Geom_CartesianPoint.hxx>
+//#include <BRepPrimAPI_MakeCylinder.hxx>
+//#include <AIS_Line.hxx>
+//#include <AIS_Point.hxx>
+//#include <Geom_CartesianPoint.hxx>
+
+#ifdef __FreeBSD__
+#include <X11/Xlib.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkx.h>
+#include <gtk/gtkwidget.h>
+#endif
 
 // Nominal mouse wheel amount for one click (known as a 'detent')
 // See description in MSDN
@@ -35,44 +42,43 @@ wxOccPanel::wxOccPanel(wxWindow *parent,
       m_last_x(-1), m_last_y(-1),
       m_panel_name(DEFAULT_NAME),
       m_mode(ScreenMode::SCREEN_MODELLING)
-      //m_floating_input(nullptr)
 {
+#ifdef _WIN32
     HWND wnd = this->GetHandle();
     m_display_connection = new Aspect_DisplayConnection();
     m_graphic_driver = new OpenGl_GraphicDriver(m_display_connection);
     m_window = new WNT_Window((Aspect_Handle) wnd);
 
     m_viewer = new V3d_Viewer(m_graphic_driver); // manages views
-    // view is the orientation, mapping etc of your actual display
-    m_view = m_viewer->CreateView();
-    // attach the view to the window
-    m_view->SetWindow(m_window);
+    m_view = m_viewer->CreateView(); // orientation, mapping etc of an actual display
+    m_view->SetWindow(m_window); // attach the view to the window
     if(!m_window->IsMapped())
         m_window->Map();
-    // for selection management i.e neutral point or open local context
-    m_context = new AIS_InteractiveContext(m_viewer);
-    // makes everything come alive
-    m_viewer->SetDefaultLights();
-    // makes everything come alive
-    m_viewer->SetLightOn();
 
+    m_context = new AIS_InteractiveContext(m_viewer);
+
+    m_viewer->SetDefaultLights();
+    m_viewer->SetLightOn();
     m_view->SetBgGradientColors(Quantity_NOC_BLUE4, Quantity_NOC_GRAY80,
                                 Aspect_GradientFillMethod_Vertical);
     m_view->MustBeResized();
-    //m_view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.1, V3d_ZBUFFER);
+
     m_context->DisplayAll(true);
     m_view->Redraw();
 
     //m_context->SetDisplayMode(AIS_WireFrame, true);
-    gp_Pnt point(0, 0, 0);
-    gp_Dir direction(0, 0, 1);
-    gp_Ax1 axis(point, direction);
-    m_plane.SetAxis(axis);
+//    gp_Pnt point(0, 0, 0);
+//    gp_Dir direction(0, 0, 1);
+//    gp_Ax1 axis(point, direction);
+//    m_plane.SetAxis(axis);
     // Set for sketch mode
     //m_context->Activate(TopAbs_FACE, Standard_True);
     //AIS_Shape::SelectionType(TopAbs_EDGE);
 
+    SetDefaultStyle();
     CreateViewCube();
+
+#endif // _WIN32
 }
 
 wxOccPanel::~wxOccPanel()
@@ -80,14 +86,56 @@ wxOccPanel::~wxOccPanel()
     //delete m_floating_input;
 }
 
-void wxOccPanel::SetStyle(const wxOcctPanelStyle &style)
+void wxOccPanel::Init()
+{
+#ifdef __FreeBSD__
+    m_display_connection = new Aspect_DisplayConnection();
+    m_graphic_driver = new OpenGl_GraphicDriver(m_display_connection);
+
+    GtkWidget* widget = this->GetHandle();
+    gtk_widget_realize(widget);
+    gtk_widget_set_double_buffered(widget, 0);
+
+    GdkWindow *gdk_window = gtk_widget_get_window(widget);
+    Window wid = gdk_x11_window_get_xid(gdk_window);
+    XSync(GDK_WINDOW_XDISPLAY(gdk_window), True);
+
+    //m_window = new Xw_Window(m_display_connection,"test", 20,20,400,400);
+    m_window = new Xw_Window(m_display_connection, wid);
+
+    m_viewer = new V3d_Viewer(m_graphic_driver);
+    m_view = m_viewer->CreateView();
+    m_view->SetWindow(m_window);
+    if(!m_window->IsMapped())
+        m_window->Map();
+
+    m_context = new AIS_InteractiveContext(m_viewer);
+
+    m_view->MustBeResized();
+    m_context->DisplayAll(true);
+    m_view->Redraw();
+
+    m_viewer->SetDefaultLights();
+    m_viewer->SetLightOn();
+    m_view->SetBgGradientColors(Quantity_NOC_BLUE4, Quantity_NOC_GRAY80,
+                                Aspect_GradientFillMethod_Vertical);
+
+    m_view->MustBeResized();
+    m_context->SetDisplayMode(AIS_Shaded, Standard_True);
+
+    SetDefaultStyle();
+    CreateViewCube();
+#endif // __FreeBSD__
+}
+
+void wxOccPanel::SetDefaultStyle()
 {
     m_context->DefaultDrawer()->SetFaceBoundaryDraw(true);
-    m_context->DefaultDrawer()->ShadingAspect()->SetColor(style.GetShadingColour());
-    m_context->DefaultDrawer()->LineAspect()->SetColor(style.GetLineColour());
-    m_context->DefaultDrawer()->LineAspect()->SetWidth(style.GetLineWidth());
-    m_context->DefaultDrawer()->FaceBoundaryAspect()->SetColor(style.GetBoundaryColour());
-    m_context->DefaultDrawer()->FaceBoundaryAspect()->SetWidth(style.GetBoundaryWidth());
+    m_context->DefaultDrawer()->ShadingAspect()->SetColor(Quantity_NOC_GRAY70);
+    m_context->DefaultDrawer()->LineAspect()->SetColor(Quantity_NOC_BLUE);
+    m_context->DefaultDrawer()->LineAspect()->SetWidth(1.5);
+    m_context->DefaultDrawer()->FaceBoundaryAspect()->SetColor(Quantity_NOC_BLACK);
+    m_context->DefaultDrawer()->FaceBoundaryAspect()->SetWidth(1.0);
 }
 
 void wxOccPanel::ClearAll()
@@ -101,9 +149,15 @@ void wxOccPanel::AddShape(Handle(AIS_InteractiveObject) shape)
     if (!shape)
         return;
 
-    m_object_pool.AppendObject(shape);
+// TODO comment
+#ifdef __FREEBSD__
+    if(!m_is_initialized)
+    {
+        return;
+    }
+#endif // __FREEBSD__
+
     m_context->Display(shape, AIS_Shaded, 0, true);
-    //m_context->SetColor(shape, Quantity_NOC_GRAY70, false);
     m_context->DisplayAll(true);
     m_view->Redraw();
 }
@@ -132,46 +186,59 @@ void wxOccPanel::DeleteSelected()
 
 void wxOccPanel::OnPaint(wxPaintEvent &event)
 {
+#ifdef __FREEBSD__
+    if(!m_is_initialized)
+    {
+        m_is_initialized = true;
+        Init();
+    }
+#endif // __FREEBSD__
+
     m_view->Redraw();
 }
 
 void wxOccPanel::OnResize(wxSizeEvent &event)
 {
+#ifdef __FREEBSD__
+    if(m_is_initialized)
+    {
+        m_view->MustBeResized();
+    }
+#endif // __FREEBSD__
+
+#ifdef _WIN32
     m_view->MustBeResized();
+#endif // _WIN32
 }
 
-#include <typeinfo>
 void wxOccPanel::Test()
 {
     //m_context->Activate(TopAbs_FACE, Standard_True);
-    ShowGrid(!IsGridShown());
+    //ShowGrid(!IsGridShown());
 }
 
 void wxOccPanel::ShowGrid(bool show)
 {
-    if(!show)
-    {
-        //m_viewer->DisplayPrivilegedPlane(false);
-        m_viewer->DeactivateGrid();
-        m_view->Redraw();
-        return;
-    }
-    gp_Pnt pnt(0,0,50);
-    gp_Dir dir(0, 0, 1);
-    gp_Pln plane(pnt, dir);
-
-
-    gp_Ax3 ax(plane.Location(), plane.Axis().Direction());
-    m_viewer->SetPrivilegedPlane(ax);
-    //m_viewer->DisplayPrivilegedPlane(true);
-
-    m_viewer->SetRectangularGridValues(0, 1, 10, 10, 0);
-    m_viewer->SetRectangularGridGraphicValues(100, 100, 0);
-    m_viewer->ActivateGrid(Aspect_GT_Rectangular, Aspect_GDM_Lines);
-    //Graphic3d_Vertex vert(0.0f,0.0f,0.0f);
-    //m_viewer->ShowGridEcho(m_view, vert);
-    //m_viewer->HideGridEcho(m_view);
-    m_view->Redraw();
+//    if(!show)
+//    {
+//        //m_viewer->DisplayPrivilegedPlane(false);
+//        m_viewer->DeactivateGrid();
+//        m_view->Redraw();
+//        return;
+//    }
+//    gp_Pnt pnt(0,0,50);
+//    gp_Dir dir(0, 0, 1);
+//    gp_Pln plane(pnt, dir);
+//
+//
+//    gp_Ax3 ax(plane.Location(), plane.Axis().Direction());
+//    m_viewer->SetPrivilegedPlane(ax);
+//    //m_viewer->DisplayPrivilegedPlane(true);
+//
+//    m_viewer->SetRectangularGridValues(0, 1, 10, 10, 0);
+//    m_viewer->SetRectangularGridGraphicValues(100, 100, 0);
+//    m_viewer->ActivateGrid(Aspect_GT_Rectangular, Aspect_GDM_Lines);
+//    m_view->Redraw();
 }
 
 void wxOccPanel::OnMouseWheel(wxMouseEvent &event)
@@ -192,14 +259,13 @@ void wxOccPanel::OnLeftMouseButtonDown(wxMouseEvent &event)
                                          flags, true);
 }
 
-#include <BRepBuilderAPI_MakeFace.hxx>
-#include <BRepAdaptor_Surface.hxx>
-#include <GeomAPI_ProjectPointOnSurf.hxx>
-#include <Aspect_Grid.hxx>
+//#include <BRepBuilderAPI_MakeFace.hxx>
+//#include <BRepAdaptor_Surface.hxx>
+//#include <GeomAPI_ProjectPointOnSurf.hxx>
+//#include <Aspect_Grid.hxx>
 void wxOccPanel::OnRightMouseButtonDown(wxMouseEvent &event)
 {
-    return;
-
+    /*
     Graphic3d_Vec2i pos(event.GetX(), event.GetY());
     Standard_Real x, y, z;//, vx, vy, vz;
     //m_view->ConvertToGrid(event.GetX(), event.GetY(), x, y, z);
@@ -246,9 +312,7 @@ void wxOccPanel::OnRightMouseButtonDown(wxMouseEvent &event)
     Handle(AIS_Point) point2 = new AIS_Point(cpoint2);
     Handle(AIS_Line) line = new AIS_Line(cpoint1, cpoint2);
     //AddShape(line);
-
-
-
+    */
 }
 
 void wxOccPanel::OnLeftMouseButtonUp(wxMouseEvent &event)
@@ -260,21 +324,19 @@ void wxOccPanel::OnLeftMouseButtonUp(wxMouseEvent &event)
                                            flags, true);
 }
 
-#include <Geom_Plane.hxx>
-#include <Geom_Line.hxx>
-#include <ElSLib.hxx>
-#include <GeomAPI_IntCS.hxx>
-#include <GC_MakeLine.hxx>
+//#include <Geom_Plane.hxx>
+//#include <Geom_Line.hxx>
+//#include <ElSLib.hxx>
+//#include <GeomAPI_IntCS.hxx>
+//#include <GC_MakeLine.hxx>
 void wxOccPanel::OnMouseMove(wxMouseEvent &event)
 {
-    
     Graphic3d_Vec2i pos(event.GetX(), event.GetY());
     Aspect_VKeyMouse buttons = GetMouseButton(event);
     Aspect_VKeyFlags flags = GetPressedKey();
 
     AIS_ViewController::UpdateMousePosition(pos, buttons, flags, false);
     AIS_ViewController::FlushViewEvents(m_context, m_view, true);
-
 
     /*
     Standard_Real x, y, z, vx, vy, vz;
@@ -325,12 +387,12 @@ void wxOccPanel::MoveInterractor(wxMouseEvent &event)
 
 gp_Pnt wxOccPanel::GetIntersectionPoint(int mouse_x, int mouse_y)
 {
-    gp_Pnt intersection_point;
-    const gp_Dir direction = m_plane.Axis().Direction();
-    Standard_Real A = direction.X();
-    Standard_Real B = direction.Y();
-    Standard_Real C = direction.Z();
-    return intersection_point;
+//    gp_Pnt intersection_point;
+//    const gp_Dir direction = m_plane.Axis().Direction();
+//    Standard_Real A = direction.X();
+//    Standard_Real B = direction.Y();
+//    Standard_Real C = direction.Z();
+//    return intersection_point;
 }
 
 void wxOccPanel::CreateViewCube()
@@ -377,14 +439,14 @@ Aspect_VKeyFlags wxOccPanel::GetPressedKey() const
 
 bool wxOccPanel::IsGridShown() const
 {
-    return m_viewer->IsGridActive();
+//    return m_viewer->IsGridActive();
 }
 
 void wxOccPanel::SetScreenMode(ScreenMode mode)
 {
-    m_mode = mode;
+//    m_mode = mode;
     // Ignore rotation on sketch mode
-    SetAllowRotation(m_mode!=ScreenMode::SCREEN_SKETCHING);
+    //SetAllowRotation(m_mode!=ScreenMode::SCREEN_SKETCHING);
 }
 
 ScreenMode wxOccPanel::GetScreenMode(void) const

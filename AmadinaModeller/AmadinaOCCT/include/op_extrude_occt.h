@@ -18,7 +18,7 @@ namespace cad::modeller::occt::operations
 	class OpExtrudeOcct : public OpExtrude, public OcctObject
 	{
 		public:
-			OpExtrude::OpExtrude;
+			using OpExtrude::OpExtrude;
 
 			DLL_EXPORT ~OpExtrudeOcct() override = default;
 

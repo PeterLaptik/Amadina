@@ -1,7 +1,6 @@
 #include "wxmodeller3d.h"
 #include "wxoccpanel.h"
 #include "wxmodeltree.h"
-#include "context.h"
 #include <wx/sizer.h>
 #include <wx/treectrl.h>
 #include <wx/splitter.h>
@@ -16,28 +15,28 @@ wxModeller3D::wxModeller3D(wxWindow *parent,
                        const wxString &name)
     : wxAbstractModeller(parent, winid, pos, size, style, name)
 {
-    
+
     m_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
     m_sizer->Add(m_splitter, 5, wxEXPAND | wxALL, 5);
-    
+
     m_occpanel = new wxOccPanel(m_splitter);
-    m_occpanel->SetStyle(m_styles_container.GetStyle("default"));
-    
+    //m_occpanel->SetStyle(m_styles_container.GetStyle("default"));
+
     m_model_tree = new wxModelTree(m_splitter, m_occpanel);
     m_model_tree->SetBackgroundColour(wxColor(204, 204, 204));
     m_model_tree->AddRoot(ROOT_NODE_NAME);
 
     m_splitter->SplitVertically(m_model_tree, m_occpanel, 342);
 
-    m_context = new Context(m_occpanel);
+    //m_context = new Context(m_occpanel);
 
 	this->SetSizer(m_sizer);
 }
 
 wxModeller3D::~wxModeller3D()
 {
-    delete m_context;
+    //delete m_context;
 }
 
 void wxModeller3D::RefreshView(void)
@@ -86,7 +85,7 @@ void wxModeller3D::Test()
     sketch->AppendObject(new PointOcct(8, 8));
     sketch->AppendObject(new PointOcct(4, 4));
     sketch->AppendObject(new PointOcct(3, 3));
-    
+
     SketchOcct *sketch_2 = new SketchOcct("Test_2");
 
     Point c_c(0, 0, 50);

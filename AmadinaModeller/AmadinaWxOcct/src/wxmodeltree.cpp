@@ -16,7 +16,7 @@ using cad::modeller::occt::OcctObject;
 
 
 wxBEGIN_EVENT_TABLE(wxModelTree, wxTreeCtrl)
-	EVT_TREE_ITEM_RIGHT_CLICK(wxID_ANY, OnItemRightClick)
+	EVT_TREE_ITEM_RIGHT_CLICK(wxID_ANY, wxModelTree::OnItemRightClick)
 wxEND_EVENT_TABLE()
 
 
@@ -49,7 +49,7 @@ void wxModelTree::AddItem(AbstractShape *shape, const wxString &name)
 {
 	wxTreeItemId root_id = GetRootItem();
 
-	wxTreeItemId id = AppendItem(root_id, name, 
+	wxTreeItemId id = AppendItem(root_id, name,
 		TreeMenuIcons::no_icon, TreeMenuIcons::no_icon, new wxCadTreeData(shape, name));
 	Expand(root_id);
 
@@ -105,7 +105,7 @@ void wxModelTree::OnPopupMenuClick(wxCommandEvent &evt)
 		return;
 
 	AbstractShape *shape = cad_data->GetShape();
-	switch (menu_id) 
+	switch (menu_id)
 	{
 		case MenuHTree::HIDE:
 			HideItem(shape);
