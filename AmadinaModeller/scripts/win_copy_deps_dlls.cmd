@@ -22,7 +22,4 @@ for /f "tokens=1* EOL=#" %%a in (%THIRD_PARTY_DLL_LIST_FILE_NAME%) do (
     if not exist .\%OUTPUT_DEBUG%\ if not exist .\%OUTPUT_RELEASE%\ if exist .\%OUTPUT_ROOT%\ Copy %%a\*.dll .\%OUTPUT_ROOT%\
 )
 
-:: TODO
-set ICONS_MENU=share\menu
-
 

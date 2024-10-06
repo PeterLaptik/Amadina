@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <deque>
-#include <memory>
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
@@ -45,7 +44,7 @@ class CommandPanel: public wxPanel
         void ProposeCommandByFirstChars();
         void ExtractHistoryLine(int key_code);
 
-        std::unique_ptr<CommandAutocompleter> m_autocompleter;
+        CommandAutocompleter *m_autocompleter;
         std::deque<std::string> m_cmd_history;
         int m_cmd_history_cursor = -1;
 

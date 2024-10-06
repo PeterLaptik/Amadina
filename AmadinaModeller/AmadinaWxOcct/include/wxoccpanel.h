@@ -17,13 +17,15 @@
 
 #ifdef _WIN32
     #include <WNT_Window.hxx>
-#elifdef __FreeBSD__
+#endif
+#ifdef __FreeBSD__
     #include <Xw_Window.hxx>
 #endif
 
 #ifdef _WIN32
     typedef Handle_WNT_Window Handle_Window_t;
-#elifdef __FreeBSD__
+#endif
+#ifdef __FreeBSD__
     typedef Handle(Xw_Window) Handle_Window_t;
 #endif
 

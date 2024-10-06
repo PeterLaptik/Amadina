@@ -4,7 +4,7 @@
 #include<wx/imaglist.h>
 #include <wx/filefn.h>
 
-const char *const relative_path_to_images = "/share/menu/";
+wxString relative_path_to_images = "../share/menu/";
 
 enum TreeMenuIcons
 {
@@ -20,7 +20,6 @@ class ResourceProvider
 
 };
 
-#include <iostream>
 class ResourceProviderFS: public ResourceProvider
 {
 	public:
@@ -29,7 +28,7 @@ class ResourceProviderFS: public ResourceProvider
 		wxImageList *GetTreeMenuImageList() override
 		{
 			wxImageList *list = new wxImageList(16, 16);
-			wxString path = wxGetCwd() + relative_path_to_images;
+			wxString path = relative_path_to_images;
 			list->Add(GetBitmapFromPath(path + "ico_mnu_hidden_shape.ico"));
 			list->Add(GetBitmapFromPath(path + "ico_mnu_error_shape.ico"));
 			return list;
@@ -39,7 +38,6 @@ class ResourceProviderFS: public ResourceProvider
 		wxBitmap GetBitmapFromPath(const wxString &path) const
 		{
 		    bool res = wxFileExists(path);
-		    std::cout << path << " - > " << res << std::endl;
  			return wxBitmap(path, wxBITMAP_TYPE_ICO);
 		}
 };

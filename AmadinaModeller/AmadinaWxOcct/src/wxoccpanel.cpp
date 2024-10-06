@@ -439,7 +439,7 @@ Aspect_VKeyFlags wxOccPanel::GetPressedKey() const
 
 bool wxOccPanel::IsGridShown() const
 {
-//    return m_viewer->IsGridActive();
+    return m_viewer->IsGridActive();
 }
 
 void wxOccPanel::SetScreenMode(ScreenMode mode)

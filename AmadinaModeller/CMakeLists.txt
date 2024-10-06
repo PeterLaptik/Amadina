@@ -16,14 +16,14 @@ include(FsUtilsWinPaths)
 include(BsdPkgCfgFinder)
 
 # Project settings files
-set(PROJECT_VARIABLES_FILENAME CMake.vars.txt)
-set(PROJECT_VARIABLES_LISTS_FILENAME CMake.vars.lists.txt)
+set(PROJECT_VERSION_FILENAME version.txt)
+set(PROJECT_VARIABLES_LISTS_FILENAME ./cmake/CMake.vars.lists.txt)
 # File containing list of dependencies paths variables: for Windows OS only
-set(WINDOWS_DEPENDENCIES_FILENAME CMake.win.paths.txt) # in the form of KEY=VALUE
-set(WINDOWS_DEPENDENCIES_TP_DLLS CMake.win.dlls.txt)   # list of paths to third party dlls, see comment inside
+set(WINDOWS_DEPENDENCIES_FILENAME ./cmake/CMake.win.paths.txt) # in the form of KEY=VALUE
+set(WINDOWS_DEPENDENCIES_TP_DLLS ./cmake/CMake.win.dlls.txt)   # list of paths to third party dlls, see comment inside
 
 # Read additional information from setting files
-read_variables_from_file(${PROJECT_VARIABLES_FILENAME})
+read_variables_from_file(${PROJECT_VERSION_FILENAME})
 read_list_variables_from_file(${PROJECT_VARIABLES_LISTS_FILENAME})
 
 # Setting up dependencies.
@@ -89,7 +89,7 @@ if(BSD) # FreeBSD
 	find_library_check(ATK "atk")
 endif()
 
-set(A_VERSION ${A_VERSION_MAJOR}.${A_VERSION_MINOR}.${A_VERSION_PATH})
+set(A_VERSION ${A_VERSION_MAJOR}.${A_VERSION_MINOR}.${A_VERSION_PATCH})
 message(STATUS "Project version: ${A_VERSION}")
 
 # Sub-projects names
@@ -118,7 +118,7 @@ add_subdirectory(${SUB_PROJECT_AMADINA_MAIN})
 
 
 add_custom_target(win_fetch_dlls
-    "Powershell" "./package_creator.cmd" 
+    "Powershell" "./scripts/win_copy_deps_dlls.cmd" 
         "${OUTPUT_DIR_NAME}"
         "${WINDOWS_DEPENDENCIES_TP_DLLS}"
         "${WX_WIDGETS_EXECUTABLE}"

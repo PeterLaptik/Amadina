@@ -1,6 +1,6 @@
 #!/bin/sh
 # ----------------------------------------------------------------
-# Full clean all CMake data files and projects
+# Full clean all CMake data files
 # ----------------------------------------------------------------
 
 DIR_PROJECTS_PATHS="./ ./AmadinaObjects/ ./AmadinaOCCT/ ./AmadinaCommand/ ./AmadinaWxOcct/ ./AmadinaWidgets/ ./AmadinaModeller/"

@@ -28,7 +28,7 @@ CommandPanel::CommandPanel(wxWindow *parent, wxWindowID id)
     m_main_sizer->Add(m_txt_input, 0, wxEXPAND | wxALL);
     SetSizer(m_main_sizer);
 
-    m_autocompleter = std::make_unique<CommandAutocompleterVec>();
+    m_autocompleter = new CommandAutocompleterVec();
     m_txt_input->Bind(wxEVT_CHAR, &CommandPanel::OnChar, this);
 }
 
