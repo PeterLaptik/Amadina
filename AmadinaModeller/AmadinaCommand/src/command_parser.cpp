@@ -1,26 +1,91 @@
 #include "command_parser.h"
-#include "variables/var_grammar.h"
-#include "calculator/calc_grammar.h"
-#include "calculator/calc_evaluator.h"
-#include <boost/spirit/home/x3.hpp>
+#include "parser_exception.h"
+#include "grammars/variables/var_assigner.h"
+#include "grammars/command_line/command_grammar.h"
+#include "grammars/command_line/command_transformer.h"
+#include "grammars/variables/var_grammar.h"
+#include "grammars/calculator/calc_grammar.h"
+#include "grammars/calculator/calc_evaluator.h"
+#include <boost/spirit/home/x3/support/ast/variant.hpp>
 
-// TODO REMOVE
-#include <iostream>
+using boost::spirit::x3::ascii::space_type;
 
-const char *MSG_EXECUTED = "OK";
-const char *MSG_BAD_VARIABLE_NAME = "Bad variable name";
-const char *MSG_BAD_MATH_EXPRESSION = "Cannot evaluate expression";
 
-void cad::command::interpreter::CommandParser::ParseCommand(std::string command)
+using cad::command::interpreter::CommandParser;
+using cad::command::interpreter::CommandToken;
+using cad::command::interpreter::grammar::variables::expression_assign;
+using cad::command::interpreter::grammar::variables::AssignExpression;
+using cad::command::interpreter::grammar::calc::exec::Evaluator;
+using cad::command::interpreter::grammar::calc::ast::MathExpression;
+using cad::command::interpreter::grammar::calc::expression;
+using cad::command::interpreter::grammar::commands::ast::CommandTransformer;
+
+using cad::command::interpreter::grammar::commands::ast::Token;
+using cad::command::interpreter::grammar::commands::ast::Text;
+using cad::command::interpreter::grammar::commands::ast::String;
+using cad::command::interpreter::grammar::commands::ast::List;
+using cad::command::interpreter::grammar::commands::ast::ListItem;
+
+using cad::command::interpreter::grammar::variables::VarAssigner;
+
+const char * const MSG_EXECUTED = "OK";
+const char * const MSG_CONSTANT_OVERRIDING = "Cannot override constant value. ";
+const char * const MSG_ASSIGN_ERROR = "Assignment error. Check variable name. ";
+const char * const MSG_CALC_ERROR = "Calculation error. ";
+const char * const MSG_CMD_ERROR = "Command read error. ";
+
+
+bool cad::command::interpreter::CommandParser::ParseCommand(const std::string &command)
 {
-    m_result_message.clear();
-    if(IsAssignValueExpression(command))
+    m_tokens.clear();
+    m_result_message = MSG_EXECUTED;
+
+    if (IsAssignValueExpression(command))
     {
-        AssignValue(command);
-        return;
+        bool assignment_result = AssignValue(command);
+        return assignment_result;
+    }
+    
+    bool parsing_result = TokenizeCommandLine(command);
+    return parsing_result;
+}
+
+bool cad::command::interpreter::CommandParser::TokenizeCommandLine(const std::string &command)
+{
+    using boost::spirit::x3::ascii::char_;
+    using cad::command::interpreter::grammar::commands::token_list;
+    using cad::command::interpreter::grammar::commands::ast::TokenList;
+    using cad::command::interpreter::grammar::commands::ast::VisitorTransformer;
+
+    std::string expression = Normalize(command);
+
+    TokenList command_token_expr;
+    auto cmd_parser = token_list;
+
+    auto string_start = expression.begin();
+    auto string_end = expression.end();
+
+    bool parse_res = phrase_parse(string_start, string_end, cmd_parser, char_('\\'), command_token_expr);
+
+    // Result is OK + full expression was parsed
+    bool cmd_res = parse_res && (string_start == string_end);
+    if (!cmd_res)
+    {
+        std::string details = (string_start == string_end) ? 
+            "" 
+            : '\'' + std::string(string_start, string_end) + '\'';
+        m_result_message = MSG_CMD_ERROR +  details;
+        return false;
     }
 
-    EvaluateMathExpression(command);
+    // Process tokens
+    CommandTransformer visitor(m_variables, m_constants);
+    for (auto &token : command_token_expr.tokens)
+    {
+        m_tokens.push_back(boost::apply_visitor(visitor, token));
+    }
+
+    return true;
 }
 
 
@@ -29,63 +94,50 @@ bool cad::command::interpreter::CommandParser::IsAssignValueExpression(const std
     return command.find('=') != std::string::npos;
 }
 
-bool cad::command::interpreter::CommandParser::AssignValue(std::string command)
+std::string cad::command::interpreter::CommandParser::Normalize(const std::string &command) const
 {
-    boost::spirit::x3::ascii::space_type space;
-    using cad::command::interpreter::grammar::variables::ExpressionAssign;
-
-    auto &assign_parser = cad::command::interpreter::grammar::variables::expression_assign;
-    auto string_start = command.begin();
-    auto string_end = command.end();
-    ExpressionAssign expr_result;
-
-    bool res = phrase_parse(string_start, string_end, assign_parser, space, expr_result);
-    std::cout << "Result: " << res <<std::endl;
-    if(!res)
+    // Remove multiply spaces
+    std::string result = command;
+    auto pos = result.find("  ");
+    while (pos != std::string::npos)
     {
-        m_result_message = MSG_BAD_VARIABLE_NAME;
+        result.replace(pos, 2, " ");
+        pos = result.find("  ");
+    }
+    // Left trim
+    size_t lpos = result.find_first_not_of(' ');
+    result.erase(0, lpos);
+    // Right trim
+    size_t rpos = result.find_last_not_of(' ');
+    result.erase(rpos + 1);
+    return result;
+}
+
+bool cad::command::interpreter::CommandParser::AssignValue(const std::string &command)
+{
+    VarAssigner assigner(m_variables, m_constants);
+    try {
+        assigner.AssignVar(command);
+    } catch (const ParserException &e) {
+        m_result_message = e.what();
         return false;
     }
-
-    std::cout << "Assign: " << expr_result.variable << " to " << expr_result.variable_expression << std::endl;
-
-    std::pair<bool,double> numeric_result = EvaluateMathExpression(expr_result.variable_expression);
-    if(!numeric_result.first)
-    {
-        m_result_message = MSG_BAD_MATH_EXPRESSION;
-        return false;
-    }
-
-    m_variables.insert(std::pair(expr_result.variable, numeric_result.second));
-
-    m_result_message = MSG_EXECUTED;
     return true;
 }
 
-std::pair<bool,double> cad::command::interpreter::CommandParser::EvaluateMathExpression(std::string expression)
+bool cad::command::interpreter::CommandParser::IsEmpty() const
 {
+    return m_tokens.empty();
+}
 
-//    using cad::command::interpreter::grammar::math::MathExpressionClass;
-    using cad::command::interpreter::grammar::calc::exec::Evaluator;
-    using cad::command::interpreter::grammar::calc::ast::math_expression;
+size_t cad::command::interpreter::CommandParser::GetTokensNumber() const
+{
+    return m_tokens.size();
+}
 
-    boost::spirit::x3::ascii::space_type space;
-    math_expression res;
-    auto calc = cad::command::interpreter::grammar::calc::expression;
-    auto string_start = expression.begin();
-    auto string_end = expression.end();
-
-    Evaluator eval;
-    bool r = phrase_parse(string_start, string_end, calc, space, res);
-    if(!r)
-    {
-        std::cout << "Expression error" << calc << "at " << std::string(string_start, string_end) << std::endl;
-        return std::pair(false, 0);
-    }
-
-    double numeric_result = eval(res);
-    std::cout << "Result: " << numeric_result << std::endl;
-    return std::pair(true, numeric_result);
+const CommandToken& cad::command::interpreter::CommandParser::GetToken(int i) const
+{
+    return m_tokens.at(i);
 }
 
 std::string cad::command::interpreter::CommandParser::GetResultMessage() const

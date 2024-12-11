@@ -2,9 +2,11 @@
 #include "abstract_modeller.h"
 #include "factory.h"
 #include "../resources/art.h"
+#include "command_panel.h"
 //#include "commands_names.h"
 //#include "wxpointinput.h"
 //#include "wxoccpanel.h"
+#include <wx/splitter.h>
 #include <wx/msgdlg.h>
 #include <wx/artprov.h>
 #include <wx/treectrl.h>
@@ -17,7 +19,7 @@ using modeller::art::Icon;
 using modeller::art::get_icon;
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
-    EVT_PAINT(MainFrame::OnPaint)
+    //EVT_PAINT(MainFrame::OnPaint)
     EVT_RIBBONBUTTONBAR_CLICKED(wxID_ANY, MainFrame::OnButtonClicked)
     //EVT_RIBBONBAR_TAB_LEFT_DCLICK(wxID_ANY, MainFrame::OnButtonClicked)
 wxEND_EVENT_TABLE()
@@ -48,6 +50,8 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
     m_ribbon = new wxRibbonBar(m_main_panel, wxID_ANY, wxDefaultPosition,
                                wxDefaultSize, wxRIBBON_BAR_DEFAULT_STYLE);
 
+    m_splitter = new wxSplitterWindow(m_main_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
+
     m_ribbon->SetArtProvider(new wxRibbonAUIArtProvider);
 
     RibbonInit();
@@ -55,9 +59,16 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
     m_ribbon->Realise();
     m_main_sizer->Add(m_ribbon, 0, wxEXPAND | wxALL, 0);
 
-    m_notebook = new wxAuiNotebook(m_main_panel, wxID_ANY, wxDefaultPosition,
+    m_notebook = new wxAuiNotebook(m_splitter, wxID_ANY, wxDefaultPosition,
                                    wxDefaultSize, wxAUI_NB_DEFAULT_STYLE);
-	m_main_sizer->Add(m_notebook, 1, wxEXPAND | wxALL, 0);
+	//m_main_sizer->Add(m_notebook, 1, wxEXPAND | wxALL, 0);
+
+    CommandPanel *m_cmd_panel = new CommandPanel(m_splitter);
+    //m_main_sizer->Add(m_cmd_panel, 1, wxEXPAND | wxALL, 0);
+
+    m_main_sizer->Add(m_splitter, 1, wxEXPAND | wxALL, 0);
+
+    m_splitter->SplitHorizontally(m_notebook, m_cmd_panel, 100);
 
     m_main_panel->SetSizer(m_main_sizer);
 	m_main_panel->Layout();
@@ -70,7 +81,7 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 	m_modeller = get_abstract_modeller(this);//new wxModeller3D(this);
 	m_notebook->AddPage(m_modeller, "test");
 
-    m_modeller->Test();
+    //m_modeller->Test();
 }
 
 MainFrame::~MainFrame()
@@ -166,6 +177,6 @@ void MainFrame::SketchModeHandler(wxEvent &event)
     //view_cube->HandleClick(click_emulator);
 
     //ctx->SetScreenMode(is_pushed ? ScreenMode::SCREEN_SKETCHING : ScreenMode::SCREEN_MODELLING);
-    //m_modeller->Test();
-    //wxMessageBox("OK");
+    m_modeller->Test();
+    wxMessageBox("OK");
 }

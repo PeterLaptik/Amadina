@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 3.23)
+
+project(${SUB_PROJECT_AMADINA_MAIN})
+
+set(CMAKE_CXX_STANDARD 17)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(EXEC_TYPE)
+if(WIN32)
+    add_compile_definitions(${FLAGS_WX_WIDGETS_WIN32})
+    set(EXEC_TYPE WIN32)
+endif()
+if(BSD)
+    add_compile_options(${WX_WIDGETS_CXX_FLAGS})
+	add_link_options(${WX_WIDGETS_LIBS_FLAGS})
+endif()
+
+set(SRC_PATH src)
+set(INCLUDE_PATH include)
+set(RES_PATH resources)
+set(AMADINA_WIDGETS_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_WIDGETS_NAME}/include)
+set(AMADINA_WX_OCCT_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_WX_OCCT_NAME}/include)
+
+link_directories(${OUTPUT_LIB_PATH})
+link_directories(${WX_WIDGETS_LIBRARIES})
+link_directories(${OPENCASCADE_LIBRARIES})
+	
+add_executable(${AMADINA_EXECUTABLE_OUT_NAME} ${EXEC_TYPE} 
+	${INCLUDE_PATH}/amadina_app.h
+	${INCLUDE_PATH}/main_frame.h
+	${SRC_PATH}/amadina_app.cpp
+	${SRC_PATH}/main_frame.cpp
+	${RES_PATH}/art.cpp
+	${RES_PATH}/art.h
+	${RES_PATH}/icons.h)
+    
+set_target_properties(${AMADINA_EXECUTABLE_OUT_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_ARCH_PATH}
+    LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_LIB_PATH}
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_RUNTIME_PATH}
+)
+
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${INCLUDE_PATH})
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WIDGETS_INCLUDE_PATH})
+target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WX_OCCT_INCLUDE_PATH})
+if(WIN32)
+    target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_DIRS})
+    target_include_directories(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_SETUP_H_DIR})
+endif()
+
+target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WIDGETS_OUT_NAME})
+target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${AMADINA_WX_OCCT_OUT_NAME})
+target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${OPENCASCADE_LIBS_FILES})
+if(WIN32)
+    target_link_libraries(${AMADINA_EXECUTABLE_OUT_NAME} PRIVATE ${WX_WIDGETS_LIBS_FILES})
+endif()
+
+	
+
+	

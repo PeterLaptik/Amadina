@@ -1,0 +1,59 @@
+TEST_ROOT_DIR=.\..\..\Tests
+TEST_BIN_DIR=$(TEST_ROOT_DIR)\bin
+TEST_OBJ_DIR=$(TEST_ROOT_DIR)\obj
+TEST_OBJ_SUB_DIR=$(TEST_OBJ_DIR)\$(TEST_NAME)
+
+INCL=.\..\include
+SRC_TEST=.
+SRC=.\..\src
+SRC_CALC=$(SRC)\grammars\calculator
+SRC_CMD=$(SRC)\grammars\command_line
+SRC_VAR=$(SRC)\grammars\variables
+
+FLAGS = /I $(INCL) /I $(BOOST_PATH) /std:c++17 /EHsc
+
+OBJECT_FILES = $(TEST_OBJ_SUB_DIR)\command_parser.obj \
+                $(TEST_OBJ_SUB_DIR)\command_token.obj \
+                $(TEST_OBJ_SUB_DIR)\base_calculator.obj \
+                $(TEST_OBJ_SUB_DIR)\calc_evaluator.obj \
+                $(TEST_OBJ_SUB_DIR)\calc_executor.obj \
+                $(TEST_OBJ_SUB_DIR)\calc_functions.obj \
+                $(TEST_OBJ_SUB_DIR)\command_transformer.obj \
+                $(TEST_OBJ_SUB_DIR)\var_assigner.obj \
+                $(TEST_OBJ_SUB_DIR)\main.obj
+
+all: prepare exectuable
+
+exectuable: $(OBJECT_FILES) 
+    LINK $(OBJECT_FILES) /OUT:$(TEST_BIN_DIR)\$(TEST_NAME).exe
+
+{$(SRC)}.cpp{$(TEST_OBJ_SUB_DIR)}.obj::
+    echo $(TEST_OBJ_SUB_DIR)
+    CL /c /Fo$(TEST_OBJ_SUB_DIR)\ $(FLAGS) $<
+    
+{$(SRC_CALC)}.cpp{$(TEST_OBJ_SUB_DIR)}.obj::
+    echo $(TEST_OBJ_SUB_DIR)
+    CL /c /Fo$(TEST_OBJ_SUB_DIR)\ $(FLAGS) $<
+    
+{$(SRC_CMD)}.cpp{$(TEST_OBJ_SUB_DIR)}.obj::
+    echo $(TEST_OBJ_SUB_DIR)
+    CL /c /Fo$(TEST_OBJ_SUB_DIR)\ $(FLAGS) $<
+    
+{$(SRC_VAR)}.cpp{$(TEST_OBJ_SUB_DIR)}.obj::
+    echo $(TEST_OBJ_SUB_DIR)
+    CL /c /Fo$(TEST_OBJ_SUB_DIR)\ $(FLAGS) $<
+
+{$(SRC_TEST)}.cpp{$(TEST_OBJ_SUB_DIR)}.obj::
+    echo $(TEST_OBJ_SUB_DIR)
+    CL /c /Fo$(TEST_OBJ_SUB_DIR)\ $(FLAGS) $< 
+
+
+clean:
+    if exist $(TEST_OBJ_DIR) rmdir /S /Q $(TEST_OBJ_DIR)
+    if exist $(TEST_BIN_DIR) rmdir /S /Q $(TEST_BIN_DIR)
+
+
+prepare:
+    if not exist $(TEST_BIN_DIR) mkdir $(TEST_BIN_DIR)
+    if not exist $(TEST_OBJ_DIR) mkdir $(TEST_OBJ_DIR)
+    if not exist $(TEST_OBJ_SUB_DIR) mkdir $(TEST_OBJ_SUB_DIR)

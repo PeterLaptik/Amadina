@@ -16,7 +16,7 @@ namespace cad::modeller::occt::operations
 	class OpBoolFuseOcct : public OpBoolOcct
 	{
 		public:
-			OpBoolOcct::OpBoolOcct;
+			using OpBoolOcct::OpBoolOcct;
 
 			DLL_EXPORT ~OpBoolFuseOcct() final = default;
 

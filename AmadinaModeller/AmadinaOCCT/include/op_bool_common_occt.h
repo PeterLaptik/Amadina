@@ -19,7 +19,7 @@ namespace cad::modeller::occt::operations
 	class OpBoolCommonOcct : public OpBoolOcct
 	{
 		public:
-			OpBoolOcct::OpBoolOcct;
+			using OpBoolOcct::OpBoolOcct;
 
 			DLL_EXPORT ~OpBoolCommonOcct() final = default;
 

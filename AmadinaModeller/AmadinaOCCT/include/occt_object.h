@@ -26,7 +26,7 @@ namespace cad::modeller::occt
 			///\see OcctCanvas
 			void AssignOcctCanvas(AbstractCanvas *cnv)
 			{
-				m_canvas = dynamic_cast<OcctCanvas *>(cnv);
+				m_canvas = static_cast<OcctCanvas *>(cnv);
 			}
 
 			void HideOcctObject(Handle(AIS_InteractiveObject) shape)
