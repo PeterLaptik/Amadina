@@ -1,10 +1,9 @@
 #include "command_panel.h"
-#include "command_autocompleter_vec.h"
-
 
 const int MAX_COMMAND_LINE_LENGTH = 255;
 const int MAX_COMMAND_LINE_HISTORY = 15;
 
+///\ TODO Desctiption
 // --------------------------------------
 // |                                    |
 // |     History text box               |
@@ -28,7 +27,6 @@ CommandPanel::CommandPanel(wxWindow *parent, wxWindowID id)
     m_main_sizer->Add(m_txt_input, 0, wxEXPAND | wxALL);
     SetSizer(m_main_sizer);
 
-    m_autocompleter = new CommandAutocompleterVec();
     m_txt_input->Bind(wxEVT_CHAR, &CommandPanel::OnChar, this);
 }
 
@@ -54,7 +52,7 @@ void CommandPanel::SendMessage(const wxString &txt)
 
 void CommandPanel::SetAutocompleteList(const std::vector<std::string> *list)
 {
-    m_autocompleter->SetCommandList(list);
+    m_autocompleter.SetCommandList(list);
 }
 
 void CommandPanel::OnChar(wxKeyEvent &event)
@@ -63,6 +61,7 @@ void CommandPanel::OnChar(wxKeyEvent &event)
     // Input text
     if(code == WXK_RETURN)
     {
+        m_txt_input->GetLineText(0);
         InputText(m_txt_input->GetValue());
         m_txt_input->Clear();
         return;
@@ -97,10 +96,10 @@ void CommandPanel::ProposeCommandByFirstChars()
     if (txt.Find(' ') != -1) // Only first word autocomplete is allowed
         return;
 
-    bool has_choise = m_autocompleter->SetNextChoiceFor(txt.ToStdString());
+    bool has_choise = m_autocompleter.SetNextChoiceFor(txt.ToStdString());
     if (has_choise)
     {
-        m_txt_input->SetValue(m_autocompleter->GetNextChoice());
+        m_txt_input->SetValue(m_autocompleter.GetNextChoice());
         m_txt_input->SetInsertionPoint(m_txt_input->GetLastPosition());
     }
 }

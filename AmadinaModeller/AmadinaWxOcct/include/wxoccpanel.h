@@ -1,41 +1,37 @@
-#ifndef WXOCCPANEL_H
-#define WXOCCPANEL_H
+#ifndef WX_OCC_PANEL_INCLUDED_H
+#define WX_OCC_PANEL_INCLUDED_H
 
-//#include "objectpool.h"
-#include "abstract_shape.h"
 #include "occt_canvas.h"
-#include "screen_modes.h"
 #include <wx/panel.h>
+#include <V3d_View.hxx>
 #include <AIS_ViewController.hxx>
 #include <V3d_Viewer.hxx>
+#include <AIS_ViewCube.hxx>
 #include <AIS_InteractiveContext.hxx>
 #include <OpenGl_GraphicDriver.hxx>
-#include <V3d_View.hxx>
-//#include <AIS_Shape.hxx>
-#include <AIS_ViewCube.hxx>
-//#include <AIS_Line.hxx>
-
 #ifdef _WIN32
-    #include <WNT_Window.hxx>
+#include <WNT_Window.hxx>
 #endif
 #ifdef __FreeBSD__
-    #include <Xw_Window.hxx>
+#include <Xw_Window.hxx>
 #endif
+
+#ifdef _WINDLL
+#define DLL_EXPORT __declspec(dllexport)
+#else
+#define DLL_EXPORT
+#endif
+
 
 #ifdef _WIN32
-    typedef Handle_WNT_Window Handle_Window_t;
+typedef Handle_WNT_Window Handle_Window_t;
 #endif
 #ifdef __FreeBSD__
-    typedef Handle(Xw_Window) Handle_Window_t;
+typedef Handle(Xw_Window) Handle_Window_t;
 #endif
 
-using cad::modeller::AbstractShape;
-using cad::modeller::ScreenMode;
-using cad::modeller::occt::OcctCanvas;
 
-class wxOcctPanelStyle;
-
-class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
+class DLL_EXPORT wxOccPanel : public wxPanel, public AIS_ViewController, public cad::modeller::occt::OcctCanvas
 {
     public:
         ///\brief Constructor
@@ -45,66 +41,50 @@ class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
         ///\param style - panel style (see wxWidgets documentation)
         ///\param name - panel name
         wxOccPanel(wxWindow *parent,
-                    wxWindowID winid = wxID_ANY,
-                    const wxPoint &pos = wxDefaultPosition,
-                    const wxSize &size = wxDefaultSize,
-                    long style = wxTAB_TRAVERSAL | wxNO_BORDER,
-                    const wxString &name = wxPanelNameStr);
+            wxWindowID winid = wxID_ANY,
+            const wxPoint &pos = wxDefaultPosition,
+            const wxSize &size = wxDefaultSize,
+            long style = wxTAB_TRAVERSAL | wxNO_BORDER,
+            const wxString &name = wxPanelNameStr);
 
-        ~wxOccPanel() override;
+        ~wxOccPanel() override = default;
 
         void ClearAll() final;
         void AddShape(Handle(AIS_InteractiveObject) shape) final;
         void RemoveShape(Handle(AIS_InteractiveObject) shape) final;
         bool ContainsShapes(const std::vector<Handle(AIS_InteractiveObject)> &objects) final;
 
-        void ShowGrid(bool show = true);
-        bool IsGridShown(void) const;
-        void DeleteSelected(void);
-        void Test(void);
+        void HideViewCube();
+        void ShowViewCube();
 
-        void SetScreenMode(ScreenMode mode);
-        ScreenMode GetScreenMode(void) const;
+        Handle(Aspect_DisplayConnection) GetDisplayConnection();
+        Handle(OpenGl_GraphicDriver) GetGraphicDriver();
+        Handle_Window_t GetWindow();
+        Handle(V3d_Viewer) GetViwer();
+        Handle(V3d_View) GetView();
+        Handle(AIS_InteractiveContext) GetContext();
 
-//        Handle(V3d_View) GetView(void)
-//        {
-//            return m_view;
-//        }
-//
-//        Handle(AIS_ViewCube) GetViewCube(void)
-//        {
-//            return m_view_cube;
-//        }
+    private:
+        void Init();
+        void SetDefaultStyle();
+        Aspect_VKeyMouse GetMouseButton(wxMouseEvent &event) const;
+        Aspect_VKeyFlags GetPressedKey(void) const;
+        void CreateViewCube();
+        void RemoveViewCube();
 
-    protected:
-        ///
+
         void OnPaint(wxPaintEvent &event);
         void OnResize(wxSizeEvent &event);
-        /// Mouse wheel event handler. Default behavior:
-        /// zoom in / zoom out on mouse wheel rotating
         void OnMouseWheel(wxMouseEvent &event);
         void OnMouseMove(wxMouseEvent &event);
         void OnLeftMouseButtonDown(wxMouseEvent &event);
         void OnLeftMouseButtonUp(wxMouseEvent &event);
         void OnRightMouseButtonDown(wxMouseEvent &event);
 
-    private:
-        inline void SetDefaultStyle();
-        inline Aspect_VKeyMouse GetMouseButton(wxMouseEvent &event) const;
-        inline Aspect_VKeyFlags GetPressedKey(void) const;
-        inline void CreateViewCube(void);
-        inline gp_Pnt GetIntersectionPoint(int mouse_x, int mouse_y);
-        inline void Init();
-        void MoveInterractor(wxMouseEvent &event);
-
-//        gp_Pln m_plane;
-//        Handle(AIS_Line) tmp_line;
-
         double m_scale_factor;
-        bool m_mouse_lb_clicked;
-        int m_last_x, m_last_y;
+        bool m_mouse_lb_clicked = false;
+        bool is_view_cube_visible = true;
 
-        TCollection_ExtendedString m_panel_name;
         Handle(Aspect_DisplayConnection) m_display_connection;
         Handle(OpenGl_GraphicDriver) m_graphic_driver;
         Handle_Window_t m_window;
@@ -112,12 +92,6 @@ class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
         Handle(V3d_View) m_view;
         Handle(AIS_InteractiveContext) m_context;
         Handle(AIS_ViewCube) m_view_cube;
-
-//        ObjectPool m_object_pool;
-//        Handle(AIS_Shape) aisthing;
-
-        ScreenMode m_mode;
-
 #ifdef __FreeBSD__
         bool m_is_initialized = false;
 #endif
@@ -125,4 +99,144 @@ class wxOccPanel: public wxPanel, public AIS_ViewController, public OcctCanvas
     DECLARE_EVENT_TABLE()
 };
 
-#endif // WXOCCPANEL_H
+#endif // WX_OCC_PANEL_INCLUDED_H
+
+
+
+
+
+
+
+
+
+
+
+//#ifndef WXOCCPANEL_H
+//#define WXOCCPANEL_H
+//
+////#include "objectpool.h"
+//#include "wxoccpanel.h"
+//#include "abstract_shape.h"
+//#include "occt_canvas.h"
+//#include "screen_modes.h"
+//#include <wx/panel.h>
+//#include <AIS_ViewController.hxx>
+//#include <V3d_Viewer.hxx>
+//#include <AIS_InteractiveContext.hxx>
+//#include <OpenGl_GraphicDriver.hxx>
+//#include <V3d_View.hxx>
+////#include <AIS_Shape.hxx>
+//#include <AIS_ViewCube.hxx>
+////#include <AIS_Line.hxx>
+//
+//#ifdef _WIN32
+//    #include <WNT_Window.hxx>
+//#endif
+//#ifdef __FreeBSD__
+//    #include <Xw_Window.hxx>
+//#endif
+//
+//#ifdef _WIN32
+//    typedef Handle_WNT_Window Handle_Window_t;
+//#endif
+//#ifdef __FreeBSD__
+//    typedef Handle(Xw_Window) Handle_Window_t;
+//#endif
+//
+//using cad::modeller::AbstractShape;
+//using cad::modeller::ScreenMode;
+//using cad::modeller::occt::OcctCanvas;
+//
+//class wxOcctPanelStyle;
+//
+//class wxOccCanvas: public wxOccPanel, public OcctCanvas
+//{
+//    public:
+//        ///\brief Constructor
+//        ///\param parent - parent window
+//        ///\param pos - default panel position
+//        ///\param size - panel size
+//        ///\param style - panel style (see wxWidgets documentation)
+//        ///\param name - panel name
+//        wxOccPanel(wxWindow *parent,
+//                    wxWindowID winid = wxID_ANY,
+//                    const wxPoint &pos = wxDefaultPosition,
+//                    const wxSize &size = wxDefaultSize,
+//                    long style = wxTAB_TRAVERSAL | wxNO_BORDER,
+//                    const wxString &name = wxPanelNameStr);
+//
+//        ~wxOccPanel() override;
+//
+//        void ClearAll() final;
+//        void AddShape(Handle(AIS_InteractiveObject) shape) final;
+//        void RemoveShape(Handle(AIS_InteractiveObject) shape) final;
+//        bool ContainsShapes(const std::vector<Handle(AIS_InteractiveObject)> &objects) final;
+//
+//        void ShowGrid(bool show = true);
+//        bool IsGridShown(void) const;
+//        void DeleteSelected(void);
+//        void Test(void);
+//
+//        void SetScreenMode(ScreenMode mode);
+//        ScreenMode GetScreenMode(void) const;
+//
+////        Handle(V3d_View) GetView(void)
+////        {
+////            return m_view;
+////        }
+////
+////        Handle(AIS_ViewCube) GetViewCube(void)
+////        {
+////            return m_view_cube;
+////        }
+//
+//    protected:
+//        ///
+//        void OnPaint(wxPaintEvent &event);
+//        void OnResize(wxSizeEvent &event);
+//        /// Mouse wheel event handler. Default behavior:
+//        /// zoom in / zoom out on mouse wheel rotating
+//        void OnMouseWheel(wxMouseEvent &event);
+//        void OnMouseMove(wxMouseEvent &event);
+//        void OnLeftMouseButtonDown(wxMouseEvent &event);
+//        void OnLeftMouseButtonUp(wxMouseEvent &event);
+//        void OnRightMouseButtonDown(wxMouseEvent &event);
+//
+//    private:
+//        inline void SetDefaultStyle();
+//        inline Aspect_VKeyMouse GetMouseButton(wxMouseEvent &event) const;
+//        inline Aspect_VKeyFlags GetPressedKey(void) const;
+//        inline void CreateViewCube(void);
+//        inline gp_Pnt GetIntersectionPoint(int mouse_x, int mouse_y);
+//        inline void Init();
+//        void MoveInterractor(wxMouseEvent &event);
+//
+////        gp_Pln m_plane;
+////        Handle(AIS_Line) tmp_line;
+//
+//        double m_scale_factor;
+//        bool m_mouse_lb_clicked;
+//        int m_last_x, m_last_y;
+//
+//        TCollection_ExtendedString m_panel_name;
+//        Handle(Aspect_DisplayConnection) m_display_connection;
+//        Handle(OpenGl_GraphicDriver) m_graphic_driver;
+//        Handle_Window_t m_window;
+//        Handle(V3d_Viewer) m_viewer;
+//        Handle(V3d_View) m_view;
+//        Handle(AIS_InteractiveContext) m_context;
+//        Handle(AIS_ViewCube) m_view_cube;
+//
+////        ObjectPool m_object_pool;
+////        Handle(AIS_Shape) aisthing;
+//
+//        ScreenMode m_mode;
+//
+//#ifdef __FreeBSD__
+//        bool m_is_initialized = false;
+//#endif
+//
+//    DECLARE_EVENT_TABLE()
+//};
+//
+//#endif // WXOCCPANEL_H

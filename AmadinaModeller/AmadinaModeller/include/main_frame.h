@@ -2,6 +2,7 @@
 #define MAIN_FRAME_H_INCLUDED
 
 //#include "command_dispatcher.h"
+#include "command_panel.h"
 #include <wx/frame.h>
 #include <wx/panel.h>
 #include <wx/sizer.h>
@@ -20,6 +21,7 @@ class wxRibbonBar;
 class wxRibbonButtonBar;
 class wxRibbonButtonBarEvent;
 class wxAbstractModeller;
+class wxSplitterWindow;
 
 class MainFrame: public wxFrame
 {
@@ -63,10 +65,14 @@ class MainFrame: public wxFrame
 		// Main sizer: vertical
 		wxBoxSizer* m_main_sizer;
 
+        // Command line
+        CommandPanel *m_cmd_panel;
+
 		wxRibbonBar *m_ribbon;
 		wxAuiNotebook *m_notebook;
 		wxStatusBar *m_status_bar;
 		wxAbstractModeller *m_modeller;
+        wxSplitterWindow *m_splitter;
 
     private:
         void SketchModeHandler(wxEvent &event);

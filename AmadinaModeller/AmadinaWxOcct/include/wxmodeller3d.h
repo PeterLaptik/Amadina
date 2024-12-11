@@ -33,8 +33,8 @@ class wxModeller3D:  public wxAbstractModeller
 
     private:
         Context *m_context;
-        wxModelTree *m_model_tree;
-        wxOccPanel *m_occpanel;
+        wxModelTree *m_model_tree;  // left-side panel, contains list of items and operations
+        wxOccPanel *m_occpanel;     // canvas to draw
         wxBoxSizer *m_sizer;
         wxSplitterWindow *m_splitter;
         wxOcctStylesContainer m_styles_container;

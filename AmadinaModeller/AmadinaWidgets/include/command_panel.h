@@ -1,6 +1,7 @@
 #ifndef COMMAND_PANEL_H_INCLUDED
 #define COMMAND_PANEL_H_INCLUDED
 
+#include "command_autocompleter.h"
 #include <vector>
 #include <deque>
 #include <wx/panel.h>
@@ -12,8 +13,6 @@
 #else
     #define DLL_EXPORT
 #endif
-
-class CommandAutocompleter;
 
 ///\brief Composite widget for command input
 /// Contains: command line text input and separate multiline text box for previous input commands (history text box)
@@ -44,7 +43,7 @@ class CommandPanel: public wxPanel
         void ProposeCommandByFirstChars();
         void ExtractHistoryLine(int key_code);
 
-        CommandAutocompleter *m_autocompleter;
+        CommandAutocompleter m_autocompleter;
         std::deque<std::string> m_cmd_history;
         int m_cmd_history_cursor = -1;
 

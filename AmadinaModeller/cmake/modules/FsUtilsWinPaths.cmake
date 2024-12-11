@@ -1,21 +1,8 @@
-# A set of helper functions for Windows paths and files searching and checking
+# A set of helper functions for Windows paths and files searching / checking
 
-# Read and assign dependency path variables from external file
-# FILE_NAME - file name, must be in a root directory
-function(read_dependencies_from_file FILE_NAME)
-    file(STRINGS ./${FILE_NAME} WIN_PATHS)
-    message(STATUS "Setting up paths values from the file: '${WINDOWS_DEPENDENCIES_FILENAME}'")
-    foreach(LINE ${WIN_PATHS})
-        string(REGEX MATCH "(.*)=(.*)" _ ${LINE})
-        set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2} PARENT_SCOPE)
-        message(STATUS "\t ${CMAKE_MATCH_1} = ${CMAKE_MATCH_2}")
-    endforeach()
-endfunction()
-
-
-# Check directory existence for the paths
+# Checks a directory existence for the path
 # ARG_PATH - path to a library
-# ARG_LIB_TXT_NAME - library name, for error messages if a directory is not found
+# ARG_LIB_TXT_NAME - library name, for output messages
 function (check_win_path ARG_PATH ARG_LIB_TXT_NAME)
     if(EXISTS ${ARG_PATH})
         message(STATUS "Checking ${ARG_LIB_TXT_NAME} path: (${ARG_PATH})\t OK")
@@ -25,8 +12,8 @@ function (check_win_path ARG_PATH ARG_LIB_TXT_NAME)
 endfunction()
 
 
-# Find dependencies lib-files
-# OUT_NAME - name of a variable for keeping .lib-files list
+# Finds lib-files in a directory
+# OUT_NAME - name of a variable to put a .lib-files list
 # ARG_PATH - a path where to look for .lib-files
 function (find_lib_files OUT_NAME ARG_PATH)
     message(STATUS "Searching libs: ${ARG_PATH}")

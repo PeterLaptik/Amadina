@@ -1,4 +1,4 @@
-#include "command_autocompleter_vec.h"
+#include "command_autocompleter.h"
 #include <algorithm>
 #include <iterator>
 
@@ -6,14 +6,14 @@
 const int MAX_CHOICE_NUMBER = 5;
 
 
-void CommandAutocompleterVec::SetCommandList(const std::vector<std::string> *list)
+void CommandAutocompleter::SetCommandList(const std::vector<std::string> *list)
 {
     m_list = list;
 }
 
-bool CommandAutocompleterVec::SetNextChoiceFor(const std::string &prefix)
+bool CommandAutocompleter::SetNextChoiceFor(const std::string &prefix)
 {
-    if(m_list->empty())
+    if(!m_list || m_list->empty())
         return false;
 
     // List has been changed / invalidated, or a new prefix is retyped
@@ -30,8 +30,7 @@ bool CommandAutocompleterVec::SetNextChoiceFor(const std::string &prefix)
         m_current_proposal = m_initial_prefix;
         m_match_range.cursor = m_match_range.start;
     }
-    // Get next proposition
-    else
+    else // Get next proposition
     {
         m_current_proposal = (*m_list)[m_match_range.cursor];
         m_match_range.cursor++;
@@ -40,27 +39,28 @@ bool CommandAutocompleterVec::SetNextChoiceFor(const std::string &prefix)
     return true;
 }
 
-std::string& CommandAutocompleterVec::GetNextChoice()
+std::string& CommandAutocompleter::GetNextChoice()
 {
     return m_current_proposal;
 }
 
-void CommandAutocompleterVec::UpdateRange(const std::string &prefix)
+void CommandAutocompleter::UpdateRange(const std::string &prefix)
 {
     m_current_list_size = m_list->size();
     m_initial_prefix = prefix;
 
+    // TODO REMOVE
     // Lower case copy: lower case letters only are expected in a command list
-    std::string upper_case_prefix;
+    std::string lower_case_prefix;
     std::transform(m_initial_prefix.begin(), m_initial_prefix.end(), 
-        std::back_insert_iterator<std::string>(upper_case_prefix),
+        std::back_insert_iterator<std::string>(lower_case_prefix),
         [](char ch) {
             return std::tolower(ch);
         });
 
     // Is the command name begins with the prefix
     auto str_starts_with_prefix = [&](const std::string_view &command) {
-        size_t pos = command.find(upper_case_prefix);
+        size_t pos = command.find(lower_case_prefix);
         if (pos == 0 && pos != std::string::npos)
             return true;
 

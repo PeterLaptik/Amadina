@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
 
-project(${SUB_PROJECT_AMADINA_WIDGETS})
+project(${SUB_PROJECT_AMADINA_WIDGETS_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -28,9 +28,8 @@ endif()
 set(SOURCE_FILE_LIST
 	${INCLUDE_PATH}/command_panel.h
 	${INCLUDE_PATH}/command_autocompleter.h
-    ${INCLUDE_PATH}/command_autocompleter_vec.h
 	${SRC_PATH}/command_panel.cpp
-    ${SRC_PATH}/command_autocompleter_vec.cpp
+    ${SRC_PATH}/command_autocompleter.cpp
     ${INCLUDE_PATH}/wxTestApp.h
     ${INCLUDE_PATH}/wxTestMain.h
     ${SRC_PATH}/wxTestMain.cpp

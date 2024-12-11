@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
 
-project(${SUB_PROJECT_AMADINA_COMMAND})
+project(${SUB_PROJECT_AMADINA_COMMAND_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -11,12 +11,14 @@ endif()
 
 set(SRC_PATH src)
 set(INCLUDE_PATH include)
+set(AMADINA_OBJECTS_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_OBJECTS_NAME}/include)
 
-link_directories(../AmadinaObjects/)
 link_directories(${OPENCASCADE_LIBRARIES})
 link_directories(${OUTPUT_LIB_PATH})
 
 set(SOURCE_FILE_LIST
+	${INCLUDE_PATH}/base_command.h  
+	${INCLUDE_PATH}/context.h  
     ${INCLUDE_PATH}/command_functions_def.h    
 	${INCLUDE_PATH}/command_parser.h  
 	${INCLUDE_PATH}/command_token.h
@@ -31,6 +33,8 @@ set(SOURCE_FILE_LIST
     ${INCLUDE_PATH}/grammars/calculator/calc_functions.h    
 	${INCLUDE_PATH}/grammars/calculator/calc_grammar.h  
 	${INCLUDE_PATH}/grammars/calculator/calc_operations.h
+	${SRC_PATH}/base_command.cpp
+	${SRC_PATH}/context.cpp  
 	${SRC_PATH}/command_parser.cpp  
 	${SRC_PATH}/command_token.cpp
 	${SRC_PATH}/grammars/calculator/base_calculator.cpp  
@@ -49,6 +53,9 @@ set_target_properties(${AMADINA_COMMAND_OUT_NAME}
     LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_LIB_PATH}
     RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_RUNTIME_PATH}
 )
-		
+
+target_link_libraries(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_OUT_NAME})
+
 target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${INCLUDE_PATH})
+target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_INCLUDE_PATH})
 target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${BOOST_ROOT_DIR})

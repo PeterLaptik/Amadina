@@ -1,9 +1,9 @@
-# A set of helper functions for reading data from files
+# A set of helper functions for reading data from text files
 
-# Read variables from file (KEY=VALUE)
-# FILE_NAME - file name, must be in a root directory
-function (read_variables_from_file FILE_NAME)
-    file(STRINGS ./${FILE_NAME} PROJECT_VARS)
+# Reads variables from file (KEY=VALUE)
+# FILE_PATH - file path
+function (read_variables_from_file FILE_PATH)
+    file(STRINGS ./${FILE_PATH} PROJECT_VARS)
     message(STATUS "Setting up project variables from the file: '${PROJECT_VARIABLES_FILENAME}'")
         foreach(LINE ${PROJECT_VARS})
             string(REGEX MATCH "(.*)=(.*)" _ ${LINE})
@@ -12,8 +12,10 @@ function (read_variables_from_file FILE_NAME)
         endforeach()
 endfunction()
 
-function (read_list_variables_from_file FILE_NAME)
-    file(STRINGS ./${FILE_NAME} PROJECT_VARS)
+# Reads list variables from file (KEY:=VALUE1 VALUE2 VALUE3 ...)
+# FILE_PATH - file path
+function (read_list_variables_from_file FILE_PATH)
+    file(STRINGS ./${FILE_PATH} PROJECT_VARS)
     message(STATUS "Setting up project list variables from the file: '${PROJECT_VARIABLES_FILENAME}'")
         foreach(LINE ${PROJECT_VARS})
             string(REGEX MATCH "(.*):=(.*)" _ ${LINE})

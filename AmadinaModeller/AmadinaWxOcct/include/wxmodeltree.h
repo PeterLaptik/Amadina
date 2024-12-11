@@ -14,6 +14,7 @@ using cad::modeller::AbstractCanvas;
 using cad::modeller::ModelTree;
 
 ///\brief Visual model tree representation as a wxWidgets widget
+///\see ModelTree
 class wxModelTree: public wxTreeCtrl, public ModelTree
 {
 	public:
@@ -23,13 +24,13 @@ class wxModelTree: public wxTreeCtrl, public ModelTree
 
         void AddItem(AbstractShape *shape) override;
 
-        void AddItem(AbstractShape *shape, const wxString &name);
-
         void RemoveItem(AbstractShape *item) override;
 
         void HideItem(AbstractShape *item) override;
 
     private:
+        void AddItem(AbstractShape *shape, const wxString &name);
+
         void OnItemRightClick(wxTreeEvent &event);
         void OnPopupMenuClick(wxCommandEvent &evt);
 
