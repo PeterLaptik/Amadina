@@ -11,13 +11,14 @@ namespace cad::command::interpreter
         TOKEN_CMD_TEXT,     // Regular text token
         TOKEN_CMD_NUMERIC,  // Numeric token (double)
         TOKEN_CMD_LIST,     // List of numeric tokens
-        TOKEN_CMD_STRING    // Quoted text token
+        TOKEN_CMD_STRING,   // Quoted text token
+        TOKEN_NULL          // Empty token
     };
 
     class CommandToken final
     {
         public:
-            CommandToken() = delete;
+            explicit CommandToken();
             explicit CommandToken(const std::string &value, TokenType type);
             explicit CommandToken(std::string &&value, TokenType type);
             explicit CommandToken(double value);
@@ -29,11 +30,12 @@ namespace cad::command::interpreter
             bool IsNumeric(void) const;
             bool IsList(void) const;
             bool IsString(void) const;
+            bool IsNull(void) const;
 
             const std::string& GetStringValue(void) const;
             double GetNumericValue(void) const;
             
-            double Get(int i) const;
+            double GetListValue(size_t i) const;
             bool IsListEmpty() const;
             size_t GetListSize() const;
 
@@ -42,7 +44,7 @@ namespace cad::command::interpreter
             void TextToLower();
 
             double m_num = 0;
-            std::string m_str;
+            std::string m_str = "";
             std::vector<double> m_list;
 
             TokenType m_type;

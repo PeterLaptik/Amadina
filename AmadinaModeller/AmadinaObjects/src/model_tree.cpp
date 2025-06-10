@@ -3,84 +3,73 @@
 #include <typeinfo>
 
 
-using cad::modeller::AbstractCanvas;
-using cad::modeller::operations::AbstractOperation;
+using cad::model::AbstractCanvas;
+using cad::model::solid::AbstractOperation;
 
 
-cad::modeller::ModelTree::~ModelTree()
+cad::model::ModelTree::ModelTree(AbstractCanvas *canvas)
+    :m_canvas(canvas)
+{ }
+
+cad::model::ModelTree::~ModelTree()
 {
-	for (auto shape : m_shapes)
-		delete shape;
+    // Suppress any visual refreshing on a modeller closing to avoid broken pointers errors
+    for (auto shape : m_shapes)
+        shape->AssignCanvas(nullptr);
+
+    for (auto it = m_shapes.rbegin(); it != m_shapes.rend(); ++it)
+        delete *it;
 }
 
-void cad::modeller::ModelTree::AddItem(AbstractShape *item)
+void cad::model::ModelTree::AddItem(AbstractShape *item)
 {
-	m_shapes.push_back(item);
-	item->AssignCanvas(m_canvas);
-	item->Draw();
+    m_shapes.push_back(item);
+    item->AssignCanvas(m_canvas);
+    item->Draw();
 }
 
-void cad::modeller::ModelTree::RemoveItem(AbstractShape *item)
+void cad::model::ModelTree::RemoveItem(AbstractShape *item)
 {
-	// Notify dependent operations about removed item. See description of a 'Purge'-method in AbstractOperation class.
-	PurgeDependentOperations(item);
+    // Notify dependent operations about removed item. See description of a 'Purge'-method in AbstractOperation class.
+    PurgeDependentOperations(item);
 
-	auto it = std::remove(m_shapes.begin(), m_shapes.end(), item);
-	m_shapes.erase(it, m_shapes.end());
-	item->Hide();
-	delete item;
+    auto it = std::remove(m_shapes.begin(), m_shapes.end(), item);
+    m_shapes.erase(it, m_shapes.end());
+    item->Remove();
+    delete item;
 }
 
-void cad::modeller::ModelTree::RedrawItem(AbstractShape *item)
+void cad::model::ModelTree::HideItem(AbstractShape *item)
 {
-	item->Hide();
-	item->Draw();
-	UpdateDependentOperations(item);
+    item->Remove();
 }
 
-void cad::modeller::ModelTree::HideItem(AbstractShape *item)
+void cad::model::ModelTree::ShowItem(AbstractShape *item)
 {
-	item->Hide();
-}
-
-void cad::modeller::ModelTree::ShowItem(AbstractShape *item)
-{
-	item->Show();
+    item->Draw();
 }
 
 
-void cad::modeller::ModelTree::RedrawTree()
+void cad::model::ModelTree::RedrawTree()
 {
-	m_canvas->ClearAll();
-	for (auto &obj : m_shapes)
-		obj->Draw();
+    for (auto &obj : m_shapes)
+        obj->Refresh();
 }
 
-AbstractCanvas* cad::modeller::ModelTree::GetCanvas() const
+AbstractCanvas *cad::model::ModelTree::GetCanvas() const
 {
-	return m_canvas;
+    return m_canvas;
 }
 
-void cad::modeller::ModelTree::PurgeDependentOperations(AbstractShape *item) const
+void cad::model::ModelTree::PurgeDependentOperations(AbstractShape *item) const
 {
-	for (auto &shape : m_shapes)
-	{
-		auto *op = dynamic_cast<AbstractOperation *>(shape);
-		if (!op)
-			continue;
+    for (auto &shape : m_shapes)
+    {
+        auto *op = dynamic_cast<AbstractOperation *>(shape);
+        if (!op)
+            continue;
 
-		op->Purge(item);
-	}
+        op->Purge(item);
+    }
 }
 
-void cad::modeller::ModelTree::UpdateDependentOperations(AbstractShape *item) const
-{
-	for (auto &shape : m_shapes)
-	{
-		auto *op = dynamic_cast<AbstractOperation *>(shape);
-		if (!op)
-			continue;
-
-		op->Update(item);
-	}
-}

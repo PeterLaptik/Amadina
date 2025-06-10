@@ -1,36 +1,37 @@
 #include "direction_vector.h"
 
-using cad::modeller::geometry::Direction;
-using cad::modeller::shapes2D::Point;
+using cad::model::geom::Direction;
+using cad::model::flat::Point;
 
-cad::modeller::geometry::DirectionVector::DirectionVector(const Point &p, const Direction &dir)
+cad::model::geom::DirectionVector::DirectionVector(const Point &p, const Direction &dir)
     : m_center(p), m_direction(dir)
 { }
 
-cad::modeller::geometry::DirectionVector::DirectionVector(const Point &p)
+cad::model::geom::DirectionVector::DirectionVector(const Point &p)
     : m_center(p)
 { }
 
-cad::modeller::geometry::DirectionVector::DirectionVector()
+cad::model::geom::DirectionVector::DirectionVector()
     : m_center(0, 0, 0)
-{ }
+{
+}
 
-void cad::modeller::geometry::DirectionVector::SetStartPoint(const Point & p)
+void cad::model::geom::DirectionVector::SetStartPoint(const Point &p)
 {
     m_center = p;
 }
 
-void cad::modeller::geometry::DirectionVector::SetDirection(const Direction & dir)
+void cad::model::geom::DirectionVector::SetDirection(const Direction &dir)
 {
     m_direction = dir;
 }
 
-const Point& cad::modeller::geometry::DirectionVector::GetStartPoint() const
+const Point &cad::model::geom::DirectionVector::GetStartPoint() const
 {
     return m_center;
 }
 
-const Direction& cad::modeller::geometry::DirectionVector::GetDirection() const
+const Direction &cad::model::geom::DirectionVector::GetDirection() const
 {
     return m_direction;
 }

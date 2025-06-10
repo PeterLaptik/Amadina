@@ -2,7 +2,7 @@
 //#include "command_dispatcher.h"
 //#include "command_abstract.h"
 
-using Context = cad::modeller::Context;
+using Context = cad::model::Context;
 //using CommandDispatcher = cad::modeller::CommandDispatcher;
 //using CommandAbstract = cad::modeller::command::CommandAbstract;
 

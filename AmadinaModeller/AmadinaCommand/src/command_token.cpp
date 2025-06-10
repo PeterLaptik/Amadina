@@ -1,6 +1,10 @@
 #include "command_token.h"
 #include <algorithm>
 
+cad::command::interpreter::CommandToken::CommandToken()
+    : m_type(TOKEN_NULL)
+{ }
+
 cad::command::interpreter::CommandToken::CommandToken(const std::string &value, TokenType type)
     : m_str(value), m_type(type)
 {
@@ -46,6 +50,11 @@ bool cad::command::interpreter::CommandToken::IsString() const
     return m_type==TOKEN_CMD_STRING;
 }
 
+bool cad::command::interpreter::CommandToken::IsNull(void) const
+{
+    return m_type==TOKEN_NULL;
+}
+
 const std::string& cad::command::interpreter::CommandToken::GetStringValue() const
 {
     return m_str;
@@ -56,7 +65,7 @@ double cad::command::interpreter::CommandToken::GetNumericValue() const
     return m_num;
 }
 
-double cad::command::interpreter::CommandToken::Get(int i) const
+double cad::command::interpreter::CommandToken::GetListValue(size_t i) const
 {
     return m_list.at(i);
 }

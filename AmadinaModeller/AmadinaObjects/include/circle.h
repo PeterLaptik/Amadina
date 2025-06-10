@@ -1,39 +1,39 @@
-#ifndef SHAPE_CIRCLE_H
-#define SHAPE_CIRCLE_H
+#ifndef SHAPE_CIRCLE_INCLUDED_H
+#define SHAPE_CIRCLE_INCLUDED_H
 
 #include "point.h"
 #include "direction.h"
 
 #ifdef _WINDLL
-	#define DLL_EXPORT __declspec(dllexport)
+#define DLL_EXPORT __declspec(dllexport)
 #else
-	#define DLL_EXPORT
+#define DLL_EXPORT
 #endif
 
-namespace cad::modeller::shapes2D
+namespace cad::model::flat
 {
-	using cad::modeller::geometry::Direction;
+    using cad::model::geom::Direction;
 
-	class DLL_EXPORT Circle : public AbstractShape
-	{
-		public:
-			Circle(const Point &p, double radius);
-			Circle(double x, double y, double z, double radius);
-			~Circle() override = default;
+    class Circle : public AbstractShape
+    {
+        public:
+            DLL_EXPORT Circle(const Point &p, double radius);
+            DLL_EXPORT Circle(double x, double y, double z, double radius);
+            DLL_EXPORT ~Circle() override = default;
 
-			void SetCenter(const Point &p);
-			void SetRadius(double rad);
-			void SetDirection(const Direction &dir);
-			const Direction& GetDirection()const;
-			const Point& GetCenter() const;
-			double GetRadius() const;
+            DLL_EXPORT void SetCenter(const Point &p);
+            DLL_EXPORT void SetRadius(double rad);
+            DLL_EXPORT void SetDirection(const Direction &dir);
+            DLL_EXPORT const Direction &GetDirection()const;
+            DLL_EXPORT const Point &GetCenter() const;
+            DLL_EXPORT double GetRadius() const;
 
-		private:
-			Direction m_direction;
-			Point m_center;
-			double m_radius;
-	};
+        private:
+            Direction m_direction;
+            Point m_center;
+            double m_radius;
+    };
 }
 
-#endif
+#endif // SHAPE_CIRCLE_INCLUDED_H
 

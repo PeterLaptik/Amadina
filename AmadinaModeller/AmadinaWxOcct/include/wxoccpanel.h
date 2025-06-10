@@ -31,7 +31,7 @@ typedef Handle(Xw_Window) Handle_Window_t;
 #endif
 
 
-class DLL_EXPORT wxOccPanel : public wxPanel, public AIS_ViewController, public cad::modeller::occt::OcctCanvas
+class DLL_EXPORT wxOccPanel : public wxPanel, public AIS_ViewController, public cad::model::occt::OcctCanvas
 {
     public:
         ///\brief Constructor
@@ -49,7 +49,7 @@ class DLL_EXPORT wxOccPanel : public wxPanel, public AIS_ViewController, public 
 
         ~wxOccPanel() override = default;
 
-        void ClearAll() final;
+        //void ClearAll() final;
         void AddShape(Handle(AIS_InteractiveObject) shape) final;
         void RemoveShape(Handle(AIS_InteractiveObject) shape) final;
         bool ContainsShapes(const std::vector<Handle(AIS_InteractiveObject)> &objects) final;

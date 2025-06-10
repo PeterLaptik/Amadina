@@ -1,67 +1,69 @@
 #include "point.h"
+#include <limits>
 
-cad::modeller::shapes2D::Point::Point(double x, double y, double z)
-	: m_x(x), m_y(y), m_z(z)
+cad::model::flat::Point::Point()
+    : m_x(std::numeric_limits<double>::max()),
+    m_y(std::numeric_limits<double>::max()),
+    m_z(std::numeric_limits<double>::max())
 { }
 
-void cad::modeller::shapes2D::Point::SetCoordinates(double x, double y, double z = 0.0)
+cad::model::flat::Point::Point(double x, double y, double z)
+    : m_x(x), m_y(y), m_z(z)
+{ }
+
+void cad::model::flat::Point::SetCoordinates(double x, double y, double z = 0.0)
 {
-	m_x = x;
-	m_y = y;
-	m_z = z;
+    m_x = x;
+    m_y = y;
+    m_z = z;
 }
 
-void cad::modeller::shapes2D::Point::SetX(double x)
+void cad::model::flat::Point::SetX(double x)
 {
-	m_x = x;
+    m_x = x;
 }
 
-void cad::modeller::shapes2D::Point::SetY(double y)
+void cad::model::flat::Point::SetY(double y)
 {
-	m_y = y;
+    m_y = y;
 }
 
-void cad::modeller::shapes2D::Point::SetZ(double z)
+void cad::model::flat::Point::SetZ(double z)
 {
-	m_z = z;
+    m_z = z;
 }
 
-double cad::modeller::shapes2D::Point::GetX() const
+double cad::model::flat::Point::GetX() const
 {
-	return m_x;
+    return m_x;
 }
 
-double cad::modeller::shapes2D::Point::GetY() const
+double cad::model::flat::Point::GetY() const
 {
-	return m_y;
+    return m_y;
 }
 
-double cad::modeller::shapes2D::Point::GetZ() const
+double cad::model::flat::Point::GetZ() const
 {
-	return m_z;
+    return m_z;
 }
 
-void cad::modeller::shapes2D::Point::AssignCanvas(AbstractCanvas *cnv)
+bool cad::model::flat::Point::IsSet() const
 {
-	// empty implementation for 'AbstractCanvas'
+    return m_x != std::numeric_limits<double>::max();
 }
 
-void cad::modeller::shapes2D::Point::Draw()
+void cad::model::flat::Point::AssignCanvas(AbstractCanvas *cnv)
 {
-	// empty implementation for 'AbstractCanvas'
+    // empty implementation for 'AbstractCanvas'
 }
 
-void cad::modeller::shapes2D::Point::Hide()
+void cad::model::flat::Point::DrawShape()
 {
-	// empty implementation for 'AbstractCanvas'
+    // empty implementation for 'AbstractCanvas'
 }
 
-void cad::modeller::shapes2D::Point::Show()
+void cad::model::flat::Point::RemoveShape()
 {
-	// empty implementation for 'AbstractCanvas'
-}
-
-void cad::modeller::shapes2D::Point::Refresh()
-{
-	// empty implementation for 'AbstractCanvas'
+    // empty implementation for 'AbstractCanvas'
 }

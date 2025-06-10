@@ -9,9 +9,9 @@
 #include <set>
 #include <map>
 
-using cad::modeller::AbstractShape;
-using cad::modeller::AbstractCanvas;
-using cad::modeller::ModelTree;
+using cad::model::AbstractShape;
+using cad::model::AbstractCanvas;
+using cad::model::ModelTree;
 
 ///\brief Visual model tree representation as a wxWidgets widget
 ///\see ModelTree

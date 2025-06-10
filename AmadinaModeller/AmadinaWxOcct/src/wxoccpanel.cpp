@@ -113,11 +113,11 @@ void wxOccPanel::SetDefaultStyle()
     m_context->DefaultDrawer()->FaceBoundaryAspect()->SetWidth(1.0);
 }
 
-void wxOccPanel::ClearAll()
-{
-    m_context->RemoveAll(true);
-    m_context->Display(m_view_cube, true);
-}
+//void wxOccPanel::ClearAll()
+//{
+//    m_context->RemoveAll(true);
+//    m_context->Display(m_view_cube, true);
+//}
 
 void wxOccPanel::AddShape(Handle(AIS_InteractiveObject) shape)
 {

@@ -1,71 +1,102 @@
 #ifndef BASE_COMMAND_H_INCLUDED
 #define BASE_COMMAND_H_INCLUDED
 
+#include "sheet_context.h"
+#include "command_arguments.h"
 #include "point.h"
+#include "direction.h"
 #include <string>
-#include <atomic>
-#include <mutex>
+#include <vector>
 
-namespace cad::command
+namespace cad::model
 {
-    using cad::modeller::shapes2D::Point;
+    class AbstractShape;
+}
 
-    class InteractiveDataReceiver
+namespace cad::app
+{
+    class SheetContext;
+}
+
+namespace cad::command::interpreter
+{
+    class CommandToken;
+}
+
+namespace cad::command {
+
+    using cad::model::AbstractShape;
+    using cad::model::flat::Point;
+    using cad::model::geom::Direction;
+    using cad::app::SheetContext;
+    using cad::command::interpreter::CommandToken;
+    using cad::command::interpreter::CommandArguments;
+
+    class BaseCommand
     {
-        public:
-            virtual void SetPoint(const Point &pt) = 0;
-            virtual void SetText(const std::string &str) = 0;
-            virtual void SetNumber(double number) = 0;
-    };
-
-    class BaseCommand: public InteractiveDataReceiver
-    {
-        // Execution states: waiting type, last input type
-        enum InputType
-        {
-            empty = 0,
-            tp_string = 2,
-            tp_number = 4,
-            tp_point = 8
-        };
-
         public:
             BaseCommand() = default;
-            virtual ~BaseCommand() = default;
 
-            void Start();
+            virtual bool Execute(SheetContext *ctx, CommandArguments &args) = 0;
 
-            void Cancel();
+            //virtual void ObjectsCreated(std::vector<AbstractShape *> &container) = 0;
 
-            bool IsWaitingFor(InputType type);
+            //virtual void ObjectsToRemove(std::vector<AbstractShape*> &container) = 0;
 
-            void SetPoint(const Point &pt) final;
+            virtual BaseCommand* Clone() = 0;
 
-            void SetText(const std::string &str) final;
-
-            void SetNumber(double number) final;
+            const std::string& GetMessage()
+            {
+                return m_err_msg;
+            }
 
         protected:
-            // Called inside Start(): has to be overriden for all commands
-            virtual void Execute();
+            std::string m_err_msg = "";
 
-            double GetNumber();
-            Point GetPoint();
-            std::string GetString();
-            int GetStringOrNumber();
+            bool CheckArgSize(const CommandArguments &args, size_t min)
+            {
+                if (args.GetSize() < min)
+                {
+                    m_err_msg = "Too few arguments. At least ";
+                    m_err_msg += std::to_string(min);
+                    m_err_msg += " expected.";
+                    return false;
+                }
+                return true;
+            }
 
-        private:
-            std::mutex mt;
-            std::atomic<bool> m_is_waiting = false;
-            std::atomic<bool> m_is_canceled = false;
+            Point GetPointFromList(CommandToken tk)
+            {
+                Point point;
 
-            // Incoming data
-            std::string m_string;
-            double m_number;
-            Point m_point;
+                bool is_list = tk.IsList();
+                size_t list_zize = tk.GetListSize();
 
-            int m_last_input = empty;
-            int m_waiting_for = empty;
+                if (!is_list || list_zize < 2)
+                    return point; // Uninitialized point. Use IsSet to check.
+
+                point.SetX(tk.GetListValue(0));
+                point.SetY(tk.GetListValue(1));
+                point.SetZ(list_zize > 2 ? tk.GetListValue(2) : 0.0);
+                return point;
+            }
+
+            Direction GetDirectionFromList(CommandToken tk)
+            {
+                Direction dir;
+
+                bool is_list = tk.IsList();
+                size_t list_zize = tk.GetListSize();
+
+                if (!is_list || list_zize < 3)
+                    return Direction{}; // Default direction.
+
+
+                dir.SetX(tk.GetListValue(0));
+                dir.SetY(tk.GetListValue(1));
+                dir.SetZ(list_zize > 2 ? tk.GetListValue(2) : 0.0);
+                return dir;
+            }
     };
 }
 

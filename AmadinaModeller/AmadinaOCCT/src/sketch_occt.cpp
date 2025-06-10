@@ -3,87 +3,51 @@
 #include "occt_canvas.h"
 #include <algorithm>
 
-using cad::modeller::occt::OcctObject;
-using cad::modeller::occt::OcctObject;
-using cad::modeller::geometry::Direction;
-using cad::modeller::geometry::DirectionVector;
+using cad::model::occt::OcctObject;
+using cad::model::occt::OcctObject;
+using cad::model::geom::Direction;
+using cad::model::geom::DirectionVector;
 
-
-cad::modeller::occt::SketchOcct::SketchOcct(const std::string &name)
-    : m_name(name)
-{ }
-
-
-void cad::modeller::occt::SketchOcct::AssignCanvas(AbstractCanvas *cnv)
+void cad::model::occt::SketchOcct::AssignCanvas(AbstractCanvas *cnv)
 {
-	AssignOcctCanvas(cnv);
-	for (auto shape : m_shapes)
-		shape->AssignCanvas(cnv);
+    AssignOcctCanvas(cnv);
+    for (auto shape : m_shapes)
+        shape->AssignCanvas(cnv);
 }
 
-void cad::modeller::occt::SketchOcct::AppendObject(AbstractShape *shape)
+void cad::model::occt::SketchOcct::AppendObject(AbstractShape *shape)
 {
-	Sketch::AppendObject(shape);
-	shape->AssignCanvas(GetOcctCanvas());
+    Sketch::AppendObject(shape);
+    shape->AssignCanvas(GetOcctCanvas());
 }
 
 
-void cad::modeller::occt::SketchOcct::Draw()
+void cad::model::occt::SketchOcct::DrawShape()
 {
-	for (auto shape : m_shapes)
-		shape->Draw();
-
-	if (GetIsVisible())
-		Show();
-
+    for (auto shape : m_shapes)
+        shape->Draw();
 }
 
-void cad::modeller::occt::SketchOcct::Hide()
+void cad::model::occt::SketchOcct::RemoveShape()
 {
-	for (auto shape : m_shapes)
-		shape->Hide();
-
-	SetVisible(false);
+    for (auto shape : m_shapes)
+        shape->Remove();
 }
 
-void cad::modeller::occt::SketchOcct::Show()
+void cad::model::occt::SketchOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
 {
-	for (auto shape : m_shapes)
-		shape->Show();
+    std::vector<AbstractShape *> shapes;
+    GetSubObjects(shapes);
 
-	SetVisible(true);
+    for (auto shape : shapes)
+    {
+        auto occt_object = dynamic_cast<OcctObject *>(shape);
+        if (occt_object)
+            occt_object->GetAisInteractiveObjects(container);
+    }
 }
 
-void cad::modeller::occt::SketchOcct::Refresh()
+void cad::model::occt::SketchOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
 {
-	Hide();
-	Draw();
-}
-
-void cad::modeller::occt::SketchOcct::SetDirectionVector(const DirectionVector &vector)
-{
-	m_vector = vector;
-}
-
-DirectionVector cad::modeller::occt::SketchOcct::GetDirectionVector() const
-{
-	return m_vector;
-}
-
-void cad::modeller::occt::SketchOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
-{
-	std::vector<AbstractShape*> shapes;
-	GetSubObjects(shapes);
-
-	for (auto shape : shapes)
-	{
-		auto occt_object = dynamic_cast<OcctObject*>(shape);
-		if (occt_object)
-			occt_object->GetAisInteractiveObjects(container);
-	}
-}
-
-void cad::modeller::occt::SketchOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
-{
-	// no curves?
+    // no curves?
 }

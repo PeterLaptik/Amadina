@@ -4,7 +4,7 @@
 # FILE_PATH - file path
 function (read_variables_from_file FILE_PATH)
     file(STRINGS ./${FILE_PATH} PROJECT_VARS)
-    message(STATUS "Setting up project variables from the file: '${PROJECT_VARIABLES_FILENAME}'")
+    message(STATUS "Setting up project variables from the file: '${FILE_PATH}'")
         foreach(LINE ${PROJECT_VARS})
             string(REGEX MATCH "(.*)=(.*)" _ ${LINE})
             set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2} PARENT_SCOPE)
@@ -16,7 +16,7 @@ endfunction()
 # FILE_PATH - file path
 function (read_list_variables_from_file FILE_PATH)
     file(STRINGS ./${FILE_PATH} PROJECT_VARS)
-    message(STATUS "Setting up project list variables from the file: '${PROJECT_VARIABLES_FILENAME}'")
+    message(STATUS "Setting up project list variables from the file: '${FILE_PATH}'")
         foreach(LINE ${PROJECT_VARS})
             string(REGEX MATCH "(.*):=(.*)" _ ${LINE})
             string(REPLACE " " ";" STR_TO_LIST ${CMAKE_MATCH_2})

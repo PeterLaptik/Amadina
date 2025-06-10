@@ -9,10 +9,10 @@
 #include <map>
 #include <wx/event.h>
 
-using cad::modeller::AbstractCanvas;
-using cad::modeller::operations::AbstractOperation;
-using cad::modeller::occt::OcctCanvas;
-using cad::modeller::occt::OcctObject;
+using cad::model::AbstractCanvas;
+using cad::model::solid::AbstractOperation;
+using cad::model::occt::OcctCanvas;
+using cad::model::occt::OcctObject;
 
 
 wxBEGIN_EVENT_TABLE(wxModelTree, wxTreeCtrl)
@@ -25,10 +25,10 @@ wxEND_EVENT_TABLE()
 
 // Default name prefixes dependent on object types
 static const std::map<std::string, wxString> object_visible_names = {
-	{typeid(cad::modeller::occt::SketchOcct).name(), "Sketch_"},
-	{typeid(cad::modeller::occt::operations::OpExtrudeOcct).name(), "Extrude_"},
-	{typeid(cad::modeller::occt::operations::OpBoolFuseOcct).name(), "Union_"},
-	{typeid(cad::modeller::occt::operations::OpBoolCommonOcct).name(), "Intersect_"}
+	{typeid(cad::model::occt::SketchOcct).name(), "Sketch_"},
+	{typeid(cad::model::occt::solid::OpExtrudeOcct).name(), "Extrude_"},
+	{typeid(cad::model::occt::solid::OpBoolFuseOcct).name(), "Fuse_"},
+	{typeid(cad::model::occt::solid::OpBoolCommonOcct).name(), "Intersect_"}
 };
 
 
@@ -66,7 +66,7 @@ void wxModelTree::RemoveItem(AbstractShape *item)
 
 void wxModelTree::HideItem(AbstractShape *item)
 {
-	if (item->GetIsVisible())
+	if (item->IsVisible())
 		ModelTree::HideItem(item);
 	else
 		ModelTree::ShowItem(item);
@@ -132,7 +132,7 @@ void wxModelTree::UpdateIcons()
 			return;
 
 		auto obj = cad_data->GetShape();
-		if (obj->GetIsVisible())
+		if (obj->IsVisible())
 		{
 			SetItemImage(child, TreeMenuIcons::no_icon);
 		}

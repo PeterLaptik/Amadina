@@ -21,7 +21,8 @@ set(SRC_PATH src)
 set(INCLUDE_PATH include)
 set(AMADINA_OBJECTS_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_OBJECTS_NAME}/include)
 set(AMADINA_OCCT_OBJECTS_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_OCCT_NAME}/include)
-set(AMADINA_OCCT_PANEL_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_WX_OCCT_PANEL_NAME}/include)
+set(AMADINA_OCCT_OBJECTS_SRC_PATH ../${SUB_PROJECT_AMADINA_OCCT_NAME}/src)
+set(AMADINA_CMD_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_COMMAND_NAME}/include)
 
 link_directories(${OUTPUT_LIB_PATH})
 link_directories(${OPENCASCADE_LIBRARIES})
@@ -32,7 +33,6 @@ endif()
 set(SOURCE_FILE_LIST
 	${INCLUDE_PATH}/abstract_modeller.h
 	${INCLUDE_PATH}/context.h
-	${INCLUDE_PATH}/factory.h
 	${INCLUDE_PATH}/menu_htree.h
 	${INCLUDE_PATH}/objectpool.h
 	${INCLUDE_PATH}/resource_provider.h
@@ -42,7 +42,6 @@ set(SOURCE_FILE_LIST
 	${INCLUDE_PATH}/wxoccpanel.h
 	${INCLUDE_PATH}/wxoccpanel_styles.h
 	${SRC_PATH}/context.cpp
-	${SRC_PATH}/factory.cpp
 	${SRC_PATH}/menu_htree.cpp
 	${SRC_PATH}/objectpool.cpp
 	${SRC_PATH}/wxmodeller3d.cpp
@@ -62,7 +61,9 @@ set_target_properties(${AMADINA_WX_OCCT_OUT_NAME}
 target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${INCLUDE_PATH})
 target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_INCLUDE_PATH})
 target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_OCCT_OBJECTS_INCLUDE_PATH})
-target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_OCCT_PANEL_INCLUDE_PATH})
+target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_OCCT_OBJECTS_SRC_PATH})
+target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_CMD_INCLUDE_PATH})
+target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${SUB_PROJECT_AMADINA_OCCT_NAME})
 target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${OPENCASCADE_INCLUDE_DIRS})
 if(WIN32)
     target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${WX_WIDGETS_INCLUDE_DIRS})
@@ -76,8 +77,9 @@ if(BSD)
 	target_include_directories(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${ATK_INCLUDE_DIRS})
 endif()
 
-target_link_libraries(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_OCCT_OUT_NAME})
 target_link_libraries(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_OUT_NAME})
+target_link_libraries(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_OCCT_OUT_NAME})
+target_link_libraries(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${AMADINA_COMMAND_OUT_NAME})
 target_link_libraries(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${OPENCASCADE_LIBS_FILES})
 if(WIN32)
     target_link_libraries(${AMADINA_WX_OCCT_OUT_NAME} PRIVATE ${WX_WIDGETS_LIBS_FILES})

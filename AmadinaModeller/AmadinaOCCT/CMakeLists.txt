@@ -18,17 +18,18 @@ link_directories(${OPENCASCADE_LIBRARIES})
 link_directories(${OUTPUT_LIB_PATH})
 
 set(SOURCE_FILE_LIST
-	${INCLUDE_PATH}/circle_occt.h
-	${INCLUDE_PATH}/circle_occt.h
-	${INCLUDE_PATH}/line_occt.h
-	${INCLUDE_PATH}/occt_canvas.h
-	${INCLUDE_PATH}/occt_object.h
-	${INCLUDE_PATH}/op_bool_common_occt.h
-	${INCLUDE_PATH}/op_bool_fuse_occt.h
-	${INCLUDE_PATH}/op_bool_occt.h
-	${INCLUDE_PATH}/op_extrude_occt.h
-	${INCLUDE_PATH}/point_occt.h
-	${INCLUDE_PATH}/sketch_occt.h
+	${SRC_PATH}/circle_occt.h
+	${SRC_PATH}/circle_occt.h
+	${SRC_PATH}/line_occt.h
+	${SRC_PATH}/occt_canvas.h
+	${SRC_PATH}/occt_object.h
+	${SRC_PATH}/occt_object.cpp
+	${SRC_PATH}/op_bool_common_occt.h
+	${SRC_PATH}/op_bool_fuse_occt.h
+	${SRC_PATH}/op_bool_occt.h
+	${SRC_PATH}/op_extrude_occt.h
+	${SRC_PATH}/point_occt.h
+	${SRC_PATH}/sketch_occt.h
 	${SRC_PATH}/circle_occt.cpp
 	${SRC_PATH}/line_occt.cpp
 	${SRC_PATH}/op_bool_common_occt.cpp

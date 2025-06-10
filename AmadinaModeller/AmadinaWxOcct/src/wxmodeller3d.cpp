@@ -1,4 +1,5 @@
 #include "wxmodeller3d.h"
+#include "sheet_context.h"
 #include "wxoccpanel.h"
 #include "wxmodeltree.h"
 #include <wx/sizer.h>
@@ -7,14 +8,12 @@
 
 const char *ROOT_NODE_NAME = "Model";
 
-wxModeller3D::wxModeller3D(wxWindow *parent,
-                       wxWindowID winid,
-                       const wxPoint &pos,
-                       const wxSize &size,
-                       long style,
-                       const wxString &name)
-    : wxAbstractModeller(parent, winid, pos, size, style, name)
+wxModeller3D::wxModeller3D(wxWindow *parent, ApplicationContext *app_ctx)
+    : wxAbstractModeller(parent, wxID_ANY, wxDefaultPosition, 
+        wxDefaultSize, wxTAB_TRAVERSAL | wxNO_BORDER, wxPanelNameStr),
+    m_app_context(app_ctx)
 {
+    m_sheet_context = new SheetContext(app_ctx);
 
     m_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
@@ -29,14 +28,14 @@ wxModeller3D::wxModeller3D(wxWindow *parent,
 
     m_splitter->SplitVertically(m_model_tree, m_occpanel, 342);
 
-    //m_context = new Context(m_occpanel);
+    m_sheet_context->SetModelTree(m_model_tree);
 
 	this->SetSizer(m_sizer);
 }
 
 wxModeller3D::~wxModeller3D()
 {
-    //delete m_context;
+    delete m_sheet_context;
 }
 
 void wxModeller3D::RefreshView(void)
@@ -44,9 +43,9 @@ void wxModeller3D::RefreshView(void)
 
 }
 
-Context* wxModeller3D::GetContext() const
+SheetContext* wxModeller3D::GetContext()
 {
-    return m_context;
+    return m_sheet_context;
 }
 
 
@@ -60,18 +59,18 @@ Context* wxModeller3D::GetContext() const
 #include "op_bool_common_occt.h"
 void wxModeller3D::Test()
 {
-    using cad::modeller::shapes2D::Point;
-    using cad::modeller::shapes2D::Line;
-    using cad::modeller::shapes2D::Direction;
-    using cad::modeller::geometry::DirectionVector;
-    using cad::modeller::occt::shapes2D::PointOcct;
-    using cad::modeller::occt::shapes2D::LineOcct;
-    using cad::modeller::occt::shapes2D::CircleOcct;
-    using cad::modeller::occt::operations::OpBoolOcct;
-    using cad::modeller::occt::operations::OpBoolCommonOcct;
-    using cad::modeller::occt::operations::OpBoolFuseOcct;
-    using cad::modeller::occt::SketchOcct;
-    using cad::modeller::occt::operations::OpExtrudeOcct;
+    using cad::model::flat::Point;
+    using cad::model::flat::Line;
+    using cad::model::flat::Direction;
+    using cad::model::geom::DirectionVector;
+    using cad::model::occt::flat::PointOcct;
+    using cad::model::occt::flat::LineOcct;
+    using cad::model::occt::flat::CircleOcct;
+    using cad::model::occt::solid::OpBoolOcct;
+    using cad::model::occt::solid::OpBoolCommonOcct;
+    using cad::model::occt::solid::OpBoolFuseOcct;
+    using cad::model::occt::SketchOcct;
+    using cad::model::occt::solid::OpExtrudeOcct;
 
     // Sketch square
     SketchOcct *sketch = new SketchOcct("Test");
@@ -104,7 +103,7 @@ void wxModeller3D::Test()
     m_model_tree->AddItem(op_extrude);
     m_model_tree->AddItem(op_extrude2);
 
-    OpBoolOcct *fuse = new OpBoolCommonOcct();
+    OpBoolOcct *fuse = new OpBoolFuseOcct();
     fuse->AddShape(op_extrude);
     fuse->AddShape(op_extrude2);
     m_model_tree->AddItem(fuse);

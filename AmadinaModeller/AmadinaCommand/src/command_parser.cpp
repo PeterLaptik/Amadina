@@ -10,9 +10,9 @@
 
 using boost::spirit::x3::ascii::space_type;
 
-
 using cad::command::interpreter::CommandParser;
 using cad::command::interpreter::CommandToken;
+using cad::command::interpreter::CommandArguments;
 using cad::command::interpreter::grammar::variables::expression_assign;
 using cad::command::interpreter::grammar::variables::AssignExpression;
 using cad::command::interpreter::grammar::calc::exec::Evaluator;
@@ -34,7 +34,6 @@ const char * const MSG_ASSIGN_ERROR = "Assignment error. Check variable name. ";
 const char * const MSG_CALC_ERROR = "Calculation error. ";
 const char * const MSG_CMD_ERROR = "Command read error. ";
 
-
 bool cad::command::interpreter::CommandParser::ParseCommand(const std::string &command)
 {
     m_tokens.clear();
@@ -48,6 +47,21 @@ bool cad::command::interpreter::CommandParser::ParseCommand(const std::string &c
     
     bool parsing_result = TokenizeCommandLine(command);
     return parsing_result;
+}
+
+bool cad::command::interpreter::CommandParser::IsEmpty() const
+{
+    return m_tokens.empty();
+}
+
+std::string cad::command::interpreter::CommandParser::GetCommand() const
+{
+    return !m_tokens.empty() ? m_tokens[0].GetStringValue() : "";
+}
+
+CommandArguments cad::command::interpreter::CommandParser::GetArguments() const
+{
+    return CommandArguments(m_tokens);
 }
 
 bool cad::command::interpreter::CommandParser::TokenizeCommandLine(const std::string &command)
@@ -123,21 +137,6 @@ bool cad::command::interpreter::CommandParser::AssignValue(const std::string &co
         return false;
     }
     return true;
-}
-
-bool cad::command::interpreter::CommandParser::IsEmpty() const
-{
-    return m_tokens.empty();
-}
-
-size_t cad::command::interpreter::CommandParser::GetTokensNumber() const
-{
-    return m_tokens.size();
-}
-
-const CommandToken& cad::command::interpreter::CommandParser::GetToken(int i) const
-{
-    return m_tokens.at(i);
 }
 
 std::string cad::command::interpreter::CommandParser::GetResultMessage() const

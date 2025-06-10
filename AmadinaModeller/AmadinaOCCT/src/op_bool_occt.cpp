@@ -2,51 +2,33 @@
 #include "occt_canvas.h"
 
 
-void cad::modeller::occt::operations::OpBoolOcct::Show()
+void cad::model::occt::solid::OpBoolOcct::AssignCanvas(AbstractCanvas *cnv)
 {
-	ShowOcctObject(m_body);
-	SetVisible(true);
+    AssignOcctCanvas(cnv);
 }
 
-void cad::modeller::occt::operations::OpBoolOcct::Hide()
+bool cad::model::occt::solid::OpBoolOcct::IsValid()
 {
-	HideOcctObject(m_body);
-	SetVisible(false);
+    std::vector<AbstractShape *> shapes;
+    GetShapes(shapes);
+
+    for (auto shape : shapes)
+    {
+        auto op = dynamic_cast<AbstractOperation *>(shape);
+        if (op && !op->IsValid())
+            return false;
+    }
+
+    return GetShapesNumber() > 1;
 }
 
-void cad::modeller::occt::operations::OpBoolOcct::AssignCanvas(AbstractCanvas *cnv)
+void cad::model::occt::solid::OpBoolOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
 {
-	AssignOcctCanvas(cnv);
+    if (m_body)
+        container.push_back(m_body);
 }
 
-bool cad::modeller::occt::operations::OpBoolOcct::IsValid()
+void cad::model::occt::solid::OpBoolOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
 {
-	std::vector<AbstractShape *> shapes;
-	GetShapes(shapes);
-
-	for (auto shape : shapes)
-	{
-		auto op = dynamic_cast<AbstractOperation *>(shape);
-		if (op && !op->IsValid())
-			return false;
-	}
-
-	return GetShapesNumber() > 1;
-}
-
-void cad::modeller::occt::operations::OpBoolOcct::Refresh()
-{
-	Hide();
-	Draw();
-}
-
-void cad::modeller::occt::operations::OpBoolOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
-{
-	if (m_body)
-		container.push_back(m_body);
-}
-
-void cad::modeller::occt::operations::OpBoolOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
-{
-	//
+    //
 }

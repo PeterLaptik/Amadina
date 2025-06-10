@@ -3,6 +3,7 @@
 #include "factory.h"
 #include "../resources/art.h"
 #include "command_panel.h"
+#include "application_context.h"
 //#include "commands_names.h"
 //#include "wxpointinput.h"
 //#include "wxoccpanel.h"
@@ -14,9 +15,14 @@
 #include <wx/ribbon/bar.h>
 #include <wx/ribbon/buttonbar.h>
 
-//using namespace cad::modeller::command::names;
-using modeller::art::Icon;
-using modeller::art::get_icon;
+#include "utils/file_resource_provider.h"
+
+#include "widgets/aribbon.h"
+
+#include "commands/file_new.h"
+
+using model::art::Icon;
+using model::art::get_icon;
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     //EVT_PAINT(MainFrame::OnPaint)
@@ -29,6 +35,8 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
           const wxPoint& pos, const wxSize& size, long style)
           : wxFrame(parent, id, title, pos, size, style)
 {
+    m_app_context = new cad::command::ApplicationContext();
+
     SetSizeHints(800, 600);
     SetPosition(wxPoint(0,0));
     m_mgr.SetManagedWindow(this);
@@ -47,14 +55,20 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
                .CentrePane());
 
     m_main_sizer = new wxBoxSizer(wxVERTICAL);
-    m_ribbon = new wxRibbonBar(m_main_panel, wxID_ANY, wxDefaultPosition,
-                               wxDefaultSize, wxRIBBON_BAR_DEFAULT_STYLE);
+    m_ribbon = new ARibbon(m_main_panel);
 
     m_splitter = new wxSplitterWindow(m_main_panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
 
     m_ribbon->SetArtProvider(new wxRibbonAUIArtProvider);
 
-    RibbonInit();
+    //RibbonInit();
+    FileResourceProvider prv;
+
+    //m_ribbonButtonBar5->AddDropdownButton(wxID_ANY, wxT("New"), wxArtProvider::GetBitmap(wxART_NEW), wxEmptyString);
+
+    int file_bar_id = m_ribbon->AddButtonBar(ARibbon::kPanelFile);
+    m_ribbon->AddCommandButton(file_bar_id, new FileNew(this), wxArtProvider::GetBitmap(wxART_NEW), _("New"), _("Create new file"));
+    
 
     m_ribbon->Realise();
     m_main_sizer->Add(m_ribbon, 0, wxEXPAND | wxALL, 0);
@@ -68,7 +82,8 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 
     m_main_sizer->Add(m_splitter, 1, wxEXPAND | wxALL, 0);
 
-    m_splitter->SplitHorizontally(m_notebook, m_cmd_panel, 100);
+    m_splitter->SplitHorizontally(m_notebook, m_cmd_panel);
+    m_splitter->SetSashGravity(0.8);
 
     m_main_panel->SetSizer(m_main_sizer);
 	m_main_panel->Layout();
@@ -78,15 +93,21 @@ MainFrame::MainFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 	m_mgr.Update();
 	this->Centre(wxBOTH);
 
-	m_modeller = get_abstract_modeller(this);//new wxModeller3D(this);
+	m_modeller = get_abstract_modeller(this, m_app_context);//new wxModeller3D(this);
 	m_notebook->AddPage(m_modeller, "test");
 
-    //m_modeller->Test();
+    m_cmd_panel->SetContext(m_modeller->GetContext());
 }
 
 MainFrame::~MainFrame()
 {
     m_mgr.UnInit();
+    delete m_app_context;
+}
+
+cad::command::ApplicationContext* MainFrame::GetAppContext()
+{
+    return m_app_context;
 }
 
 void MainFrame::RibbonInit()

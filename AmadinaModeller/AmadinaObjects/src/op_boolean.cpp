@@ -2,85 +2,103 @@
 #include <algorithm>
 #include <iterator>
 
+using cad::model::AbstractShape;
 
-using cad::modeller::AbstractShape;
-
-
-cad::modeller::operations::OpBoolean::~OpBoolean()
+cad::model::solid::OpBoolean::~OpBoolean()
 {
-	for (auto shape : m_initial_shapes)
-	{
-		shape->SetHandled(false);
-		shape->SetVisible(true);
-	}
+    for (auto shape : m_initial_shapes)
+    {
+        shape->SetHandled(false);
+        shape->Draw();
+    }
 }
 
-void cad::modeller::operations::OpBoolean::AddShape(AbstractShape *shape)
+void cad::model::solid::OpBoolean::AddShape(AbstractShape *shape)
 {
-	if (shape->GetIsHandled())
-		return; // the shape is used by another operation
+    if (shape->IsHandled())
+        return; // the shape is used by another operation
 
-	auto it = std::find_if(m_initial_shapes.begin(), m_initial_shapes.end(), 
-		[=](auto obj) {
-			return obj == shape;
-		});
+    auto it = std::find_if(m_initial_shapes.begin(), m_initial_shapes.end(),
+        [=](auto obj) {
+            return obj == shape;
+        });
 
-	if (it != m_initial_shapes.end())
-		return; // the shape already exists in the list
+    if (it != m_initial_shapes.end())
+        return; // the shape already exists in the list
 
-	m_initial_shapes.push_back(shape);
-	shape->SetHandled(true);
-	Refresh();
+    m_initial_shapes.push_back(shape);
+    shape->SetHandled(true);
+    Refresh();
 }
 
-void cad::modeller::operations::OpBoolean::RemoveShape(AbstractShape *shape)
+void cad::model::solid::OpBoolean::RemoveShape(AbstractShape *shape)
 {
-	m_initial_shapes.erase(std::remove(m_initial_shapes.begin(), m_initial_shapes.end(), shape), m_initial_shapes.end());
-	shape->SetHandled(false);
-	shape->SetVisible(true);
-	Refresh();
+    m_initial_shapes.erase(std::remove(m_initial_shapes.begin(), m_initial_shapes.end(), shape), m_initial_shapes.end());
+    shape->SetHandled(false);
+    shape->Draw();
+    Refresh();
 }
 
- void cad::modeller::operations::OpBoolean::Purge(AbstractShape *shape)
+void cad::model::solid::OpBoolean::Purge(AbstractShape *removing_shape)
 {
-	 bool shape_dep = AbstractOperation::DoesOperationDependOnShape(shape, m_initial_shapes);
-	 bool sub_shapes_dep = AbstractOperation::DoesOperationDependOnSubShapes(shape, m_initial_shapes);
+    auto its = std::find_if(m_initial_shapes.begin(), m_initial_shapes.end(),
+        [removing_shape](auto obj) {
+            return obj == removing_shape;
+        });
 
-	 if (shape_dep)
-	 {
-		 m_initial_shapes.erase(std::remove(m_initial_shapes.begin(), m_initial_shapes.end(), shape), m_initial_shapes.end());
-		 shape->SetHandled(false);
-		 shape->SetVisible(true);
-	 }
+    bool has_direct_dependency = its != m_initial_shapes.end();
 
-	 if (shape_dep || sub_shapes_dep)
-		 Refresh();
+    if (has_direct_dependency)
+    {
+        m_initial_shapes.erase(std::remove(m_initial_shapes.begin(), m_initial_shapes.end(), removing_shape), m_initial_shapes.end());
+        removing_shape->SetHandled(false);
+        Refresh();
+    }
 }
 
- void cad::modeller::operations::OpBoolean::Update(AbstractShape *updated_shape)
- {
-	 bool shape_dep = AbstractOperation::DoesOperationDependOnShape(updated_shape, m_initial_shapes);
-	 bool sub_shapes_dep = AbstractOperation::DoesOperationDependOnSubShapes(updated_shape, m_initial_shapes);
-	 if (shape_dep || sub_shapes_dep)
-		 Refresh();
- }
-
- void cad::modeller::operations::OpBoolean::GetSubObjects(std::vector<AbstractShape *> &container)
- {
-	 for (auto obj : m_initial_shapes)
-	 {
-		 container.push_back(obj);
-		 obj->GetSubObjects(container);
-	 }
- }
-
-void cad::modeller::operations::OpBoolean::GetShapes(std::vector<AbstractShape *> &container) const
+void cad::model::solid::OpBoolean::Update(AbstractShape *updated_shape)
 {
-	std::copy(m_initial_shapes.begin(), m_initial_shapes.end(), std::back_inserter(container));
+    bool has_dependencies = DoesDependOn(updated_shape);
+    if (has_dependencies)
+        Refresh();
 }
 
-int cad::modeller::operations::OpBoolean::GetShapesNumber() const
+void cad::model::solid::OpBoolean::GetSubObjects(std::vector<AbstractShape *> &container)
 {
-	return static_cast<int>(m_initial_shapes.size());
+    for (auto obj : m_initial_shapes)
+    {
+        container.push_back(obj);
+        obj->GetSubObjects(container);
+    }
+}
+
+void cad::model::solid::OpBoolean::GetShapes(std::vector<AbstractShape *> &container) const
+{
+    std::copy(m_initial_shapes.begin(), m_initial_shapes.end(), std::back_inserter(container));
+}
+
+int cad::model::solid::OpBoolean::GetShapesNumber() const
+{
+    return static_cast<int>(m_initial_shapes.size());
+}
+
+bool cad::model::solid::OpBoolean::DoesDependOn(AbstractShape *shape)
+{
+    std::vector<AbstractShape *> sub_shapes;
+    sub_shapes.push_back(shape);
+    shape->GetSubObjects(sub_shapes);
+
+    for (auto sub_shape : sub_shapes)
+    {
+        auto its = std::find_if(m_initial_shapes.begin(), m_initial_shapes.end(),
+            [sub_shape](auto obj) {
+                return obj == sub_shape;
+            });
+
+        if (its != m_initial_shapes.end())
+            return true;
+    }
+
+    return false;
 }
 

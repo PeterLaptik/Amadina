@@ -4,7 +4,7 @@
 
 namespace cad
 {
-    namespace modeller
+    namespace model
     {
         class Context
         {

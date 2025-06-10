@@ -1,29 +1,30 @@
 #ifndef MAIN_FRAME_H_INCLUDED
 #define MAIN_FRAME_H_INCLUDED
 
-//#include "command_dispatcher.h"
+#include "application.h"
 #include "command_panel.h"
 #include <wx/frame.h>
-#include <wx/panel.h>
-#include <wx/sizer.h>
 #include <wx/aui/aui.h>
-#include <wx/aui/framemanager.h>
-#include <wx/aui/auibook.h>
 #include <string>
 #include <memory>
 #include <map>
 
-//using cad::modeller::CommandDispatcher;
-
 const wxSize DEFAULT_WINDOW_SIZE = wxSize(800,600);
 
-class wxRibbonBar;
+namespace cad::command
+{
+    class ApplicationContext;
+}
+
+//class wxRibbonBar;
 class wxRibbonButtonBar;
 class wxRibbonButtonBarEvent;
 class wxAbstractModeller;
 class wxSplitterWindow;
+class wxAuiNotebook;
+class ARibbon;
 
-class MainFrame: public wxFrame
+class MainFrame: public wxFrame, public Application
 {
     public:
         MainFrame(wxWindow* parent,
@@ -34,6 +35,8 @@ class MainFrame: public wxFrame
                   long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
 
         virtual ~MainFrame();
+
+        cad::command::ApplicationContext* GetAppContext() override;
 
     protected:
         /// Definition of a system commands handler.
@@ -68,7 +71,7 @@ class MainFrame: public wxFrame
         // Command line
         CommandPanel *m_cmd_panel;
 
-		wxRibbonBar *m_ribbon;
+        ARibbon *m_ribbon;
 		wxAuiNotebook *m_notebook;
 		wxStatusBar *m_status_bar;
 		wxAbstractModeller *m_modeller;
@@ -78,6 +81,7 @@ class MainFrame: public wxFrame
         void SketchModeHandler(wxEvent &event);
         wxRibbonButtonBar *m_ribbonButtonBar6;
 
+        cad::command::ApplicationContext *m_app_context;
         std::map<wxWindowID, std::string> m_commands_buttons_map;
         std::map<wxWindowID,CommandHandler> m_system_commands_map;
 

@@ -1,40 +1,40 @@
-#ifndef SHAPE_DIRECTION_VECTOR_H
-#define SHAPE_DIRECTION_VECTOR_H
+#ifndef GEOM_DIRECTION_VECTOR_INCLUDED_H
+#define GEOM_DIRECTION_VECTOR_INCLUDED_H
 
 #include "point.h"
 #include "direction.h"
 
 #ifdef _WINDLL
-    #define DLL_EXPORT __declspec(dllexport)
+#define DLL_EXPORT __declspec(dllexport)
 #else
-    #define DLL_EXPORT
+#define DLL_EXPORT
 #endif
 
-namespace cad::modeller::geometry
+namespace cad::model::geom
 {
-	using cad::modeller::shapes2D::Point;
+    using cad::model::flat::Point;
 
-	///\brief Represents a vector in 3D space
-	class DLL_EXPORT DirectionVector
-	{
-		public:
-			DirectionVector();
-			explicit DirectionVector(const Point &p);
-			DirectionVector(const Point &p, const Direction &dir);
-			~DirectionVector() = default;
+    ///\brief Represents a vector in 3D space
+    class DirectionVector
+    {
+        public:
+            DLL_EXPORT DirectionVector();
+            DLL_EXPORT explicit DirectionVector(const Point &p);
+            DLL_EXPORT DirectionVector(const Point &p, const Direction &dir);
+            DLL_EXPORT ~DirectionVector() = default;
 
-			void SetStartPoint(const Point &p);
-			void SetDirection(const Direction &dir);
-			const Point& GetStartPoint() const;
-			const Direction& GetDirection() const;
+            DLL_EXPORT void SetStartPoint(const Point &p);
+            DLL_EXPORT void SetDirection(const Direction &dir);
+            DLL_EXPORT const Point &GetStartPoint() const;
+            DLL_EXPORT const Direction &GetDirection() const;
 
-		private:
-			Point m_center;
-			Direction m_direction;
-	};
+        private:
+            Point m_center;
+            Direction m_direction;
+    };
 }
 
-#endif
+#endif // GEOM_DIRECTION_VECTOR_INCLUDED_H
 
 
 

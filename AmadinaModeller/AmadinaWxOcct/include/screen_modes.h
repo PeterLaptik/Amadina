@@ -3,7 +3,7 @@
 
 namespace cad
 {
-    namespace modeller
+    namespace model
     {
         enum ScreenMode
         {

@@ -1,7 +1,7 @@
 #include "command_panel.h"
 
-const int MAX_COMMAND_LINE_LENGTH = 255;
-const int MAX_COMMAND_LINE_HISTORY = 15;
+const int kMaxCommandLineLength = 255;
+const int kMaxCommandLineHistory = 30;
 
 ///\ TODO Desctiption
 // --------------------------------------
@@ -23,14 +23,19 @@ CommandPanel::CommandPanel(wxWindow *parent, wxWindowID id)
     // Bottom input text box
     m_txt_input = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
                                  wxTE_PROCESS_TAB | wxTE_PROCESS_ENTER);
-    m_txt_input->SetMaxLength(MAX_COMMAND_LINE_LENGTH);
+    m_txt_input->SetMaxLength(kMaxCommandLineLength);
     m_main_sizer->Add(m_txt_input, 0, wxEXPAND | wxALL);
     SetSizer(m_main_sizer);
 
     m_txt_input->Bind(wxEVT_CHAR, &CommandPanel::OnChar, this);
 }
 
-void CommandPanel::InputText(const wxString &txt)
+void CommandPanel::SetContext(SheetContext *ctx)
+{
+    m_sheet_context = ctx;
+}
+
+void CommandPanel::InputCommand(const wxString &txt)
 {
     if (txt.length() < 1)
         return;
@@ -39,7 +44,7 @@ void CommandPanel::InputText(const wxString &txt)
     m_txt_history->AppendText(txt);
     m_txt_history->AppendText('\n');
 
-    if (m_txt_history->GetNumberOfLines() >= MAX_COMMAND_LINE_HISTORY)
+    if (m_txt_history->GetNumberOfLines() >= kMaxCommandLineHistory)
     {
         DeleteHistoryTopLine();
     }
@@ -47,7 +52,7 @@ void CommandPanel::InputText(const wxString &txt)
 
 void CommandPanel::SendMessage(const wxString &txt)
 {
-    InputText(txt);
+    InputCommand(txt);
 }
 
 void CommandPanel::SetAutocompleteList(const std::vector<std::string> *list)
@@ -61,8 +66,8 @@ void CommandPanel::OnChar(wxKeyEvent &event)
     // Input text
     if(code == WXK_RETURN)
     {
-        m_txt_input->GetLineText(0);
-        InputText(m_txt_input->GetValue());
+        wxString txt = m_txt_input->GetValue();
+        InputCommand(txt);
         m_txt_input->Clear();
         return;
     }

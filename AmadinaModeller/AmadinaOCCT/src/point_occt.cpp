@@ -6,50 +6,36 @@
 #include <Prs3d_PointAspect.hxx>
 
 
-using cad::modeller::AbstractCanvas;
+using cad::model::AbstractCanvas;
 
 
-void cad::modeller::occt::shapes2D::PointOcct::AssignCanvas(AbstractCanvas *cnv)
+void cad::model::occt::flat::PointOcct::AssignCanvas(AbstractCanvas *cnv)
 {
-	AssignOcctCanvas(cnv);
+    AssignOcctCanvas(cnv);
 }
 
-void cad::modeller::occt::shapes2D::PointOcct::Draw()
+void cad::model::occt::flat::PointOcct::DrawShape()
 {
-	gp_Pnt pnt(GetX(), GetY(), GetZ());
-	TopoDS_Vertex v = BRepBuilderAPI_MakeVertex(pnt);
-	m_point.reset(new AIS_Shape(v));
+    gp_Pnt pnt(GetX(), GetY(), GetZ());
+    TopoDS_Vertex v = BRepBuilderAPI_MakeVertex(pnt);
+    m_point.reset(new AIS_Shape(v));
 
-	// Output
-	if (GetIsVisible())
-		Show();
+    // Output
+    ShowOcctObject(m_point);
 }
 
-void cad::modeller::occt::shapes2D::PointOcct::Hide()
+void cad::model::occt::flat::PointOcct::RemoveShape()
 {
-	
-	HideOcctObject(m_point);
-	SetVisible(false);
+
+    HideOcctObject(m_point);
 }
 
-void cad::modeller::occt::shapes2D::PointOcct::Show()
+void cad::model::occt::flat::PointOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
 {
-	ShowOcctObject(m_point);
-	SetVisible(false);
+    // no curves for point
 }
 
-void cad::modeller::occt::shapes2D::PointOcct::Refresh()
+void cad::model::occt::flat::PointOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
 {
-	Hide();
-	Draw();
-}
-
-void cad::modeller::occt::shapes2D::PointOcct::ExtractGeomCurves(std::vector<Handle(Geom_Curve)> &container)
-{
-	// no curves for point
-}
-
-void cad::modeller::occt::shapes2D::PointOcct::GetAisInteractiveObjects(std::vector<Handle(AIS_InteractiveObject)> &container)
-{
-	container.push_back(m_point);
+    container.push_back(m_point);
 }

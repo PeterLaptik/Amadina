@@ -10,29 +10,31 @@ class wxBoxSizer;
 class wxSplitterWindow;
 class wxModelTree;
 
-class Context;
+namespace cad::app
+{
+    class ApplicationContext;
+}
+
+using cad::app::SheetContext;
+using cad::app::ApplicationContext;
 
 ///\brief Composite widget for interactive modelling
 class wxModeller3D:  public wxAbstractModeller
 {
     public:
-        wxModeller3D(wxWindow *parent,
-                    wxWindowID winid = wxID_ANY,
-                    const wxPoint &pos = wxDefaultPosition,
-                    const wxSize &size = wxDefaultSize,
-                    long style = wxTAB_TRAVERSAL | wxNO_BORDER,
-                    const wxString &name = wxPanelNameStr);
+        wxModeller3D(wxWindow *parent, ApplicationContext *m_app_context);
 
         ~wxModeller3D() override;
 
         void RefreshView(void);
 
-        Context* GetContext(void) const;
+        SheetContext* GetContext();
 
         void Test(void) override;
 
     private:
-        Context *m_context;
+        ApplicationContext *m_app_context;
+        SheetContext *m_sheet_context;
         wxModelTree *m_model_tree;  // left-side panel, contains list of items and operations
         wxOccPanel *m_occpanel;     // canvas to draw
         wxBoxSizer *m_sizer;

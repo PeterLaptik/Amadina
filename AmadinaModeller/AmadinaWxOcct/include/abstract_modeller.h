@@ -3,6 +3,13 @@
 
 #include <wx/panel.h>
 
+namespace cad::app
+{
+    class SheetContext;
+}
+
+using cad::app::SheetContext;
+
 class wxAbstractModeller: public wxPanel
 {
 	public:
@@ -14,6 +21,8 @@ class wxAbstractModeller: public wxPanel
         virtual void RefreshView(void) = 0;
 
 		virtual void Test(void) = 0;
+
+        virtual SheetContext* GetContext() = 0;
 };
 
 #endif

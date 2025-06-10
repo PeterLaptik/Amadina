@@ -1,39 +1,41 @@
-#ifndef OP_EXTRUDE_H
-#define OP_EXTRUDE_H
+#ifndef OP_EXTRUDE_INCLUDED_H
+#define OP_EXTRUDE_INCLUDED_H
 
 #include "abstract_operation.h"
-#include "direction.h"
 
 #ifdef _WINDLL
-	#define DLL_EXPORT __declspec(dllexport)
+#define DLL_EXPORT __declspec(dllexport)
 #else
-	#define DLL_EXPORT
+#define DLL_EXPORT
 #endif
 
-namespace cad::modeller::operations
+namespace cad::model::solid
 {
-	/// Extrusion operation (extrudes from sketch)
-	class DLL_EXPORT OpExtrude : public AbstractOperation
-	{
-		public:
-			OpExtrude(AbstractShape *sketch, double length);
+    /// Extrusion operation (extrudes from sketch)
+    class OpExtrude : public AbstractOperation
+    {
+        public:
+            DLL_EXPORT OpExtrude(AbstractShape *sketch, double length);
 
-			~OpExtrude() override;
+            DLL_EXPORT ~OpExtrude() override = default;
 
-			void Purge(AbstractShape *removed_shape) override;
+            DLL_EXPORT void Purge(AbstractShape *removed_shape) override;
 
-			void Update(AbstractShape *updated_shape) override;
+            DLL_EXPORT void Update(AbstractShape *updated_shape) override;
 
-			void SetLength(double length);
-			void SetSketch(AbstractShape *sketch);
+            DLL_EXPORT void SetLength(double length);
 
-			double GetLength() const;
-			AbstractShape *GetSketch() const;
+            DLL_EXPORT void SetSketch(AbstractShape *sketch);
 
-		private:
-			AbstractShape *m_sketch;
-			double m_length;
-	};
+            DLL_EXPORT double GetLength() const;
+
+        protected:
+            DLL_EXPORT AbstractShape *GetSketch() const;
+
+        private:
+            AbstractShape *m_sketch;
+            double m_length;
+    };
 }
 
-#endif
+#endif // OP_EXTRUDE_INCLUDED_H
