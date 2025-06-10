@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.25)
 
 project(${SUB_PROJECT_AMADINA_COMMAND_NAME})
 
@@ -58,4 +58,4 @@ target_link_libraries(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_OUT_
 
 target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${INCLUDE_PATH})
 target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_INCLUDE_PATH})
-target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${BOOST_ROOT_DIR})
+target_include_directories(${AMADINA_COMMAND_OUT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})

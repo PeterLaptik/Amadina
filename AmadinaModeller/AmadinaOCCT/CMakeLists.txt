@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.25)
 
 project(${SUB_PROJECT_AMADINA_OCCT_NAME})
 
@@ -13,8 +13,7 @@ set(SRC_PATH src)
 set(INCLUDE_PATH include)
 set(AMADINA_OBJECTS_INCLUDE_PATH ../${SUB_PROJECT_AMADINA_OBJECTS_NAME}/include)
 
-link_directories(../AmadinaObjects/)
-link_directories(${OPENCASCADE_LIBRARIES})
+link_directories(${OpenCASCADE_LIBRARY_DIR})
 link_directories(${OUTPUT_LIB_PATH})
 
 set(SOURCE_FILE_LIST
@@ -49,8 +48,8 @@ set_target_properties(${AMADINA_OCCT_OUT_NAME}
 
 target_include_directories(${AMADINA_OCCT_OUT_NAME} PRIVATE ${INCLUDE_PATH})
 target_include_directories(${AMADINA_OCCT_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_INCLUDE_PATH})
-target_include_directories(${AMADINA_OCCT_OUT_NAME} PRIVATE ${OPENCASCADE_INCLUDE_DIRS})
+target_include_directories(${AMADINA_OCCT_OUT_NAME} PRIVATE ${OpenCASCADE_INCLUDE_DIR})
 
 target_link_libraries(${AMADINA_OCCT_OUT_NAME} PRIVATE ${AMADINA_OBJECTS_OUT_NAME})
-target_link_libraries(${AMADINA_OCCT_OUT_NAME} PRIVATE ${OPENCASCADE_LIBS_FILES})
+target_link_libraries(${AMADINA_OCCT_OUT_NAME} PRIVATE ${OpenCASCADE_LIBRARIES})
 
