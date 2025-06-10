@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.25)
 
 project(${SUB_PROJECT_AMADINA_OBJECTS_NAME})
 
@@ -25,7 +25,7 @@ set(SOURCE_FILE_LIST
 	${INCLUDE_PATH}/op_extrude.h
 	${INCLUDE_PATH}/point.h
 	${INCLUDE_PATH}/sketch.h
-	${SRC_PATH}/abstract_shape.cpp
+	${SRC_PATH}/abstract_operation.cpp 
 	${SRC_PATH}/direction.cpp 
 	${SRC_PATH}/direction_vector.cpp
 	${SRC_PATH}/point.cpp
